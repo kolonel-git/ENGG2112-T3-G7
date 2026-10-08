@@ -1,0 +1,27 @@
+# Single source of truth for every experiment. Do not hard-code these values elsewhere.
+# Every undecided value is TODO. Record decisions in docs/DECISIONS.md.
+
+dataset:
+  name: Hill of Towie
+  version: "2.1.0"            # Zenodo record 22662930; confirm team agrees (see DECISIONS.md)
+  zenodo_record: 22662930
+  doi: "10.5281/zenodo.22662930"
+  tables: [tblSCTurTemp, tblSCTurbine, tblSCTurPress, tblAlarmLog]
+
+splits:                        # year ranges, inclusive
+  train_years: TODO
+  val_years: TODO
+  test_years: TODO
+
+robustness:
+  leave_one_turbine_out: TODO  # true / false
+
+labels:
+  positive_window_days: TODO   # brief: 30
+  exclusion_window_days: TODO  # brief: 30-60 day exclusion; set exact bounds
+  feature_window_days: TODO    # brief: 7
+
+evaluation:
+  false_alarm_budget_per_turbine_month: TODO   # brief: 1
+
+seed: TODO
