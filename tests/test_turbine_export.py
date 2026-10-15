@@ -18,10 +18,47 @@ from wt_predmaint.data.turbine_export import (
     NS,
     export_turbines,
     publish_workbook,
+    timestamp,
 )
 
 
 class TurbineExportTests(unittest.TestCase):
+    def test_day_first_pressure_dates(self) -> None:
+        self.assertEqual(timestamp("1/10/2018 0:00"), "2018-10-01 00:00:00")
+        self.assertEqual(timestamp("13/10/2018 12:30:15"), "2018-10-13 12:30:15")
+        self.assertEqual(timestamp("2018-06-01 00:00:00"), "2018-06-01 00:00:00")
+
+    def test_rounded_boundary_duplicates_retain_precision(self) -> None:
+        self.write("tblSCTurPress", ["TimeStamp", "StationId", "wtc_GearPres_mean"], [
+            ["2018-06-01 00:00:00", "2304510", "2.973145008"],
+            ["2018-06-01 00:00:00", "2304510", "2.973145008087158"],
+        ])
+        report = export_turbines(self.root, self.output)
+        self.assertEqual(report["rounded_duplicates_merged"]["tblSCTurPress"], 1)
+        workbook = load_workbook(self.output, read_only=True)
+        try:
+            values = list(workbook["Station_2304510"].values)
+            self.assertEqual(values[1][2], 2.973145008087158)
+        finally:
+            workbook.close()
+
+    def test_multiple_months_share_turbine_sheets(self) -> None:
+        for table, columns in FEATURES.items():
+            with (self.root / f"{table}_october.csv").open("w", newline="") as file:
+                writer = csv.writer(file)
+                writer.writerow(["TimeStamp", "StationId", columns[0]])
+                time = "1/10/2018 0:00" if table == "tblSCTurPress" else "2018-10-01 00:00:00"
+                writer.writerow([time, "2304510", "9"])
+        report = export_turbines(self.root, self.output)
+        self.assertEqual(report["rows_per_station"]["2304510"], 3)
+        workbook = load_workbook(self.output, read_only=True)
+        try:
+            values = list(workbook["Station_2304510"].values)
+            self.assertEqual(values[-1][0], "2018-10-01 00:00:00")
+            self.assertEqual(values[-1][2], 9)
+        finally:
+            workbook.close()
+
     def setUp(self) -> None:
         self.work = tempfile.TemporaryDirectory()
         self.addCleanup(self.work.cleanup)

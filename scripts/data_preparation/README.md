@@ -11,20 +11,55 @@ The selected column list is in `src/wt_predmaint/data/turbine_export.py`, in `FE
 From the repository root, run:
 
 ```powershell
-python scripts/data_preparation/export_turbines.py --input-dir "path/to/your/CSVs" --pattern "*_2018_06.csv" --output data/interim/turbine_exports/turbines_2018_06.xlsx
+python scripts/data_preparation/export_turbines.py --input-dir "path/to/your/CSVs" --pattern "*_2018_06.csv" --keep-missing --output data/interim/turbine_exports/turbines_2018_06.xlsx
 ```
 
 On this machine, `python` is currently a Windows Store alias and `py` reports no
 installed Python. The June 2018 export was run with the existing bundled interpreter:
 
 ```powershell
-& 'C:\Program Files\Blender Foundation\Blender 5.1\5.1\python\bin\python.exe' scripts/data_preparation/export_turbines.py --input-dir 'C:\Users\parve\Desktop\University Stuff\ENG2112\Project\Data\2018_Only_Necessary' --pattern '*_2018_06.csv' --output data/interim/turbine_exports/turbines_2018_06.xlsx
+& 'C:\Program Files\Blender Foundation\Blender 5.1\5.1\python\bin\python.exe' scripts/data_preparation/export_turbines.py --input-dir 'C:\Users\parve\Desktop\University Stuff\ENG2112\Project\Data\2018_Only_Necessary' --pattern '*_2018_06.csv' --keep-missing --output data/interim/turbine_exports/turbines_2018_06.xlsx
 ```
 
 The workbook contains one `Station_<ID>` sheet per turbine, sorted by timestamp.
 Sensor values are numeric; timestamps and IDs are text to preserve their representation.
 The accompanying `.report.json` records inputs, missing columns, duplicate counts,
 and exported row counts. Re-running the command replaces the specified workbook.
+
+## Combine a full year
+
+The same exporter combines all matching monthly files and sorts each turbine's
+records into a single sheet in one annual workbook:
+
+```powershell
+python scripts/data_preparation/export_turbines.py
+```
+
+Change **`YEAR_FOLDER = "2018"`** near the top of `export_turbines.py` to `"2019"`
+for another year, or pass `--year 2019`. The script reads only that year's folder,
+for example `data/raw/2018/`, and automatically names both output files for that year:
+
+- `data/interim/turbine_exports/turbines_2018.xlsx`: all selected readings and alarms.
+- `data/processed/turbine_exports/turbines_2018.xlsx`: the cleaned annual workbook.
+
+Both contain a separate chronological sheet for each station. The processed copy uses
+the same cleaning rules as `clean_interim.py`: remove unavailable columns and rows
+missing any remaining sensor reading; allow blank alarm fields. Alarm-only records
+remain in the interim copy. Re-running replaces these annual outputs, leaving the
+June workbooks separate. Pass `--keep-missing` to export without cleaning.
+
+On this computer, run the complete annual workflow with:
+
+```powershell
+& 'C:\Program Files\Blender Foundation\Blender 5.1\5.1\python\bin\python.exe' scripts/data_preparation/export_turbines.py
+```
+
+At the time of the 2018 export, pressure files for January and February were absent
+from `data/raw/`; their pressure readings remain blank in the interim workbook,
+and those incomplete rows are removed from the processed workbook.
+The source files include an end-of-year boundary reading at `2019-01-01 00:00:00`,
+which is retained. A single alarm-only record for station `91` is preserved in its
+own sheet, separate from the 21 turbine sheets.
 
 ## Alignment and cleaning rules
 
@@ -34,8 +69,10 @@ and exported row counts. Re-running the command replaces the specified workbook.
 - `Alarmcode` contains the codes starting at that timestamp, separated by semicolons.
   `AlarmEvents` contains JSON preserving each code's original start and end times.
   A blank code means no alarm **start** recorded at that timestamp, not no active alarm.
-- Identical selected sensor records are deduplicated and reported; conflicting
-  duplicate keys cause an error. Every alarm event is retained, including repeats.
+- Identical selected sensor records are deduplicated and reported. Boundary duplicates
+  differing only by numeric rounding (`rel_tol=1e-9`, `abs_tol=1e-8`) are merged,
+  keeping the longer numeric representation and counted separately. Larger conflicts
+  cause an error. Every alarm event is retained, including repeats.
 - Missing sensor values remain blank. No interpolation, scaling, outlier removal,
   alarm labels, or assumed missing-value sentinel replacements are applied.
 - Temperature names retain their CSV `wtc_` prefix. The broadly requested temperature

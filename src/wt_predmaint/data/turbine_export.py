@@ -58,7 +58,13 @@ def publish_workbook(staged: Path, output: Path) -> None:
 
 def timestamp(value: str) -> str:
     """Validate and normalise timestamps without changing their timezone or rounding."""
-    parsed = datetime.fromisoformat(value.strip())
+    text = value.strip()
+    if "/" in text:
+        # The supplied October 2018 pressure CSV uses day/month/year.
+        date_format = "%d/%m/%Y %H:%M:%S" if text.count(":") == 2 else "%d/%m/%Y %H:%M"
+        parsed = datetime.strptime(text, date_format)
+    else:
+        parsed = datetime.fromisoformat(text)
     if parsed.tzinfo is not None:
         raise ValueError("Timezone-aware timestamps require an explicit alignment policy")
     return parsed.isoformat(sep=" ")
@@ -176,6 +182,7 @@ def export_turbines(input_dir: Path, output: Path, pattern: str = "*.csv") -> di
     """Outer-join sensors and alarm starts on exact (StationId, TimeStamp) keys."""
     output.parent.mkdir(parents=True, exist_ok=True)
     report = {"inputs": {}, "missing_features": {}, "exact_duplicates_removed": {},
+              "rounded_duplicates_merged": {},
               "alarm_alignment": "Exact TimeOn; StationNr mapped to StationId"}
     with tempfile.TemporaryDirectory(prefix="turbine_export_", dir=output.parent) as work:
         db = sqlite3.connect(str(Path(work) / "readings.sqlite"))
@@ -194,6 +201,7 @@ def export_turbines(input_dir: Path, output: Path, pattern: str = "*.csv") -> di
                 report["inputs"][table] = [str(p.resolve()) for p in paths]
                 missing: set[str] = set()
                 duplicates = 0
+                rounded_duplicates = 0
                 for path in paths:
                     print(f"Reading {path.name}", flush=True)
                     with path.open(encoding="utf-8-sig", newline="") as source:
@@ -242,11 +250,32 @@ def export_turbines(input_dir: Path, output: Path, pattern: str = "*.csv") -> di
                                     ).fetchone()
                                     if previous:
                                         if previous[0] != serialised:
-                                            raise ValueError("Conflicting duplicate sensor key")
-                                        duplicates += 1
-                                        continue
-                                    db.execute("INSERT INTO seen VALUES (?,?,?,?)",
-                                               (table, station, time, serialised))
+                                            old = json.loads(previous[0])
+                                            equivalent = old.keys() == selected.keys() and all(
+                                                old[c] == selected[c] or (
+                                                    old[c] and selected[c] and math.isclose(
+                                                        float(old[c]), float(selected[c]),
+                                                        rel_tol=1e-9, abs_tol=1e-8,
+                                                    )
+                                                ) for c in selected
+                                            )
+                                            if not equivalent:
+                                                raise ValueError("Conflicting duplicate sensor key")
+                                            selected = {c: max((old[c], selected[c]), key=len)
+                                                        for c in selected}
+                                            serialised = json.dumps(selected, sort_keys=True)
+                                            rounded_duplicates += 1
+                                            db.execute(
+                                                "UPDATE seen SET payload=? WHERE table_name=? "
+                                                "AND station=? AND time=?",
+                                                (serialised, table, station, time),
+                                            )
+                                        else:
+                                            duplicates += 1
+                                            continue
+                                    else:
+                                        db.execute("INSERT INTO seen VALUES (?,?,?,?)",
+                                                   (table, station, time, serialised))
                                     values.update(selected)
                                 db.execute("INSERT OR REPLACE INTO readings VALUES (?,?,?,?)",
                                            (station, time, json.dumps(values), json.dumps(events)))
@@ -255,6 +284,7 @@ def export_turbines(input_dir: Path, output: Path, pattern: str = "*.csv") -> di
                     db.commit()
                 report["missing_features"][table] = sorted(missing)
                 report["exact_duplicates_removed"][table] = duplicates
+                report["rounded_duplicates_merged"][table] = rounded_duplicates
             report["alarm_only_station_ids"] = sorted(alarm_stations - sensor_stations)
             stations = [r[0] for r in db.execute("SELECT DISTINCT station FROM readings")]
             stations.sort(key=int)
