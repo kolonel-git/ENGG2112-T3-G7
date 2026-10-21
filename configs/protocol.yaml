@@ -75,6 +75,9 @@ labels:
 
 evaluation:
   false_alarm_budget_per_turbine_month: 1   # D-009 (project brief)
+  days_per_month: 30.4375                   # D-020: converts scored turbine-days to turbine-months
+  bootstrap_resamples: 1000                 # D-020: resamples of turbines for confidence intervals
+  ci_level: 0.95                            # D-020: percentile interval
   # false alarm = alert on a turbine-day whose label is 0; recall and lead time are event-level.
 
 seed: 42                              # D-010
