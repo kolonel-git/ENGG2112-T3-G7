@@ -1,0 +1,7 @@
+target,split,labelled_rows,with_features,share_missing_values,rows_all_op_missing
+A,train,22309,22309,0.1826,1788
+A,val,9690,9690,0.2125,1475
+A,test,17951,17947,0.134,1418
+B,train,20911,20911,0.1867,1790
+B,val,8827,8827,0.217,1403
+B,test,17281,17281,0.1326,1353

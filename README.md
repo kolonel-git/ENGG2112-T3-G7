@@ -65,7 +65,7 @@ On top of that, every alert comes with an explanation (SHAP and residual attribu
 | Cleaning layer (flags for outage months and suspect wind sensors) | Done |
 | Labels for targets A and B | Done and verified (see below) |
 | Evaluation harness and random-score floor | Done |
-| Daily features and leakage test | Next |
+| Daily features and look-ahead test | Done |
 | Baselines, normal-behaviour models, LightGBM | Planned |
 | Robustness analyses and SHAP | Planned |
 | Report and ethics review | Planned |
@@ -133,6 +133,8 @@ about 15 GB of yearly zips). Then run, in order:
 | `python scripts/build_scada_parquet.py --workers 4` | one parquet per SCADA table and year in `data/interim/scada/` |
 | `python scripts/build_clean_data.py` | cleaned `scada_<year>.parquet` and `daily_summary.parquet` in `data/interim/clean/`, plus `reports/tables/cleaning_report.csv` |
 | `python scripts/build_labels.py` | episodes and 30-day labels for targets A and B in `data/interim/labels/`, plus `reports/tables/label_summary.csv` |
+| `python scripts/build_features.py` | daily feature table `data/interim/features/daily_features.parquet` and `reports/tables/feature_summary.csv` |
+| `python scripts/check_feature_leakage.py` | re-computes random feature rows with the future deleted and fails if any value changes |
 | `python scripts/run_dummy_baselines.py` | constant and random-score floors in `reports/tables/baselines_dummy.csv` |
 
 Metadata only: `python scripts/download_data.py --only Hill_of_Towie_data_dictionary.md --out data/raw/metadata`

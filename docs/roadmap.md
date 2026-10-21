@@ -17,6 +17,7 @@ Decisions behind this roadmap are in `docs/DECISIONS.md`; the technical plan is 
 | Split, windows, metrics decided | Done (D-005 to D-010) |
 | Cleaning layer (`data/clean.py`, `data/daily.py`, `scripts/build_clean_data.py`) | Done on branch `kanav/cleaning-layer` (D-015 to D-017); 10.14M rows 2016 to 2026-04, flags for outage months and suspect wind |
 | Labels for targets A and B (`labels/episodes.py`, `labels/horizon.py`, `scripts/build_labels.py`) | Done on branch `kanav/labels` (D-019); brute-force verified, 13 tests |
+| Daily features and look-ahead test (`features/daily.py`, `features/leakage.py`, `scripts/build_features.py`) | Done on branch `kanav/eval-harness` (D-021); 70,816 turbine-days, 366 columns, no look-ahead found |
 | Evaluation harness (`evaluation/metrics.py`, `splits.py`, `scripts/run_dummy_baselines.py`) | Done on branch `kanav/eval-harness` (D-020); random-score floor computed; brief's budget kept (D-020) |
 | Missing tables `tblSCTurGrid` (power) and `tblSCTurFlag` (error time) | Skipped for now; proxies used (D-018) |
 | Labels, features, baselines, models, evaluation | Wk2 onward (below) |
@@ -49,7 +50,7 @@ Dates: TODO (add once the submission deadline is confirmed). Week numbers are re
 - **Gate G1** (end Wk2): cleaning, labels and harness merged; data frozen. Target thresholds are chosen and logged (D-007, D-008, 2026-10-22).
 
 ### Wk3 Features, baselines and O1
-- **Features** (Revael): daily aggregates, 7-day windows, alarm-count features, operating-state fractions. Output: `src/wt_predmaint/features/`.
+- **Features** (Revael; first version built by Kanav, done): daily aggregates over producing intervals, 7-day trailing windows, alarm-count features, operating-state fractions, fault history (D-021). Output: `src/wt_predmaint/features/`, a look-ahead test and 11 tests. Residual features from the normal-behaviour models come next.
 - **Normal-behaviour models** (Kanav): ridge and LightGBM trained on train-year healthy rows; daily residual features. Output: `src/wt_predmaint/models/nbm.py`.
 - **Baselines** (Kanav, Farhan): prevalence dummy, recent-fault rule, rpm-vs-wind power-curve proxy (D-011), class-weighted logistic regression. Output: first results table.
 - **Gate G2** (end Wk3): baseline results on validation years; indicator plots; thresholds chosen on validation only.
