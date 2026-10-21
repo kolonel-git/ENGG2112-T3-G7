@@ -186,6 +186,23 @@ Status is **decided** or **open** (value to be fixed during the work and logged 
   - Turbine 2304515 is positive on 97% of its validation days (15 to 16 episodes in 2021 to 2022, found by both targets). Report results with and without it.
   - Positive rate by year varies (target A: 0.31 in 2016 to 0.63 in 2022).
 
+### D-020: Evaluation harness details and the random-score floor
+- Date: 2026-10-22
+- Owner: Kanav
+- Status: decided for the harness; the budget question below is open (Farhan and the team to review)
+- Context: D-009 fixed the metrics. Building them needed choices about the false alarm denominator, undetectable episodes, the threshold rule and the confidence intervals.
+- Decision: implemented in `src/wt_predmaint/evaluation/metrics.py` and `splits.py`.
+  - Alert: `score > threshold` (strict, so tied scores are all in or all out). Rows must be labelled (0 or 1); unlabelled rows (D-019) are rejected.
+  - Exposure: one turbine-month is `evaluation.days_per_month` = 30.4375 scored turbine-days (all labelled rows, positives and negatives).
+  - Threshold: the lowest threshold with at most `floor(budget * turbine-months)` false alarms on validation; frozen for test. The realised test false alarm rate is reported next to the budget, because it can differ.
+  - Episode recall: an episode counts only if at least one scored day lies in its 30-day window (the purge and the in-episode rule can remove all of them). Episodes are assigned to a split by the year of their start. The number of evaluable episodes is reported.
+  - Lead time: days from the first alert in the window to the episode start.
+  - Intervals: 1000 bootstrap resamples of turbines (`bootstrap_resamples`), percentile 95% interval (`ci_level`), seeded from `seed`. The threshold stays fixed across draws.
+  - Splitters: `labelled_split` for the year splits, `leave_one_turbine_out` for the robustness stage only (D-006).
+- Results: `scripts/run_dummy_baselines.py` writes `reports/tables/baselines_dummy.csv`. A constant score gives PR-AUC equal to the prevalence (0.45 to 0.51) and recall 0. A random uniform score at the budget gives, on test, recall 0.79 (A) and 0.84 (B) with median lead time 22 days; on validation 0.81 and 0.79.
+- Finding: episode recall at 1 false alarm per turbine-month is easy to reach by chance. About 53% of scored days are negative, so a random alert rate near 6% of days meets the budget, and a 30-day window then contains at least one alert about 80% of the time. Random-score recall on test for target A: 0.79 at a budget of 1, 0.51 at 0.5, 0.34 at 0.25, 0.16 at 0.1, 0.06 at 0.05 (target B: 0.84, 0.65, 0.44, 0.21, 0.13). A model's recall at budget 1 therefore has about 0.2 of headroom above chance.
+- Open question for the team (the 1 per turbine-month budget comes from the project brief): keep it as the headline metric and always show the random floor next to it, and also report recall at 0.25 and 0.1 per turbine-month (needs only a config list and no code change to the metrics), or change the headline budget. Not decided; until then results tables carry the random floor.
+
 ## Open decisions
 - Dataset version: confirm v2.1.0 with the teammate who downloaded the data (D-004).
 - Licence: none chosen; README carries a TODO.
