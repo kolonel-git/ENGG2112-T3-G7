@@ -25,6 +25,6 @@ SWT-2.3-VS-82 turbines, 10-min data, CC-BY-4.0). Tables: tblSCTurTemp, tblSCTurb
 - Every experiment reads `configs/protocol.yaml`; no hard-coded windows, years or budgets.
 - Reusable logic in `src/`, not notebooks. Add tests for new logic. Run `ruff check .` and `pytest`.
 - Undecided values stay `TODO`; do not pick them silently. Record every decision in `docs/DECISIONS.md` with an ID the same day, and change `configs/protocol.yaml` only together with its entry.
-- Model on raw tables via `src/wt_predmaint/data/`, never on the processed workbooks. SCADA `TimeStamp` is the interval end; join alarms with ceil to 10 min.
+- Model on raw tables via `src/wt_predmaint/data/`, never on the processed workbooks. SCADA `TimeStamp` is the interval end (UTC); join alarms with ceil to 10 min. `tblDailySummary` rows are stamped at the start of the day. Use the cleaned tables in `data/interim/clean/` (`scripts/build_clean_data.py`); flags `n_masked`, `outage_month`, `suspect_wind` are kept, never dropped, in the data.
 - Fit anything (scalers, imputers, normal-behaviour models, thresholds) on train years only; the test years are scored once per frozen configuration.
 - **Never invent results or references.** Report only what was actually computed; cite only sources actually verified.

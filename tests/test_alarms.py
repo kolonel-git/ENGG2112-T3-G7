@@ -119,3 +119,10 @@ def test_iso_dates_with_and_without_time_parse_together() -> None:
 
     out = parse_times(pd.Series(["2022-10-31 23:50:00", "2022-11-01"]), "mixed.csv")
     assert out.iloc[1] == pd.Timestamp("2022-11-01 00:00:00")
+
+
+def test_month_first_date_only_parses() -> None:
+    from wt_predmaint.data.alarms import parse_times
+
+    out = parse_times(pd.Series(["1/13/2026", "2/1/2026"]), "daily.csv")
+    assert out.tolist() == [pd.Timestamp("2026-01-13"), pd.Timestamp("2026-02-01")]

@@ -5,7 +5,7 @@ Sections below are kept as the working history. Where they conflict with this su
 
 ## Current plan (v2)
 
-- **Data:** raw tables 2016 to 2026-04 (D-004). Alarms from raw `tblAlarmLog` only. `TimeStamp` is the interval end (D-013). Sentinels masked per column (D-014).
+- **Data:** raw tables 2016 to 2026-04 (D-004). Alarms from raw `tblAlarmLog` only. `TimeStamp` is the interval end, daily rows the day start (D-013). Cleaning rules and flags in D-015, columns in D-016, wind speed from the primary channel (D-017). Measured active power and 10-min error time exist in `tblSCTurGrid` and `tblSCTurFlag` but are not in `data/raw` yet (D-018).
 - **O2 targets (D-003):** A = fault-time episodes from `tblDailySummary.TimeErr`; B = unplanned stops derived from 10-min SCADA. Both trained and reported. Thresholds are open (D-007, D-008).
 - **Label geometry (D-005):** daily prediction time; positive if an episode starts in the next 30 days; 30 to 60-day zone and rows already in an episode dropped; 7-day feature window.
 - **Alarm codes (D-001 to D-003):** the 12 documented codes are features (counts, time since last event, deviation from the 5-day pitch-lubrication schedule), not targets.

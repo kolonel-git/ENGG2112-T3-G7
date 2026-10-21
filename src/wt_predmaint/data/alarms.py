@@ -48,12 +48,13 @@ def iter_alarm_log_files(root: Path) -> Iterator[tuple[str, bytes]]:
 
 
 def parse_times(values: pd.Series, name: str) -> pd.Series:
-    """Parse one file's timestamps: ISO (date-only values allowed), or month-first 'M/D/YYYY H:MM'.
+    """Parse one file's timestamps: ISO (date-only allowed) or month-first 'M/D/YYYY[ H:MM]'.
 
-    The month-first layout was verified on 2025-01 and 2026-01 (day values above 12 only occur in
-    the second field). Anything else raises rather than being guessed.
+    The month-first layout was verified on the re-saved 2025-01 and 2026-01 files (day values
+    above 12 only occur in the second field), including the date-only daily-summary file.
+    Anything else raises rather than being guessed.
     """
-    for fmt in ("ISO8601", "%m/%d/%Y %H:%M"):
+    for fmt in ("ISO8601", "%m/%d/%Y %H:%M", "%m/%d/%Y"):
         try:
             return pd.to_datetime(values, format=fmt)
         except ValueError:
