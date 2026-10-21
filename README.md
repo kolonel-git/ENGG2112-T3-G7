@@ -18,6 +18,8 @@ on open wind-farm SCADA data.
 - Put the raw monthly CSVs in `data/raw/<year>/` (or `python scripts/download_data.py --list`, then `python scripts/download_data.py`; all years are ~15 GB for the yearly zips)
 - `python scripts/build_alarm_table.py` builds `data/interim/alarm_events.parquet` from the raw alarm logs
 - `python scripts/build_scada_parquet.py --workers 4` builds one parquet per SCADA table and year in `data/interim/scada/`
+- `python scripts/build_clean_data.py` joins and cleans them into `data/interim/clean/` (`scada_<year>.parquet`, `daily_summary.parquet`) and writes `reports/tables/cleaning_report.csv`
+- Metadata only: `python scripts/download_data.py --only Hill_of_Towie_data_dictionary.md --out data/raw/metadata`
 
 ## Folder map
 - `src/wt_predmaint/`: all reusable code (`data`, `features`, `labels`, `models`, `evaluation`, `explain`)

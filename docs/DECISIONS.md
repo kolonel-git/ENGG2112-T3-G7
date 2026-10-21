@@ -93,7 +93,7 @@ Status is **decided** or **open** (value to be fixed during the work and logged 
 ### D-011: Power-curve baseline uses generator rpm instead of power
 - Date: 2026-10-21
 - Owner: Kanav
-- Status: decided
+- Status: decided, provisional (see D-018: measured power exists in `tblSCTurGrid`, which is not yet in `data/raw`)
 - Context: no 10-min measured active power exists; `PowerRef_endvalue` is a setpoint and `tblDailySummary` has only daily energy and mean power.
 - Decision: the power-curve threshold baseline compares generator rpm to a wind-speed curve fitted on healthy train rows, and flags windows where the shortfall persists. This is a documented deviation from the brief.
 
@@ -108,19 +108,59 @@ Status is **decided** or **open** (value to be fixed during the work and logged 
 - Owner: Kanav
 - Status: decided
 - Context: `wtc_CurTime_endvalue` lies 1 to 2 s before `TimeStamp` in 99% of rows (4 months checked), so `TimeStamp` marks the end of the 10-min interval. Files `tblAlarmLog` 2025_01 and 2026_01 and `tblSCTurbine`/`tblSCTurPress` 2025_01 were re-saved with month-first `M/D/YYYY H:MM` timestamps (seconds lost); month boundaries contain date-only values and duplicate rows.
-- Decision: alarm events join to SCADA with `ceil` to 10 min. `parse_times` accepts ISO (with or without time) or `M/D/YYYY H:MM` and raises on anything else. SCADA keys are de-duplicated on (StationId, TimeStamp).
+- Decision: alarm events join to SCADA with `ceil` to 10 min. `parse_times` accepts ISO (with or without time), `M/D/YYYY H:MM` or `M/D/YYYY` and raises on anything else. SCADA keys are de-duplicated on (StationId, TimeStamp).
+- Confirmed 2026-10-21 by the dataset dictionary (`data/raw/metadata/Hill_of_Towie_data_dictionary.md`, downloaded with the user's approval, MD5 verified): all timestamps are UTC and the 10-min `TimeStamp` is the end of the period.
+- Daily rows are start-of-day labelled: a `tblDailySummary` row stamped D covers [D 00:00, D+1 day). Verified against the 10-min data (daily `NacelleWind` vs mean `wtc_PrWindSp` over the 144 intervals ending in (D, D+1 day]: correlation 0.9996, median difference 0.000; the other alignment gives 0.56). A prediction made at the end of day D uses data to D+1 00:00.
+- Re-saved files (2025-01 SCADA and alarms, 2026-01 alarms and daily summary) also have floats rounded to about 10 significant digits (for example 1981.2889404296875 became 1981.28894); the effect is negligible.
 
 ### D-014: Sentinel handling
 - Date: 2026-10-21
 - Owner: Kanav
-- Status: decided (implementation pending)
+- Status: decided; implemented and refined by D-015 (per-table value lists, one `n_masked` count instead of per-sensor flags)
 - Decision: values `200`, `-50`, `-100` in sensor columns are masked to NaN per column, with a boolean flag column per affected sensor; LightGBM uses NaN natively, linear models use train-fit imputation. Outage months (2022-08, 2022-09, 2025-09) are flagged and excluded from healthy-row fits.
+
+### D-015: Cleaning rules for raw 10-min SCADA
+- Date: 2026-10-21
+- Owner: Kanav
+- Status: decided
+- Context: sentinels, duplicates, outage months and a few suspect wind sensors, found in the raw exploration (`DATA_TRAPS.md`). Checked in the data before choosing rules: a constant `200` on a single hub-pressure channel (min = max = 200, other channels normal, 105 rows with one of three channels, 13 with two) is a stuck-sensor placeholder, while `-100` hits all three hub channels together (630 rows in 2022); `200` in yaw and nacelle position sits in a uniform density of about 34,000 rows per degree (a real angle), and `PowerRef = 200` rows have normal rpm (a real curtailment setpoint).
+- Decision: implemented in `src/wt_predmaint/data/clean.py`, parameters in `configs/protocol.yaml` under `cleaning`.
+  - De-duplicate on (StationId, TimeStamp); the first copy is kept (all SCADA duplicates are exact month-boundary repeats).
+  - Mask to NaN, per table and in `_mean`, `_min` and `_max` columns: `tblSCTurTemp` {200, -50}; `tblSCTurPress` {-100, 200}; `tblSCTurbine` none. Rows get `n_masked` (cells masked in that row). NaN itself marks the masked value, so no per-sensor flag columns (this simplifies D-014).
+  - Inner-join the three tables on (StationId, TimeStamp).
+  - A row belongs to the year of its interval START (TimeStamp minus 10 min), so the 00:00 stamp of 1 January closes the previous year.
+  - Flag, never drop: `outage_month` (month with under 90% of the full 21-turbine grid) and `suspect_wind` (turbine-year with corr(wind speed, generator rpm) under 0.55 among rows with rpm of at least 1000, at least 1000 such rows).
+- Result on the raw data (`reports/tables/cleaning_report.csv`): outage months 2022-08, 2022-09, 2025-09; suspect-wind turbine-years 2304511 (2022, 2025), 2304514 (2022), 2304520 (2023): exactly the four found by hand. 10,143,040 rows over 2016 to 2026-04 (2019 has no temperature or pressure tables and is excluded, D-006).
+- Consequences: thresholds are config values, not code. A transient `-100` inside a 10-min `_min` column (about 1% of `HydPress_min`) means the mean is slightly pulled down; at roughly 0.5 bar this is below sensor noise and is left as is.
+
+### D-016: Columns kept in the clean 10-min table
+- Date: 2026-10-21
+- Owner: Kanav (option chosen by the user)
+- Status: decided
+- Options considered: means only; means plus min/max for key sensors; all columns.
+- Decision: every `_mean` column, `_min` and `_max` for the key pressure and temperature sensors (`KEY_SENSORS` in `data/scada.py`), plus wind-speed and generator-rpm `_stddev`, `PowerRef_endvalue` and `WTOperSt_endvalue`. 141 to 151 columns per year, of which 74 are min/max. About 620 to 660 MB per year in memory.
+- Consequences: peak bearing and winding temperatures per interval are available as features. `scripts/build_scada_parquet.py` rebuilt all 31 table-year files with these columns.
+
+### D-017: Wind speed comes from the primary channel
+- Date: 2026-10-21
+- Owner: Kanav
+- Status: decided
+- Context: the dataset dictionary says the secondary anemometer signal `wtc_SecAnemo` has a step change on each turbine's correction switch-on date (2017-08-01 for T14 and T17; 2018-04-10/11 for the rest), the primary channel is an ultrasonic anemometer and the controller's active channel is `wtc_AcWindSp`. `wtc_PriAnemo` is constant throughout.
+- Decision: use `wtc_PrWindSp` (primary) for wind speed in cleaning checks, normal-behaviour inputs and the rpm-vs-wind curve. `wtc_SeWindSp` is allowed as a backup feature; `wtc_SecAnemo`, `wtc_PriAnemo` and `wtc_TetAnFrq` are not used as features.
+
+### D-018: Missing source tables for power and error time
+- Date: 2026-10-21
+- Owner: Kanav
+- Status: open
+- Context: the dictionary lists `wtc_ActPower` (active power, kW) in `tblSCTurGrid` and `wtc_ScTurSto_timeon` (time turbine error active within the period, s), `wtc_ScInOper_timeon` (running time) and `wtc_ScReToOp_timeon` in `tblSCTurFlag`. Neither table is in `data/raw` (which has only `tblSCTurbine`, `tblSCTurTemp`, `tblSCTurPress`, `tblAlarmLog`, `tblDailySummary`); they are in the Zenodo year zips.
+- Impact: measured power would replace the rpm proxy of D-011 for the power-curve baseline, and `tblSCTurFlag` would give a 10-min error-time signal, a direct basis for target B and a check on `tblDailySummary.TimeErr` (which the dictionary does not define).
+- Decision pending: the user to supply or approve downloading these two tables (about 11 yearly zips of roughly 1.4 GB each; a ranged read of only these members would be much smaller).
 
 ## Open decisions
 - Dataset version: confirm v2.1.0 with the teammate who downloaded the data (D-004).
 - Licence: none chosen; README carries a TODO.
-- `TimeErr` meaning: fetch `Hill_of_Towie_data_dictionary.md` from Zenodo (small metadata file; needs the user's go-ahead to download) and confirm.
+- `TimeErr` meaning: the data dictionary was downloaded but does not describe `tblDailySummary`; `tblSCTurFlag` (D-018) would allow a check against `wtc_ScTurSto_timeon`. Until then it is inferred from its name and from agreement with target B.
 - Target A and B parameters (D-007, D-008).
-- Handling of the possible anemometer faults (turbine-years 2304511 in 2022 and 2025, 2304520 in 2023, 2304514 in 2022): include with a flag or exclude.
+- Handling of the four flagged `suspect_wind` turbine-years (flag only for now, D-015): decide per model whether to exclude them.
 - Whether the 2022 drop of alarms 20 and 25 (about 60%) reflects a controller change; relevant to alarm-count features across years.
 - Upgrade analysis needs `Hill_of_Towie_AeroUp_install_dates.csv` from Zenodo.

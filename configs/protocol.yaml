@@ -7,6 +7,24 @@ dataset:
   zenodo_record: 22662930
   doi: "10.5281/zenodo.22662930"
   tables: [tblSCTurTemp, tblSCTurbine, tblSCTurPress, tblAlarmLog, tblDailySummary]  # D-004
+  wanted_not_in_raw: [tblSCTurGrid, tblSCTurFlag]  # active power and error time, D-018
+
+# Cleaning rules for the raw SCADA tables (D-013 to D-016). Sentinels are masked to NaN per table;
+# 200 in yaw/nacelle position and PowerRef are real values and are NOT masked (checked in the data).
+cleaning:
+  expected_turbines: 21
+  outage_coverage_threshold: 0.9      # months below this share of the full 10-min grid are flagged
+  producing_min_rpm: 1000             # "producing" rows for the wind-sensor check
+  suspect_wind_min_corr: 0.55         # corr(wind speed, generator rpm) below this is flagged per turbine-year
+  suspect_wind_min_rows: 1000
+  mask_sentinels:
+    tblSCTurTemp: [200.0, -50.0]
+    tblSCTurPress: [-100.0, 200.0]
+    tblSCTurbine: []
+  daily:                              # tblDailySummary flags
+    min_samples: 90
+    expected_period_minutes: 1440
+    max_hours: 24.01
 
 # Time-based split on raw SCADA years (D-006). 2019 has no temperature/pressure tables, so it
 # is unused. Model fitting, thresholds and normal-behaviour models use train years only.
