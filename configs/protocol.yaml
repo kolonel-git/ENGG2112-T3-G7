@@ -80,4 +80,8 @@ evaluation:
   ci_level: 0.95                            # D-020: percentile interval
   # false alarm = alert on a turbine-day whose label is 0; recall and lead time are event-level.
 
+features:                             # D-021: provisional choices, not tuned
+  min_producing_intervals: 12         # a sensor's daily mean needs at least this many producing 10-min intervals (2 hours)
+  window_min_days: 4                  # a 7-day window statistic needs at least this many observed days
+
 seed: 42                              # D-010

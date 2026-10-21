@@ -189,7 +189,7 @@ Status is **decided** or **open** (value to be fixed during the work and logged 
 ### D-020: Evaluation harness details and the random-score floor
 - Date: 2026-10-22
 - Owner: Kanav
-- Status: decided for the harness; the budget question below is open (Farhan and the team to review)
+- Status: decided (budget question settled 2026-10-22: keep the brief's budget)
 - Context: D-009 fixed the metrics. Building them needed choices about the false alarm denominator, undetectable episodes, the threshold rule and the confidence intervals.
 - Decision: implemented in `src/wt_predmaint/evaluation/metrics.py` and `splits.py`.
   - Alert: `score > threshold` (strict, so tied scores are all in or all out). Rows must be labelled (0 or 1); unlabelled rows (D-019) are rejected.
@@ -201,7 +201,32 @@ Status is **decided** or **open** (value to be fixed during the work and logged 
   - Splitters: `labelled_split` for the year splits, `leave_one_turbine_out` for the robustness stage only (D-006).
 - Results: `scripts/run_dummy_baselines.py` writes `reports/tables/baselines_dummy.csv`. A constant score gives PR-AUC equal to the prevalence (0.45 to 0.51) and recall 0. A random uniform score at the budget gives, on test, recall 0.79 (A) and 0.84 (B) with median lead time 22 days; on validation 0.81 and 0.79.
 - Finding: episode recall at 1 false alarm per turbine-month is easy to reach by chance. About 53% of scored days are negative, so a random alert rate near 6% of days meets the budget, and a 30-day window then contains at least one alert about 80% of the time. Random-score recall on test for target A: 0.79 at a budget of 1, 0.51 at 0.5, 0.34 at 0.25, 0.16 at 0.1, 0.06 at 0.05 (target B: 0.84, 0.65, 0.44, 0.21, 0.13). A model's recall at budget 1 therefore has about 0.2 of headroom above chance.
-- Open question for the team (the 1 per turbine-month budget comes from the project brief): keep it as the headline metric and always show the random floor next to it, and also report recall at 0.25 and 0.1 per turbine-month (needs only a config list and no code change to the metrics), or change the headline budget. Not decided; until then results tables carry the random floor.
+- Resolution (Kanav, 2026-10-22): stay with the original project brief. The headline metric stays recall at 1 false alarm per turbine-month, no change to scope. Every results table carries the random-score floor next to it so the headroom is visible. No extra budgets are added.
+
+### D-021: Daily features and the look-ahead test
+- Date: 2026-10-22
+- Owner: Kanav
+- Status: decided; the two `features:` values are provisional choices, not tuned
+- Context: the model needs one feature row per labelled turbine-day, built only from data available at the end of that day (D-005, D-013).
+- Decision: implemented in `src/wt_predmaint/features/daily.py`, run by `scripts/build_features.py`.
+  - Day assignment: a 10-min interval belongs to the day of its start (`TimeStamp` minus 10 minutes), so day D holds `TimeStamp` in (D 00:00, D+1 00:00]. Alarms use the same rule after the ceil join (D-013). The `tblDailySummary` row stamped D is used for day D.
+  - Daily sensor features: mean of every 10-min `_mean` column over producing intervals only (generator rpm at least `cleaning.producing_min_rpm`), set to missing if fewer than `features.min_producing_intervals` (12) such intervals; daily maximum of every `_max` column. This partly removes the effect of idle time on temperatures. It does not remove the effect of load or wind; the normal-behaviour model is meant to do that.
+  - State features: interval count, fractions producing, idle and stopped, wind and rpm mean and spread, share of intervals with a masked value, outage-month and suspect-wind flags.
+  - Window features: trailing 7-day mean and standard deviation (`labels.feature_window_days`) of the sensor and state features, on a gap-free calendar so missing days are not bridged; needs at least `features.window_min_days` (4) observed days.
+  - Alarm features: counts per documented code, per tier and in total over the same 7 days. Days without alarms count as zero, including days without SCADA coverage.
+  - Fault-history features from `tblDailySummary` (target A rule, usable days only): days since the latest fault day up to and including D, and fault days in the last 30 days. They feed the recent-fault baseline. Not available as 10-min signals for target B.
+  - Not model inputs: keys, the three data-quality flags, interval counts and masked share (`feature_columns`).
+- Look-ahead test: `features/leakage.py` deletes everything after the end of day D from every source (SCADA and alarms up to D+1 00:00, summary rows up to D), rebuilds, and requires the row for D to be identical. Unit tests include a deliberately leaky feature (tomorrow's temperature) that the check catches. `scripts/check_feature_leakage.py` runs it on real data.
+- Results (`reports/tables/feature_summary.csv`):
+  - Feature table: 70,816 turbine-days, 366 model columns.
+  - Every labelled row has features, except 4 target-A test rows.
+  - Real-data look-ahead check: 48 random turbine-days on 6 turbines, no difference found (4 turbines and 20 days in an earlier run).
+- Consequences and caveats:
+  - Missing values are common: on average 13% to 22% of cells per split. 12 of 110 base sensor columns are over 50% missing because the sensor only exists in some years (for example `IO1IntTm`, `NMMBrdTm`, `TrafoTMa`). About 6% to 8% of labelled rows have no producing interval at all.
+  - The modelling step must drop or impute columns using train years only (for example, keep columns observed in at least a set share of train rows). That share is not chosen yet.
+  - The 2022 drop in alarm codes 20 and 25 (open decisions) affects the alarm window counts across years.
+  - Only trailing mean and spread are used; trends and cross-sensor ratios are not built. Add them only if baselines justify it.
+  - Normal-behaviour residual features are not here yet; they need the fitted models.
 
 ## Open decisions
 - Dataset version: confirm v2.1.0 with the teammate who downloaded the data (D-004).
