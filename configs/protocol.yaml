@@ -66,10 +66,12 @@ labels:
       stop_max_rpm: 200
       stop_min_wind_ms: 4.0
       stop_min_intervals: 18          # 3 hours of consecutive 10-min intervals
+      min_observed_intervals_per_day: 115   # a day counts as observed with >= 115 of 144 intervals (D-019)
       episode_gap_days: 7
   positive_window_days: 30            # D-005 (project brief)
   exclusion_end_days: 60              # D-005: (30, 60] days before an episode is excluded
   feature_window_days: 7              # D-005 (project brief)
+  min_horizon_coverage: 0.8           # D-019: share of the next 60 days that must be observed for a negative label
 
 evaluation:
   false_alarm_budget_per_turbine_month: 1   # D-009 (project brief)

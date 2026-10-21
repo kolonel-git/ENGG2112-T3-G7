@@ -161,6 +161,31 @@ Status is **decided** or **open** (value to be fixed during the work and logged 
 - Decision: option 3. Power-curve baseline uses the rpm-vs-wind curve (D-011). Target B uses the SCADA stop rule of D-008. `TimeErr` meaning rests on its name and on its agreement with target B (D-008).
 - Consequences: limitations to state in the report: no measured power, no 10-min error-time signal, `TimeErr` not documented. Later upgrade path: with `tblSCTurFlag`, target B can be redefined from `wtc_ScTurSto_timeon`; with `tblSCTurGrid`, the power-curve baseline and an underperformance feature become possible.
 
+### D-019: Label construction details
+- Date: 2026-10-22
+- Owner: Kanav
+- Status: decided
+- Context: D-005 fixed the window geometry; building the labels required choices about episode spans, data gaps, the end of the data and the split boundaries.
+- Decision: implemented in `src/wt_predmaint/labels/` (`episodes.py`, `horizon.py`), run by `scripts/build_labels.py`.
+  - Candidate rows: each usable turbine-day of `tblDailySummary` for target A (not `partial_day`, not `bad_hours`); each observed day for target B (at least 115 of 144 intervals outside outage months, `min_observed_intervals_per_day`).
+  - An episode spans its first to last fault day (A) or stop day (B). A row is `in_episode` if its day lies in that span (dropped).
+  - A row is `positive` if an episode starts in days D+1 to D+30. A row with no positive but a start in D+31 to D+60 is in the `zone` (dropped).
+  - A row is `purged` if D+60 falls in a different split from D (dropped, even if it looks positive), so no label uses events from another split. The last 60 days of 2020 and of 2022 are therefore dropped.
+  - A row with no positive is `censored` if D+60 is beyond the last observed day, and `low_coverage` if fewer than 80% (`labels.min_horizon_coverage`) of the days D+1 to D+60 were observed. Both are dropped.
+  - Precedence: in_episode, purged, positive, zone, censored, low_coverage, negative. The label is 1 for positive, 0 for negative, missing otherwise.
+  - 2019 days stay in the label files with split `none` and are not used (no 2019 temperature or pressure data).
+- Results (`reports/tables/label_summary.csv`):
+  - Target A: train 22,309 labelled rows, 8,315 positive (37.3%), 355 episodes; validation 9,690 rows, 4,558 positive (47.0%), 217 episodes; test 17,951 rows, 8,099 positive (45.1%), 336 episodes.
+  - Target B: train 20,911 rows, 10,001 positive (47.8%), 434 episodes; validation 8,827 rows, 4,346 positive (49.2%), 209 episodes; test 17,281 rows, 8,725 positive (50.5%), 382 episodes.
+  - All 21 turbines have positives in every split.
+- Verification: 3,000 random labelled rows per target recomputed by brute force from the episode table, 0 disagreements; target A episode counts match the D-007 sweep (355 and 217); 13 unit tests on synthetic data cover gap semantics, run rules, every status, purging and censoring.
+- Consequences and caveats:
+  - Positive rates are 37% to 50% after the exclusions, not the 32% of the raw sweep, so a prevalence-only model scores a PR-AUC equal to that rate. PR-AUC must be read against it.
+  - Consecutive days share most of their 30-day window, so rows are strongly autocorrelated. Intervals are bootstrapped over turbines (D-009), not over rows.
+  - Episodes are short: median length 1 day, 90th percentile 6 to 7 days; median spacing between episode starts is 48 to 51 days per turbine.
+  - Turbine 2304515 is positive on 97% of its validation days (15 to 16 episodes in 2021 to 2022, found by both targets). Report results with and without it.
+  - Positive rate by year varies (target A: 0.31 in 2016 to 0.63 in 2022).
+
 ## Open decisions
 - Dataset version: confirm v2.1.0 with the teammate who downloaded the data (D-004).
 - Licence: none chosen; README carries a TODO.
