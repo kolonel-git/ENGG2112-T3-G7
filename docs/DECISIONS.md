@@ -66,16 +66,20 @@ Status is **decided** or **open** (value to be fixed during the work and logged 
 - Consequences: positive counts per split must be reported; if too few, the split is revisited and logged here. Cross-year drift (hydraulic pressure steps, bearing temperature drift) is a known risk, covered by the year-shift stress test.
 
 ### D-007: Target A parameters
-- Date: 2026-10-21
+- Date: 2026-10-22
 - Owner: Kanav
-- Status: open
-- Decision pending: minimum `TimeErr` hours for a fault day (4 h used in exploration), fault-free gap that separates episodes (`targets.daily_fault_time`). To be fixed after a sensitivity check on train and validation years only and logged here.
+- Status: decided
+- Decision: a fault day is a turbine-day with `TimeErr` of at least 4 hours (usable days only: not `partial_day`, not `bad_hours`); an episode starts on the first fault day after at least 7 fault-free days (`targets.daily_fault_time` in `configs/protocol.yaml`).
+- Evidence (train and validation years only, 44,550 usable turbine-days): the threshold sweep gave 4 h with a 7-day gap = 4.3 episode starts per turbine-year, 31.6% of 30-day windows positive, 355 starts in train and 217 in validation. Alternatives: 2 h gave 40.6% positive (5.8 per turbine-year); 8 h gave 19.5% (2.5 per turbine-year, 205 and 144 starts); gaps of 3 and 14 days changed counts by about 15% either way.
+- Rationale: a balanced positive rate with enough events in both splits, and consistent with the SCADA agreement check in D-008 (done at 4 h).
 
 ### D-008: Target B parameters
-- Date: 2026-10-21
+- Date: 2026-10-22
 - Owner: Kanav
-- Status: open
-- Decision pending: SCADA stop definition (maximum generator rpm, minimum wind speed, minimum consecutive intervals, episode gap; `targets.scada_stops`). To be fixed by checking agreement with `TimeErr` on train years and logged here.
+- Status: decided
+- Decision: a stop interval is a 10-min row with generator rpm below 200 and primary wind speed (`wtc_PrWindSp_mean`, D-017) of at least 4.0 m/s, outside outage months. A stop is a run of at least 18 consecutive intervals (3 hours). An episode starts at the first stop after at least 7 stop-free days (`targets.scada_stops`).
+- Evidence (train and validation years only): daily stop hours (rpm < 200, wind >= 4 m/s) correlate 0.857 with `TimeErr` and 0.778 with `TimeExternalErr`; stricter settings (wind >= 6 m/s) correlate 0.75 or lower. Day-level agreement with target A (`TimeErr` >= 4 h): daily stop hours >= 4 gave F1 0.854 (precision 0.84, recall 0.87); with the run rule, 18 intervals gave the best F1 (0.786; 12 gave 0.754, 24 gave 0.781, 36 gave 0.681). The rule gives about 12.6 qualifying runs and 5.1 episodes (7-day gap) per turbine-year.
+- Consequences: this is a proxy for unplanned stops because `tblSCTurFlag` is not available (D-018). The agreement with `TimeErr` is also the first independent support that `TimeErr` measures real stop/error time, which the dictionary does not state. A and B are not independent labels: they overlap at day level (F1 about 0.8), and results for both must be read together.
 
 ### D-009: Evaluation definitions
 - Date: 2026-10-21
@@ -148,19 +152,19 @@ Status is **decided** or **open** (value to be fixed during the work and logged 
 - Context: the dataset dictionary says the secondary anemometer signal `wtc_SecAnemo` has a step change on each turbine's correction switch-on date (2017-08-01 for T14 and T17; 2018-04-10/11 for the rest), the primary channel is an ultrasonic anemometer and the controller's active channel is `wtc_AcWindSp`. `wtc_PriAnemo` is constant throughout.
 - Decision: use `wtc_PrWindSp` (primary) for wind speed in cleaning checks, normal-behaviour inputs and the rpm-vs-wind curve. `wtc_SeWindSp` is allowed as a backup feature; `wtc_SecAnemo`, `wtc_PriAnemo` and `wtc_TetAnFrq` are not used as features.
 
-### D-018: Missing source tables for power and error time
-- Date: 2026-10-21
-- Owner: Kanav
-- Status: open
-- Context: the dictionary lists `wtc_ActPower` (active power, kW) in `tblSCTurGrid` and `wtc_ScTurSto_timeon` (time turbine error active within the period, s), `wtc_ScInOper_timeon` (running time) and `wtc_ScReToOp_timeon` in `tblSCTurFlag`. Neither table is in `data/raw` (which has only `tblSCTurbine`, `tblSCTurTemp`, `tblSCTurPress`, `tblAlarmLog`, `tblDailySummary`); they are in the Zenodo year zips.
-- Impact: measured power would replace the rpm proxy of D-011 for the power-curve baseline, and `tblSCTurFlag` would give a 10-min error-time signal, a direct basis for target B and a check on `tblDailySummary.TimeErr` (which the dictionary does not define).
-- Decision pending: the user to supply or approve downloading these two tables (about 11 yearly zips of roughly 1.4 GB each; a ranged read of only these members would be much smaller).
+### D-018: Missing source tables for power and error time: proceed with proxies
+- Date: 2026-10-22
+- Owner: Kanav (decided by the user: "skip it for now and use proxies")
+- Status: decided (revisit if the tables are obtained)
+- Context: the dictionary lists `wtc_ActPower` (active power, kW) in `tblSCTurGrid` and `wtc_ScTurSto_timeon` (time turbine error active within the period, s), `wtc_ScInOper_timeon` and `wtc_ScReToOp_timeon` in `tblSCTurFlag`. Neither table is in `data/raw`. Whether they are inside the Zenodo year zips is unverified (the yearly zips are about 1.4 GB, while the five tables we have are about 3.4 GB uncompressed per year).
+- Options considered: (1) the user supplies the tables; (2) extend the download script to read only those files from the zips with HTTP range requests; (3) proceed with proxies.
+- Decision: option 3. Power-curve baseline uses the rpm-vs-wind curve (D-011). Target B uses the SCADA stop rule of D-008. `TimeErr` meaning rests on its name and on its agreement with target B (D-008).
+- Consequences: limitations to state in the report: no measured power, no 10-min error-time signal, `TimeErr` not documented. Later upgrade path: with `tblSCTurFlag`, target B can be redefined from `wtc_ScTurSto_timeon`; with `tblSCTurGrid`, the power-curve baseline and an underperformance feature become possible.
 
 ## Open decisions
 - Dataset version: confirm v2.1.0 with the teammate who downloaded the data (D-004).
 - Licence: none chosen; README carries a TODO.
-- `TimeErr` meaning: the data dictionary was downloaded but does not describe `tblDailySummary`; `tblSCTurFlag` (D-018) would allow a check against `wtc_ScTurSto_timeon`. Until then it is inferred from its name and from agreement with target B.
-- Target A and B parameters (D-007, D-008).
+- `TimeErr` meaning: the data dictionary does not describe `tblDailySummary`. It is inferred from its name and from its agreement with SCADA stop time (correlation 0.86, D-008); `tblSCTurFlag` would settle it (D-018).
 - Handling of the four flagged `suspect_wind` turbine-years (flag only for now, D-015): decide per model whether to exclude them.
 - Whether the 2022 drop of alarms 20 and 25 (about 60%) reflects a controller change; relevant to alarm-count features across years.
 - Upgrade analysis needs `Hill_of_Towie_AeroUp_install_dates.csv` from Zenodo.

@@ -7,7 +7,7 @@ dataset:
   zenodo_record: 22662930
   doi: "10.5281/zenodo.22662930"
   tables: [tblSCTurTemp, tblSCTurbine, tblSCTurPress, tblAlarmLog, tblDailySummary]  # D-004
-  wanted_not_in_raw: [tblSCTurGrid, tblSCTurFlag]  # active power and error time, D-018
+  wanted_not_in_raw: [tblSCTurGrid, tblSCTurFlag]  # active power and error time; proxies used, D-018
 
 # Cleaning rules for the raw SCADA tables (D-013 to D-016). Sentinels are masked to NaN per table;
 # 200 in yaw/nacelle position and PowerRef are real values and are NOT masked (checked in the data).
@@ -59,14 +59,14 @@ labels:
   # label = 1 if a fault episode starts in (t, t + positive_window_days];
   # rows with an episode start in (t + positive_window_days, t + exclusion_end_days] are dropped.
   targets:
-    daily_fault_time:                 # target A: tblDailySummary.TimeErr
-      fault_day_min_hours: TODO       # D-007 (set after sensitivity check)
-      episode_gap_days: TODO          # fault-free days that separate two episodes, D-007
-    scada_stops:                      # target B: unplanned stops derived from 10-min SCADA
-      stop_max_rpm: TODO              # D-008
-      stop_min_wind_ms: TODO          # D-008
-      stop_min_intervals: TODO        # D-008
-      episode_gap_days: TODO          # D-008
+    daily_fault_time:                 # target A: tblDailySummary.TimeErr (D-007)
+      fault_day_min_hours: 4
+      episode_gap_days: 7             # fault-free days that separate two episodes
+    scada_stops:                      # target B: stops derived from 10-min SCADA (D-008)
+      stop_max_rpm: 200
+      stop_min_wind_ms: 4.0
+      stop_min_intervals: 18          # 3 hours of consecutive 10-min intervals
+      episode_gap_days: 7
   positive_window_days: 30            # D-005 (project brief)
   exclusion_end_days: 60              # D-005: (30, 60] days before an episode is excluded
   feature_window_days: 7              # D-005 (project brief)

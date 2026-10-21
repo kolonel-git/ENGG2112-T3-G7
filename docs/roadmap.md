@@ -16,7 +16,7 @@ Decisions behind this roadmap are in `docs/DECISIONS.md`; the technical plan is 
 | O2 target decision | Done (D-003): fault-time episodes from `tblDailySummary` plus SCADA-derived stops; alarm codes become features |
 | Split, windows, metrics decided | Done (D-005 to D-010) |
 | Cleaning layer (`data/clean.py`, `data/daily.py`, `scripts/build_clean_data.py`) | Done on branch `kanav/cleaning-layer` (D-015 to D-017); 10.14M rows 2016 to 2026-04, flags for outage months and suspect wind |
-| Missing tables `tblSCTurGrid` (power) and `tblSCTurFlag` (error time) | Open, D-018 |
+| Missing tables `tblSCTurGrid` (power) and `tblSCTurFlag` (error time) | Skipped for now; proxies used (D-018) |
 | Labels, features, baselines, models, evaluation | Wk2 onward (below) |
 
 ## 2. Objectives and deliverables
@@ -44,7 +44,7 @@ Dates: TODO (add once the submission deadline is confirmed). Week numbers are re
 - **Cleaning layer** (Parvez; first version built by Kanav, done): join the three SCADA tables from raw, de-duplicate, mask sentinels per table, flag outage months and suspect wind sensors. Output: `src/wt_predmaint/data/clean.py`, `daily.py`, tests. Parvez to review and extend.
 - **Labels** (Revael): episode builder for target A (`TimeErr`) and target B (SCADA stops); horizon labels with the 30-day positive window and 30 to 60-day exclusion. Output: `src/wt_predmaint/labels/`, tests including a leakage check.
 - **Evaluation harness** (Farhan): PR-AUC, recall at 1 false alarm per turbine-month, event-level lead time, turbine bootstrap, time-split and leave-one-turbine-out splitters. Output: `src/wt_predmaint/evaluation/`, tests on synthetic labels.
-- **Gate G1** (end Wk2): cleaning, labels and harness merged; data frozen; target thresholds chosen and logged (D-007, D-008).
+- **Gate G1** (end Wk2): cleaning, labels and harness merged; data frozen. Target thresholds are chosen and logged (D-007, D-008, 2026-10-22).
 
 ### Wk3 Features, baselines and O1
 - **Features** (Revael): daily aggregates, 7-day windows, alarm-count features, operating-state fractions. Output: `src/wt_predmaint/features/`.
