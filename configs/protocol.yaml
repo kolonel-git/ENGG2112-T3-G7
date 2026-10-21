@@ -1,27 +1,60 @@
 # Single source of truth for every experiment. Do not hard-code these values elsewhere.
-# Every undecided value is TODO. Record decisions in docs/DECISIONS.md.
+# Undecided values stay TODO. Every decision is logged in docs/DECISIONS.md (IDs in comments).
 
 dataset:
   name: Hill of Towie
-  version: "2.1.0"            # Zenodo record 22662930; confirm team agrees (see DECISIONS.md)
+  version: "2.1.0"            # Zenodo record 22662930; version still to be confirmed (see DECISIONS.md D-004)
   zenodo_record: 22662930
   doi: "10.5281/zenodo.22662930"
-  tables: [tblSCTurTemp, tblSCTurbine, tblSCTurPress, tblAlarmLog]
+  tables: [tblSCTurTemp, tblSCTurbine, tblSCTurPress, tblAlarmLog, tblDailySummary]  # D-004
 
-splits:                        # year ranges, inclusive
-  train_years: TODO
-  val_years: TODO
-  test_years: TODO
+# Time-based split on raw SCADA years (D-006). 2019 has no temperature/pressure tables, so it
+# is unused. Model fitting, thresholds and normal-behaviour models use train years only.
+splits:
+  train_years: [2016, 2017, 2018, 2020]
+  val_years: [2021, 2022]
+  test_years: [2023, 2024, 2025, 2026]   # 2026 ends 2026-04-30
 
 robustness:
-  leave_one_turbine_out: TODO  # true / false
+  leave_one_turbine_out: false  # main runs use the time split; O3 scripts run leave-one-turbine-out (D-006)
 
 labels:
-  positive_window_days: TODO   # brief: 30
-  exclusion_window_days: TODO  # brief: 30-60 day exclusion; set exact bounds
-  feature_window_days: TODO    # brief: 7
+  # In-scope alarm codes and tiers (D-001, D-002). Superseded by D-003: alarm codes are now
+  # FEATURES (counts per window), not targets. All other codes are dropped.
+  alarm_codes:
+    - {code: 3130,  tier: 1, stopping: true,  description: "Pitch lubrication"}
+    - {code: 10105, tier: 1, stopping: true,  description: "Stopped, untwisting cables"}
+    - {code: 1005,  tier: 2, stopping: true,  description: "Availability - low wind"}
+    - {code: 8000,  tier: 2, stopping: true,  description: "Windspeed too high to operate"}
+    - {code: 8210,  tier: 2, stopping: true,  description: "Stopped, due to icing"}
+    - {code: 8230,  tier: 2, stopping: true,  description: "Ice detection: Low torque"}
+    - {code: 8234,  tier: 2, stopping: true,  description: "Ice detection: No cut in"}
+    - {code: 8235,  tier: 2, stopping: true,  description: "Ice Detect: Stopped"}
+    - {code: 8236,  tier: 2, stopping: true,  description: "Ice Detect: Stopped, De-Ice"}
+    - {code: 20,    tier: 3, stopping: false, description: "Large generator cut-in"}
+    - {code: 25,    tier: 3, stopping: false, description: "Fast cut-out of generator"}
+    - {code: 102,   tier: 3, stopping: false, description: "Ice detection"}
+  feature_tiers: [1, 2, 3]            # D-003
+  keep_other_alarms_for_masking: false  # D-003: healthy-row mask uses fault-time labels instead
+
+  # O2 targets (D-003, D-005). Prediction time t is the end of a turbine-day.
+  # label = 1 if a fault episode starts in (t, t + positive_window_days];
+  # rows with an episode start in (t + positive_window_days, t + exclusion_end_days] are dropped.
+  targets:
+    daily_fault_time:                 # target A: tblDailySummary.TimeErr
+      fault_day_min_hours: TODO       # D-007 (set after sensitivity check)
+      episode_gap_days: TODO          # fault-free days that separate two episodes, D-007
+    scada_stops:                      # target B: unplanned stops derived from 10-min SCADA
+      stop_max_rpm: TODO              # D-008
+      stop_min_wind_ms: TODO          # D-008
+      stop_min_intervals: TODO        # D-008
+      episode_gap_days: TODO          # D-008
+  positive_window_days: 30            # D-005 (project brief)
+  exclusion_end_days: 60              # D-005: (30, 60] days before an episode is excluded
+  feature_window_days: 7              # D-005 (project brief)
 
 evaluation:
-  false_alarm_budget_per_turbine_month: TODO   # brief: 1
+  false_alarm_budget_per_turbine_month: 1   # D-009 (project brief)
+  # false alarm = alert on a turbine-day whose label is 0; recall and lead time are event-level.
 
-seed: TODO
+seed: 42                              # D-010

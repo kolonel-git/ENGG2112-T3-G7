@@ -1,0 +1,264 @@
+HILL OF TOWIE WIND FARM - PROCESSED DATA DESCRIPTION
+Folder: data/00-Processed-Data
+==============================================================================
+
+1. WHAT IS IN THE FOLDER
+------------------------------------------------------------------------------
+14 files, one pair per year:
+
+  turbines_YYYY.xlsx           the cleaned 10-minute SCADA data (one workbook/year)
+  turbines_YYYY.cleaning.json  a log of what the cleaning step removed
+
+Years available: 2018, 2020, 2021, 2022, 2023, 2024, 2025.
+There is NO 2019 file. The 2018 file starts on 1 March 2018 and the 2022 file
+starts on 4 April 2022 at 10:40. All the others cover the full calendar year.
+
+Note: the unprocessed folders here (2016-2019) are NOT the source of these
+files. The cleaning logs show the xlsx files were made from a separate export
+(ENGG2112-T3-G7\data\interim\turbine_exports\turbines_YYYY.xlsx). Only 2018
+overlaps with the raw data in this folder.
+
+Data source: Hill of Towie wind farm open dataset (Zenodo record 14870023),
+21 turbines, 10-minute SCADA averages plus an alarm log.
+
+
+2. HOW EACH WORKBOOK IS LAID OUT
+------------------------------------------------------------------------------
+- One worksheet per station, named  Station_<StationId>.
+    Station_2304510 ... Station_2304530  = the 21 turbines (T01-T21 in order)
+    Station_91                            = site-level station (not a turbine).
+                                            It is EMPTY (header row only) in
+                                            every year, and missing from 2020.
+- Row 1 is the header and the top row is frozen. Every following row is one
+  10-minute interval for that turbine.
+- Rows are in ascending time order. There are no duplicate timestamps, and
+  consecutive rows are exactly 600 s apart except where rows were removed by
+  cleaning (see section 5).
+- 2018, 2020, 2021: 45 columns.
+  2022-2025: 47 columns (two extra temperatures, wtc_InvUpTmp_mean and
+  wtc_TrafoTMa_mean, which the cleaning step removed from the earlier years).
+- Apart from the two alarm columns, every cell in every kept row is filled
+  (0 missing values were found). The alarm columns are blank unless an alarm
+  happened in that row.
+- Storage quirk: TimeStamp and StationId are stored as TEXT, not as an Excel
+  date or number. Convert them after loading, e.g. in pandas:
+      df["TimeStamp"] = pd.to_datetime(df["TimeStamp"])
+      df["StationId"] = df["StationId"].astype(int)
+- The files are large (340-485 MB, about 21-22 sheets of ~52,000 rows each).
+  pd.read_excel(path, sheet_name=None) works but is slow. Loading once and
+  saving to parquet/CSV saves a lot of time later.
+
+Row counts per year (all turbines combined):
+
+  Year  Sheets  Period covered                         Rows        % of full 10-min grid*
+  2018  22      2018-03-01 00:00 -> 2019-01-01 00:00     919,106   99.3 %
+  2020  21      2020-01-01 00:00 -> 2021-01-01 00:00   1,101,294   99.5 %
+  2021  22      2021-01-01 00:00 -> 2022-01-01 00:00   1,090,804   98.8 %
+  2022  22      2022-04-04 10:40 -> 2023-01-01 00:00     778,694   94.8 %
+  2023  22      2023-01-01 00:00 -> 2024-01-01 00:00   1,098,422   99.5 %
+  2024  22      2024-01-01 00:00 -> 2025-01-01 00:00   1,102,885   99.6 %
+  2025  22      2025-01-01 00:00 -> 2026-01-01 00:00   1,059,412   96.0 %
+  * 21 turbines x every 10-min step in the period.
+
+Each year file includes the 00:00 timestamp of 1 January of the NEXT year as its
+last row, so for a full year one turbine has 52,561 slots (52,705 in a leap year).
+Watch for this boundary row if you concatenate years.
+Per-turbine row counts are typically 50,000-52,700 for a full year. The lowest
+are 2304529 in 2021 (43,378) and 2304520 in 2022 (35,840 of a possible 39,105).
+
+
+3. COLUMN DICTIONARY
+------------------------------------------------------------------------------
+Naming convention: wtc_<Tag>_<statistic>
+  wtc_      = wind turbine controller signal
+  _mean     = average over the 10-minute interval
+  _stddev   = standard deviation within the 10-minute interval
+  _endvalue = value at the end of the 10-minute interval
+The raw tables also have _min / _max, which were not kept.
+
+[O] = description from the official field dictionary
+      (Hill_of_Towie_turbine_fields_description.csv)
+[I] = NOT in the official dictionary. The meaning is my interpretation of the
+      tag name and value range; treat it as a best guess.
+
+Range = min / max / mean across all turbines and all years in the processed data.
+
+Col  Name                    Raw table      Unit   Meaning                                            Range (min / max / mean)
+---  ----------------------  -------------  -----  -------------------------------------------------  ------------------------
+ 1   TimeStamp               all            -      Start of the 10-min interval, 'YYYY-MM-DD HH:MM:SS' (text). See note below.
+ 2   StationId               all            -      Turbine ID, 2304510-2304530 (text)
+
+     PRESSURES (from tblSCTurPress)
+ 3   wtc_GearPres_mean       tblSCTurPress  bar    [O] Gear oil pressure                              -4.0 / 5.7 / 2.6
+ 4   wtc_HydPress_mean       tblSCTurPress  bar    [I] Main hydraulic system pressure                 -100 / 245.5 / 217.8
+ 5   wtc_HubPresA_mean       tblSCTurPress  bar    [I] Hub (pitch) hydraulic pressure, blade A        -100 / 253.0 / 227.5
+ 6   wtc_HubPresB_mean       tblSCTurPress  bar    [I] Hub (pitch) hydraulic pressure, blade B        -100 / 253.9 / 227.3
+ 7   wtc_HubPresC_mean       tblSCTurPress  bar    [I] Hub (pitch) hydraulic pressure, blade C        -100 / 255.0 / 227.5
+
+     GEARBOX / DRIVETRAIN TEMPERATURES (from tblSCTurTemp)
+ 8   wtc_HSGenTmp_mean       tblSCTurTemp   degC   [O] Gearbox bearing temp, high-speed shaft, generator side      -50 / 200 / 43.9
+ 9   wtc_HSRotTmp_mean       tblSCTurTemp   degC   [O] Gearbox bearing temp, high-speed shaft, rotor side          0 / 200 / 43.1
+10   wtc_IMSGenTm_mean       tblSCTurTemp   degC   [O] Gearbox bearing temp, intermediate shaft, generator side    0 / 200 / 37.8
+11   wtc_IMSRotTm_mean       tblSCTurTemp   degC   [O] Gearbox bearing temp, intermediate shaft, rotor side        0 / 200 / 34.1
+12   wtc_GeOilTmp_mean       tblSCTurTemp   degC   [O] Gear oil temperature                                        0 / 200 / 36.9
+13   wtc_GenBeGTm_mean       tblSCTurTemp   degC   [O] Generator bearing temp, non-drive end (NDE)                 -4 / 87.5 / 31.0
+14   wtc_GenBeRTm_mean       tblSCTurTemp   degC   [O] Generator bearing temp, drive end (DE)                      -3 / 82.9 / 24.8
+15   wtc_MainBTmp_mean       tblSCTurTemp   degC   [O] Main bearing temperature                                    -1 / 51.0 / 34.4
+
+     GENERATOR WINDING TEMPERATURES
+16   wtc_Gen1U1Tm_mean       tblSCTurTemp   degC   [O] Generator winding temperature, phase 1U1                    -3 / 200 / 38.6
+17   wtc_Gen1V1Tm_mean       tblSCTurTemp   degC   [O] Generator winding temperature, phase 1V1                    -4 / 106.7 / 38.3
+18   wtc_Gen1W1Tm_mean       tblSCTurTemp   degC   [O] Generator winding temperature, phase 1W1                    -3 / 105.5 / 38.4
+
+     AMBIENT / NACELLE
+19   wtc_AmbieTmp_mean       tblSCTurTemp   degC   [O] Ambient (outside) temperature                               -30.2 / 30.9 / 7.9
+20   wtc_NacelTmp_mean       tblSCTurTemp   degC   [O] Nacelle temperature                                         -15.7 / 39.9 / 21.8
+
+     CONVERTER / TRANSFORMER / ELECTRICAL
+21   wtc_ConvWTmp_mean       tblSCTurTemp   degC   [I] Converter cooling-water temperature                         -5.0 / 85.3 / 29.9
+--   wtc_InvUpTmp_mean       tblSCTurTemp   degC   [I] Inverter temperature (upper). 2022-2025 ONLY                -1.6 / 88.5 / 31.2
+22   wtc_TraOilTF_mean       tblSCTurTemp   degC   [I] Transformer oil temperature (official dictionary has a       -1.6 / 154.8 / 49.0
+                                                       similar tag, wtc_TrafOilT = transformer oil temperature)
+23   wtc_TraRooTF_mean       tblSCTurTemp   degC   [I] Transformer room temperature (cf. official wtc_TraRoomT)     0 / 95.7 / 31.9
+--   wtc_TrafoTMa_mean       tblSCTurTemp   degC   [I] Transformer temperature, maximum. 2022-2025 ONLY             -1.6 / 121.0 / 48.7
+24   wtc_HydOilTm_mean       tblSCTurTemp   degC   [O] Pitch hydraulic oil temperature                             -4 / 70.2 / 33.9
+25   wtc_A1ExtTmp_mean       tblSCTurTemp   degC   [I] Cabinet A1, external temperature                            -4.1 / 251.6 / 16.0
+26   wtc_A3LefTmp_mean       tblSCTurTemp   degC   [I] Cabinet A3, left-side temperature                           -11.4 / 105.4 / 28.2
+27   wtc_A3RigTmp_mean       tblSCTurTemp   degC   [I] Cabinet A3, right-side temperature                          -9.2 / 48.0 / 28.9
+28   wtc_A9IntTmp_mean       tblSCTurTemp   degC   [I] Cabinet A9, internal temperature                            -50 / 200 / 24.3
+29   wtc_A21IntTm_mean       tblSCTurTemp   degC   [I] Cabinet A21, internal temperature                           0 / 87.6 / 25.2
+30   wtc_DeltaTmp_mean       tblSCTurTemp   degC   [I] Unclear. A temperature (possibly a temperature difference    -50 / 200 / 27.2
+                                                       or a 'Delta' module); no reliable meaning available
+31   wtc_BrkTmpGn_mean       tblSCTurTemp   degC   [I] Mechanical brake temperature, generator side                -2 / 200 / 27.0
+32   wtc_GFilB1Tm_mean       tblSCTurTemp   degC   [I] Grid-filter bank 1 temperature                              -49.7 / 93.6 / 37.2
+33   wtc_GFilB2Tm_mean       tblSCTurTemp   degC   [I] Grid-filter bank 2 temperature                              -50 / 70.0 / 35.6
+34   wtc_GFilB3Tm_mean       tblSCTurTemp   degC   [I] Grid-filter bank 3 temperature                              -49.6 / 68.3 / 33.1
+35   wtc_ReacUTmp_mean       tblSCTurTemp   degC   [I] Converter reactor (choke) temperature, phase U              -46.2 / 88.6 / 40.4
+36   wtc_ReacVTmp_mean       tblSCTurTemp   degC   [I] Converter reactor (choke) temperature, phase V              -46.1 / 91.0 / 41.0
+37   wtc_ReacWTmp_mean       tblSCTurTemp   degC   [I] Converter reactor (choke) temperature, phase W              -46.5 / 94.8 / 41.0
+
+     OPERATING STATE (from tblSCTurbine)
+38   wtc_PrWindSp_mean       tblSCTurbine   m/s    [O] Wind speed, primary nacelle anemometer                      0 / 32.5 / 6.6
+39   wtc_PrWindSp_stddev     tblSCTurbine   m/s    [O] Std dev of primary wind speed within the 10 min             0 / 21.9 / 1.2
+                                                       (turbulence measure)
+40   wtc_GenRpm_mean         tblSCTurbine   rpm    [O] Generator speed                                             0 / 1567 / 956
+41   wtc_GenRpm_stddev       tblSCTurbine   rpm    [O] Std dev of generator speed within the 10 min                0 / 764 / 70
+42   wtc_MainSRpm_mean       tblSCTurbine   rpm    [O] Main (rotor) shaft speed                                    0 / 17.2 / 10.5
+                                                       (GenRpm / MainSRpm is about 91, the gearbox ratio)
+43   wtc_PowerRef_endvalue   tblSCTurbine   kW     [I] Active-power set-point/limit at end of interval.            0 / 2300 / 2215
+                                                       2300 = rated power (no curtailment); lower values
+                                                       mean the turbine was derated or curtailed.
+
+     ALARMS (merged in from tblAlarmLog)
+44   Alarmcode               tblAlarmLog    -      Code(s) of alarms raised in this interval (text). Several codes are
+                                                   joined with "; " in event order, e.g. "20; 25" or "67; 68; 69; 61".
+                                                   Repeats are possible ("92; 92"). Blank when there is no alarm.
+45   AlarmEvents             tblAlarmLog    -      The same events as a JSON list (text), one object per event:
+                                                   [{"Alarmcode": "20", "TimeOn": "2018-03-08 12:40:00", "TimeOff": null}]
+                                                   Alarmcode is a string; TimeOff is null for instantaneous events,
+                                                   or a 'YYYY-MM-DD HH:MM:SS' string when the alarm has a duration.
+                                                   Parse with json.loads(). Blank when there is no alarm.
+
+(For 2022-2025 the two extra columns sit at positions 22 and 25, so Alarmcode
+and AlarmEvents are columns 46 and 47. Always select columns by name, not position.)
+
+Note on TimeStamp: every alarm event kept in the file has TimeOn exactly equal to
+its row's TimeStamp. Each file runs from 00:00 on 1 Jan to 00:00 on 1 Jan of the
+next year. The official dataset does not say whether a timestamp marks the
+start or the end of its 10-minute window. If that matters to your features,
+check against tblSCTurbine's wtc_CurTime_endvalue column in the raw data.
+
+
+4. VALUES TO WATCH OUT FOR (likely sensor fault or limit codes)
+------------------------------------------------------------------------------
+- Exactly 200 and -50 degC turn up in several temperature channels (HS/IMS
+  gearbox bearings, gear oil, Gen1U1, A9, DeltaTmp, brake). They are almost
+  certainly sensor-limit or fault values, not real temperatures. They appear in a
+  handful of turbine-years (e.g. 2018: 7 turbines hit 200 on the gearbox
+  bearing channels).
+- Exactly -100 bar appears in HydPress / HubPresA-C (2021-2025) and is almost
+  certainly a fault value.
+- A1ExtTmp reaches 251.6 in 2020 and TraOilTF reaches 154.8 in 2020. Both are
+  implausible spikes.
+- Zeros are common when a turbine is stopped (rpm = 0, pressures near 0,
+  PowerRef = 0). They are real readings, not missing data.
+- Hydraulic and hub pressures of ~230 bar are the NORMAL operating level.
+
+Consider masking or clipping these before training, and checking them against
+the alarm log, since a sensor fault can itself be an alarm.
+
+
+5. WHAT THE CLEANING STEP DID (from turbines_YYYY.cleaning.json)
+------------------------------------------------------------------------------
+Each JSON has:
+  "source"           path of the pre-cleaning export the xlsx was made from
+  "removed_columns"  columns dropped entirely
+                     (2018/2020/2021: wtc_InvUpTmp_mean, wtc_TrafoTMa_mean; 2022+: none)
+  "required_columns" the 43 (2018-21) or 45 (2022-25) columns a row had to have
+                     filled to be kept: StationId, TimeStamp and the sensor columns
+  "sheets"           per station: input_rows, kept_rows, removed_rows,
+                     alarm_events_in_removed_rows
+
+Totals per year:
+
+  Year   Input rows   Kept rows   Removed rows   Alarm events in removed rows
+  2018    1,889,881     919,106       970,775        808,142
+  2020    1,753,452   1,101,294       652,158        663,111
+  2021    1,872,881   1,090,804       782,077        797,861
+  2022    1,448,981     778,694       670,287        416,216
+  2023    1,429,407   1,098,422       330,985        346,231
+  2024    1,416,602   1,102,885       313,717        328,955
+  2025    1,437,782   1,059,412       378,370        396,222
+
+So a row was kept only if every required sensor column had a value.
+
+
+6. IMPORTANT CAVEAT FOR ALARM PREDICTION: MOST ALARMS WERE DROPPED
+------------------------------------------------------------------------------
+The alarm columns in these files contain very few events:
+
+  Year   Rows with an alarm   Alarm events kept
+  2018         1,306                1,331
+  2020         1,203                1,214
+  2021         1,505                1,508
+  2022           591                  619
+  2023           700                  715
+  2024           747                  771
+  2025         2,371                2,832
+  Total                             8,990
+
+For comparison, the raw tblAlarmLog for March-December 2018 has 706,572 events,
+and the processed 2018 file keeps 1,331 of them (about 0.2 %).
+
+Why: every kept event has a TimeOn of exactly HH:M0:00, the same as its row's
+TimeStamp. The pre-cleaning export appears to have put each alarm on its own row
+at its own timestamp (which is why input_rows is roughly double the 10-minute
+grid). Those alarm-only rows had no sensor values, so cleaning removed them
+(the "alarm_events_in_removed_rows" counts above). Only alarms that happened
+exactly on a 10-minute boundary survived.
+
+Also: 128 distinct codes appear in the processed files. Codes 20 and 25 (generator
+cut-in / cut-out) make up most of what is left. Rarer fault codes are mostly
+gone.
+
+To use alarms as labels, re-attach them from the raw tblAlarmLog: floor each
+TimeOn to its 10-minute interval (or label a look-ahead window), and join on
+StationId + TimeStamp. Don't rely on the Alarmcode / AlarmEvents columns here.
+See Alarm_Codes.txt for the full code list.
+
+
+7. QUICK LOAD EXAMPLE (pandas)
+------------------------------------------------------------------------------
+    import pandas as pd, json
+    sheets = pd.read_excel("turbines_2023.xlsx", sheet_name=None)   # dict of DataFrames
+    sheets.pop("Station_91", None)                                   # empty sheet
+    df = pd.concat(sheets.values(), ignore_index=True)
+    df["TimeStamp"] = pd.to_datetime(df["TimeStamp"])
+    df["StationId"] = df["StationId"].astype(int)
+    df["events"] = df["AlarmEvents"].dropna().map(json.loads)        # list of dicts or NaN
+
+
+Sources:
+  Hill of Towie wind farm open dataset - https://zenodo.org/records/14870023
+  (Hill_of_Towie_turbine_fields_description.csv, Hill_of_Towie_tables_description.csv)
+  All counts and ranges above were computed directly from the files in this folder.
