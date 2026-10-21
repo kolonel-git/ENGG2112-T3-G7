@@ -189,7 +189,7 @@ Status is **decided** or **open** (value to be fixed during the work and logged 
 ### D-020: Evaluation harness details and the random-score floor
 - Date: 2026-10-22
 - Owner: Kanav
-- Status: decided for the harness; the budget question below is open (Farhan and the team to review)
+- Status: decided (budget question settled 2026-10-22: keep the brief's budget)
 - Context: D-009 fixed the metrics. Building them needed choices about the false alarm denominator, undetectable episodes, the threshold rule and the confidence intervals.
 - Decision: implemented in `src/wt_predmaint/evaluation/metrics.py` and `splits.py`.
   - Alert: `score > threshold` (strict, so tied scores are all in or all out). Rows must be labelled (0 or 1); unlabelled rows (D-019) are rejected.
@@ -201,7 +201,7 @@ Status is **decided** or **open** (value to be fixed during the work and logged 
   - Splitters: `labelled_split` for the year splits, `leave_one_turbine_out` for the robustness stage only (D-006).
 - Results: `scripts/run_dummy_baselines.py` writes `reports/tables/baselines_dummy.csv`. A constant score gives PR-AUC equal to the prevalence (0.45 to 0.51) and recall 0. A random uniform score at the budget gives, on test, recall 0.79 (A) and 0.84 (B) with median lead time 22 days; on validation 0.81 and 0.79.
 - Finding: episode recall at 1 false alarm per turbine-month is easy to reach by chance. About 53% of scored days are negative, so a random alert rate near 6% of days meets the budget, and a 30-day window then contains at least one alert about 80% of the time. Random-score recall on test for target A: 0.79 at a budget of 1, 0.51 at 0.5, 0.34 at 0.25, 0.16 at 0.1, 0.06 at 0.05 (target B: 0.84, 0.65, 0.44, 0.21, 0.13). A model's recall at budget 1 therefore has about 0.2 of headroom above chance.
-- Open question for the team (the 1 per turbine-month budget comes from the project brief): keep it as the headline metric and always show the random floor next to it, and also report recall at 0.25 and 0.1 per turbine-month (needs only a config list and no code change to the metrics), or change the headline budget. Not decided; until then results tables carry the random floor.
+- Resolution (Kanav, 2026-10-22): stay with the original project brief. The headline metric stays recall at 1 false alarm per turbine-month, no change to scope. Every results table carries the random-score floor next to it so the headroom is visible. No extra budgets are added.
 
 ## Open decisions
 - Dataset version: confirm v2.1.0 with the teammate who downloaded the data (D-004).
