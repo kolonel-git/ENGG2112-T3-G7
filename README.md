@@ -66,12 +66,14 @@ On top of that, every alert comes with an explanation (SHAP and residual attribu
 | Labels for targets A and B | Done and verified (see below) |
 | Evaluation harness and random-score floor | Done |
 | Daily features and look-ahead test | Done |
-| Baselines, normal-behaviour models, LightGBM | Planned |
+| Baselines, normal-behaviour models, LightGBM | B1 complete on validation; others planned |
 | Robustness analyses and SHAP | Planned |
 | Report and ethics review | Planned |
 
-Dates, owners and review gates are in [`docs/roadmap.md`](docs/roadmap.md). There are no model
-results yet; this README will link to them when they exist.
+Dates, owners and review gates are in [`docs/roadmap.md`](docs/roadmap.md).
+[B1 validation results and reproduction](reports/B1_README.md) are available: the recent-fault rule
+has higher PR-AUC point estimates than the floors, but much lower episode recall than random at the
+required false-alarm budget. Learned-model results are still pending.
 
 ### What the labels look like (`reports/tables/label_summary.csv`)
 
@@ -137,6 +139,7 @@ about 15 GB of yearly zips). Then run, in order:
 | `python scripts/check_feature_leakage.py` | re-computes random feature rows with the future deleted and fails if any value changes |
 | `python scripts/plot_risk_timeline.py --station <id> --column <col>` | `reports/figures/timeline_*.png`: one turbine's line with bands showing why days are blank |
 | `python scripts/run_baselines.py` | constant and random-score floors in `reports/tables/baselines_<target>.csv` |
+| `python scripts/run_b1_recent_fault.py` | all three B1 rules and current floors on validation for A and B, plus missing-history counts |
 
 Metadata only: `python scripts/download_data.py --only Hill_of_Towie_data_dictionary.md --out data/raw/metadata`
 
