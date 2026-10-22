@@ -10,12 +10,13 @@ from __future__ import annotations
 from collections.abc import Callable
 
 from wt_predmaint.models.base import Baseline
+from wt_predmaint.models.logistic import LogisticBaseline
 
 REGISTRY: dict[str, Callable[[str], Baseline]] = {
     # "B1_recent_fault": lambda target: RecentFaultRule(target),   # Farhan
     # "B2_alarm_count": lambda target: AlarmCountRule(target),      # Farhan
     # "B3_power_curve": lambda target: PowerCurveProxy(target),     # Parvez
-    # "B4_logistic": lambda target: LogisticBaseline(target),       # Revael
+    "B4_logistic": lambda target: LogisticBaseline(target),  # Revael
 }
 
 
