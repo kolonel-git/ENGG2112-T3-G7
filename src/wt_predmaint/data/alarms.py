@@ -1,7 +1,7 @@
 """Build the in-scope alarm event table from the raw tblAlarmLog files.
 
 Alarms must come from the raw tblAlarmLog, not from the Alarmcode/AlarmEvents columns of the
-processed turbine workbooks: those keep only ~0.2% of events (see docs/DATA_TRAPS.md).
+processed turbine workbooks: those keep only ~0.2% of events (see docs/project/DATA_TRAPS.md).
 """
 
 from __future__ import annotations

@@ -1,5 +1,5 @@
 # Single source of truth for every experiment. Do not hard-code these values elsewhere.
-# Undecided values stay TODO. Every decision is logged in docs/DECISIONS.md (IDs in comments).
+# Undecided values stay TODO. Every decision is logged in docs/project/DECISIONS.md (IDs in comments).
 
 dataset:
   name: Hill of Towie

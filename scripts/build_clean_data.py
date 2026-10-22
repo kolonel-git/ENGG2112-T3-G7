@@ -10,8 +10,13 @@ and a short table to reports/tables/cleaning_report.csv.
 from __future__ import annotations
 
 import argparse
+import sys
 import json
 from pathlib import Path
+
+# Support running this file directly from an IDE without installing the package.
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / 'src'))
 
 import pandas as pd
 
@@ -20,7 +25,7 @@ from wt_predmaint.data.clean import clean_year, read_scada_parquet
 from wt_predmaint.data.daily import load_daily_summary
 from wt_predmaint.data.scada import TABLES
 
-ROOT = Path(__file__).resolve().parents[1]
+
 
 
 def main() -> None:

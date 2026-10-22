@@ -1,6 +1,6 @@
 """Cleaning layer for the raw 10-min SCADA tables.
 
-Rules (docs/DECISIONS.md D-013 to D-016): de-duplicate on (StationId, TimeStamp); mask sentinel
+Rules (docs/project/DECISIONS.md D-013 to D-016): de-duplicate on (StationId, TimeStamp); mask sentinel
 values per table to NaN and count them per row; inner-join the three tables; assign each row to
 the year of its interval START (TimeStamp is the interval end); flag, but never drop, outage
 months and turbine-years with a suspect wind signal.

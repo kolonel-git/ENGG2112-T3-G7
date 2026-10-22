@@ -9,7 +9,12 @@ Writes reports/tables/baselines_dummy.csv.
 from __future__ import annotations
 
 import argparse
+import sys
 from pathlib import Path
+
+# Support running this file directly from an IDE without installing the package.
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / 'src'))
 
 import numpy as np
 import pandas as pd
@@ -21,7 +26,7 @@ from wt_predmaint.evaluation.metrics import (
 )
 from wt_predmaint.evaluation.splits import labelled_split, split_years
 
-ROOT = Path(__file__).resolve().parents[1]
+
 
 
 def main() -> None:
@@ -35,6 +40,19 @@ def main() -> None:
     rows = []
     for target in ("a", "b"):
         labels = pd.read_parquet(args.interim / "labels" / f"{target}_labels.parquet")
+        missing_splits = [split for split in ("val", "test")
+                          if labelled_split(labels, split).empty]
+        if missing_splits:
+            details = "; ".join(
+                f"{split}: configured years {split_years(cfg, split)}"
+                for split in missing_splits
+            )
+            p.error(
+                f"Target {target.upper()} has no labelled rows for {details}. "
+                "Build SCADA, cleaned data, and labels for those years before running "
+                "baselines. See reports/tables/label_summary.csv. "
+                "No baseline output has been overwritten."
+            )
         episodes = pd.read_parquet(args.interim / "labels" / f"{target}_episodes.parquet")
         scorers = {
             "constant (prevalence)": lambda n: np.zeros(n),

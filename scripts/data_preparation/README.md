@@ -53,7 +53,7 @@ handled explicitly when constructing a regular sensor series for machine learnin
 1. Read original CSV files from `data/raw/`, preserving the originals.
 2. Select the feature columns explicitly requested by the team, retaining `StationId`
    and the timestamp needed to identify each observation.
-3. Apply agreed cleaning rules and record dataset issues in `docs/DATA_TRAPS.md`.
+3. Apply agreed cleaning rules and record dataset issues in `docs/project/DATA_TRAPS.md`.
 4. Group observations by `StationId`; preserve existing IDs rather than inventing
    new ones.
 5. Export one Excel workbook at `data/interim/turbine_exports/turbines.xlsx`, with

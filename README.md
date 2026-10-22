@@ -70,7 +70,7 @@ On top of that, every alert comes with an explanation (SHAP and residual attribu
 | Robustness analyses and SHAP | Planned |
 | Report and ethics review | Planned |
 
-Dates, owners and review gates are in [`docs/roadmap.md`](docs/roadmap.md). There are no model
+Dates, owners and review gates are in [`docs/project/roadmap.md`](docs/project/roadmap.md). There are no model
 results yet; this README will link to them when they exist.
 
 ### What the labels look like (`reports/tables/label_summary.csv`)
@@ -98,7 +98,7 @@ decision D-020), and every results table shows them.
 - Turbine 2304515 is positive on 97% of its validation days; we report results with and without it.
 - It is a decision aid for planning inspections, not an automatic shutdown trigger.
 
-The full list, with the evidence, is in [`docs/DATA_TRAPS.md`](docs/DATA_TRAPS.md).
+The full list, with the evidence, is in [`docs/project/DATA_TRAPS.md`](docs/project/DATA_TRAPS.md).
 
 ## Dataset
 
@@ -107,11 +107,19 @@ The full list, with the evidence, is in [`docs/DATA_TRAPS.md`](docs/DATA_TRAPS.m
 - Provisionally pinned to **v2.1.0**: DOI [10.5281/zenodo.22662930](https://doi.org/10.5281/zenodo.22662930)
   (concept DOI for all versions: 10.5281/zenodo.14870021). The brief cited 10.5281/zenodo.14870023,
   which is **v1.0.0** and ends before our 2025 to 2026 data; version to be confirmed
-  (`docs/DECISIONS.md` D-004).
+  (`docs/project/DECISIONS.md` D-004).
 - Tables used: `tblSCTurTemp`, `tblSCTurbine`, `tblSCTurPress`, `tblAlarmLog`, `tblDailySummary`.
 - TODO: add the exact citation text from the Zenodo record page.
 
 ## Quickstart
+
+Browse the [documentation index](docs/README.md) for general, single-year, and
+multi-year instructions.
+
+For step-by-step installation, pipeline commands, Excel exports, and troubleshooting,
+see [How to use this repository](docs/general/USAGE.md).
+For exploratory within-year experiments, see [single-year evaluation metrics](docs/single_year/EVALUATION.md)
+and the [script directory guide](scripts/README.md).
 
 ```bash
 git clone <repo-url>
@@ -146,9 +154,9 @@ Check the code with `pytest` and `ruff check .`.
 - `src/wt_predmaint/`: all reusable code (`data`, `features`, `labels`, `models`, `evaluation`, `explain`)
 - `configs/protocol.yaml`: the single source of experiment settings (windows, splits, thresholds, seed)
 - `scripts/`: command-line entry points for the steps above
-- `docs/`: [`roadmap.md`](docs/roadmap.md) (schedule, owners, gates), [`DECISIONS.md`](docs/DECISIONS.md)
-  (every decision, with an ID), [`DATA_TRAPS.md`](docs/DATA_TRAPS.md),
-  [`modelling_plan.md`](docs/modelling_plan.md), `reference/` (alarm code and data descriptions)
+- `docs/`: [`roadmap.md`](docs/project/roadmap.md) (schedule, owners, gates), [`DECISIONS.md`](docs/project/DECISIONS.md)
+  (every decision, with an ID), [`DATA_TRAPS.md`](docs/project/DATA_TRAPS.md),
+  [`modelling_plan.md`](docs/project/modelling_plan.md), `reference/` (alarm code and data descriptions)
 - `notebooks/`: exploration only, named `NN_owner_topic.ipynb`; outputs are never committed
 - `reports/{figures,tables}`: generated outputs
 - `data/{raw,interim,processed}`: git-ignored, never committed
@@ -164,7 +172,7 @@ Check the code with `pytest` and `ruff check .`.
 | Farhan | Evaluation harness and cost analysis |
 | Cyrus | Ethics review and report |
 
-Working rules: every decision is logged in `docs/DECISIONS.md` the same day; `configs/protocol.yaml`
+Working rules: every decision is logged in `docs/project/DECISIONS.md` the same day; `configs/protocol.yaml`
 changes only together with its decision entry; no results or references are invented; all randomness
 is seeded from the config.
 

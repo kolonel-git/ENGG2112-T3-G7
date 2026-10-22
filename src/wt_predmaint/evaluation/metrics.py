@@ -28,6 +28,8 @@ def _check(frame: pd.DataFrame) -> None:
     missing = {"StationId", "Day", "label", "score"} - set(frame.columns)
     if missing:
         raise ValueError(f"scored frame is missing columns {sorted(missing)}")
+    if frame.empty:
+        raise ValueError("Cannot evaluate an empty scored frame: no labelled turbine-days")
     if frame["label"].isna().any() or not frame["label"].isin([0, 1]).all():
         raise ValueError("scored frame must contain only labels 0 and 1 (drop unlabelled rows)")
     if frame["score"].isna().any():
@@ -55,6 +57,8 @@ def threshold_for_budget(
     """
     label = np.asarray(label)
     score = np.asarray(score, dtype=float)
+    if not len(label):
+        raise ValueError("Cannot choose a threshold without labelled validation data")
     allowed = int(np.floor(budget * turbine_months(len(label), days_per_month)))
     negatives = np.sort(score[label == 0])[::-1]
     if allowed >= len(negatives):

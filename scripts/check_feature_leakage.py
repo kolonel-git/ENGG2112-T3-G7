@@ -12,13 +12,17 @@ import argparse
 import sys
 from pathlib import Path
 
+# Support running this file directly from an IDE without installing the package.
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / 'src'))
+
 import numpy as np
 import pandas as pd
 
 from wt_predmaint.config import load_protocol
 from wt_predmaint.features.leakage import check_no_lookahead
 
-ROOT = Path(__file__).resolve().parents[1]
+
 
 
 def main() -> None:
