@@ -150,6 +150,7 @@ Check the code with `pytest` and `ruff check .`.
 - `docs/`: [`roadmap.md`](docs/roadmap.md) (schedule, owners, gates), [`DECISIONS.md`](docs/DECISIONS.md)
   (every decision, with an ID), [`DATA_TRAPS.md`](docs/DATA_TRAPS.md),
   [`FEATURES_AND_LABELS.md`](docs/FEATURES_AND_LABELS.md) (every label and feature column),
+  [`BASELINE_SPLIT.md`](docs/BASELINE_SPLIT.md) (who builds which baseline, and what each must deliver),
   [`modelling_plan.md`](docs/modelling_plan.md), `reference/` (alarm code and data descriptions)
 - `notebooks/`: exploration only, named `NN_owner_topic.ipynb`; outputs are never committed
 - `reports/{figures,tables}`: generated outputs
