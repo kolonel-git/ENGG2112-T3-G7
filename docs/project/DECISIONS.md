@@ -343,10 +343,32 @@ Status is **decided** or **open** (value to be fixed during the work and logged 
   two real sampled turbine-days passed, plus synthetic causal-window tests.
   Full-repository Ruff has unrelated existing findings (including earlier notebook).
 
+### D-030/D-031 follow-up: workflow and interpretation log (2026-10-22)
+- No new modelling settings or split decisions. Notebook renamed to
+  `notebooks/02_healthy_row_diagnostics_and_baseline_evaluation.ipynb`; documentation
+  points to that name. H0 has no training step; B3 is the fitted risk baseline.
+- Registry now includes B3; the earlier empty-registry notebook run used only
+  constant/random references and must not be confused with B3 results.
+- `RUN_PREPARATION=True` runs preparation, while false reuses prepared tables.
+  `FROZEN_TEST=False` still fits training models, selects thresholds and evaluates
+  validation. True additionally evaluates available configured test years.
+- All turbines contribute eligible training rows; plot `STATION` changes only
+  the displayed turbine. Current timeline shows evaluated splits only and omits
+  training scores. No full-period training risk visualization has been added.
+- PR curves are day-level; episode recall credits any alert in the preceding
+  30-day window. B3's substantially lower recall than random at comparable budget
+  is poor baseline performance, not evidence of predictive benefit. Alert timing
+  and evidence availability remain items to investigate on validation.
+- Earlier H0 partial-source counts are historical. The later B3 run used prepared
+  multi-year data and its recorded fit counts in D-031. Do not reuse old missing-
+  validation statements as a description of the newer prepared inputs.
+- This log update records existing artefacts and prior checks; it does not claim
+  a new test-set run or a fresh training/test execution.
+
 ## Open decisions
 - Dataset version: confirm v2.1.0 with the teammate who downloaded the data (D-004).
 - Licence: none chosen; README carries a TODO.
 - `TimeErr` meaning: the data dictionary does not describe `tblDailySummary`. It is inferred from its name and from its agreement with SCADA stop time (correlation 0.86, D-008); `tblSCTurFlag` would settle it (D-018).
-- Handling of the four flagged `suspect_wind` turbine-years (flag only for now, D-015): decide per model whether to exclude them.
+- Handling of flagged `suspect_wind` turbine-years for later models remains open; H0 and B3 exclude flagged intervals under D-030/D-031.
 - Whether the 2022 drop of alarms 20 and 25 (about 60%) reflects a controller change; relevant to alarm-count features across years.
 - Upgrade analysis needs `Hill_of_Towie_AeroUp_install_dates.csv` from Zenodo.

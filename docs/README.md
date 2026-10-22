@@ -11,6 +11,12 @@ that matches your experiment. Run terminal commands from the repository root.
 | project/ | [Decision log](project/DECISIONS.md), [data traps](project/DATA_TRAPS.md), [roadmap](project/roadmap.md), and [modelling plan](project/modelling_plan.md). |
 | reference/ | Original alarm-code and processed-data descriptions. |
 
+Current all-turbine baseline work: [H0 masks](HEALTHY_ROWS.md),
+[B3 implementation and validation](POWER_CURVE.md), and the
+[integrated notebook](../notebooks/02_healthy_row_diagnostics_and_baseline_evaluation.ipynb).
+Progress and interpretation updates are recorded in the project logbooks above
+(2026-10-22, D-030/D-031).
+
 Install dependencies with:
 
 ```powershell

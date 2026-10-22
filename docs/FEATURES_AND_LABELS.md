@@ -5,6 +5,14 @@ H0 normal-behaviour fitting now uses [healthy-day and interval masks](HEALTHY_RO
 negative labels with clear quality flags and a seven-day recovery buffer.
 It is a training-selection helper, not a new risk feature or a revised label definition.
 
+B3 now uses those masks to fit its [wind/generator-RPM proxy](POWER_CURVE.md)
+(D-031). Its target-specific daily diagnostics are written separately to
+`data/interim/features/b3_daily_{a,b}.parquet`; they are not automatically
+appended to the shared `daily_features.parquet` or used by other classifiers.
+The seven-day exceedance score is not a calibrated fault probability. Initial
+A/B validation has lower episode recall than the random reference at comparable
+false-alert budgets; see the linked results and project logs (2026-10-22).
+
 Reference for the O2 labels (D-005, D-019) and the daily feature table (D-021). Counts come from the
 files built on 2026-10-22; if the code changes, rebuild and update this page. Sensor groupings are
 read from the column names (the data dictionary in `data/raw/metadata/` is the authority), so treat
