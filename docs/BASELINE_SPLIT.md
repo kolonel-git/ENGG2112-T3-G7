@@ -101,6 +101,7 @@ for your package, so edits to the file do not collide.
 - `ruff check .` and `pytest` pass.
 - A script in `scripts/` that reproduces your table in `reports/tables/`.
 - A decision entry for every choice not already fixed, including thresholds, variants and exclusions.
+- The constraints in section 2.7 (C1 to C21) and its PR checklist are met.
 - One PR per baseline, with a title and a summary (what, why, results, things to review, how to verify,
   not included).
 - Results quoted in the PR are the numbers the script printed. No invented numbers or references.
@@ -109,6 +110,128 @@ for your package, so edits to the file do not collide.
 
 Any new daily feature must be built from data to the end of its day only and must pass
 `scripts/check_feature_leakage.py` (extend its sources if the feature needs a new one).
+
+### 2.7 Exact constraints for building and adding a baseline
+
+These are rules, not suggestions. A PR that breaks one is sent back. "Must" is checked by a test or by
+the runner; "may not" is checked in review.
+
+#### Files and names
+- **C1.** The class lives in `src/wt_predmaint/models/<module>.py`. One baseline per class; several
+  variants of one idea are separate instances with their own `name`, not flags hidden inside `score`.
+- **C2.** `name` is `B<n>_<snake_case>` or `R<n>_<snake_case>` and is exactly the key used in
+  `models/registry.py`. Ids to use: `B1_recent_fault`, `B2_alarm_count`, `B3_power_curve`,
+  `B4_logistic`, `R1_zscore`, `R2_ridge_nbm`. A variant adds a suffix: `B2_alarm_count__tier2`.
+- **C3.** The script for anything beyond running the runner is `scripts/<verb>_<id>.py` (for example
+  `scripts/tune_b4_logistic.py`). Tests are in `tests/test_<module>.py`.
+
+#### Class shape
+- **C4.** The constructor is `__init__(self, target: str)` and takes nothing else. It sets `name` and
+  `target`, raises `ValueError` if `target` is not `"a"` or `"b"`, and does no fitting, no file reading and
+  no heavy work.
+- **C5.** `fit(self, train, cfg)` calls `require_train_only(train)` on its first line, stores everything
+  it learns on `self`, and returns `self`. It sees only the `train` and `cfg` it is given.
+- **C6.** `score(self, rows)` returns a `float64` `pd.Series` with the same index as `rows`, finite
+  everywhere, higher meaning riskier. Anything that cannot be scored gets a documented fallback value
+  (state it in the docstring and in a decision entry), never NaN or infinity.
+- **C7.** `fit` and `score` do no file or network access, print nothing, change no global state, and do
+  not modify the DataFrames passed in (copy first). Heavy work happens in `fit`, once.
+
+#### What a baseline may read
+- **C8.** `score` may use only the feature columns of the row in front of it (`feature_columns` plus
+  `StationId`). It may not use `label`, `status`, `split`, the other rows of the batch (no group-wide
+  mean, rank, shift or rolling over `rows`), or `Day` as an input. `StationId` is allowed only to look up
+  parameters fitted on train for that turbine. History a baseline needs (a 7-day mean, days since a
+  fault) must already be a column of the feature table.
+- **C9.** `fit` may use `label` only to fit parameters. It may not read validation or test rows from
+  anywhere, including by loading files itself.
+- **C10.** Missing values in input columns are expected (see section 4 of FEATURES_AND_LABELS). Handle
+  them explicitly and say how.
+
+#### Choosing settings (the validation rule)
+- **C11.** Nothing is selected on validation inside `fit`, because `fit` never sees validation rows. If a
+  setting is chosen on validation (the logistic `C`, the B2 variant, a tolerance), do it in a separate
+  tuning script that fits each candidate on train, evaluates it on validation through
+  `run_baselines`, and prints the comparison. Then write the chosen value into `configs/protocol.yaml`
+  with a decision entry (D-0xx) that lists the candidates tried and their validation results. The class
+  reads the frozen value from `cfg`. Test years are never used to choose anything.
+- **C12.** Every number that is a window, threshold, grid, bin width, multiplier or tolerance comes from
+  `configs/protocol.yaml`, under a block named for your package (for example `baseline_b3:`). The
+  defaults are not hard-coded in the class. The block and its decision entry arrive in the same PR.
+- **C13.** All randomness uses `cfg["seed"]`. Same inputs must give the same scores on every run. No
+  unseeded random generators, no timestamps, no dependence on file or row order.
+
+#### New data and new features
+- **C14.** The runner reads only `data/interim/features/daily_features.parquet`. A baseline that needs
+  information not in it (B3 needs the 10-minute data) must add it as **new feature columns** in
+  `src/wt_predmaint/features/`, joined by `scripts/build_features.py`, and extend
+  `scripts/check_feature_leakage.py` to cover them (section 2.6). The baseline then reads those columns
+  like any other. It may not open `data/interim/clean/` inside `fit` or `score`.
+- **C15.** New columns use a short prefix named for the baseline (for example `pc_` for the power-curve
+  proxy), and are documented in `docs/FEATURES_AND_LABELS.md` in the same PR. Anything fitted from data
+  (a curve, a mean, a tolerance) is fitted on train years only, then applied unchanged to every year.
+- **C16.** Only packages already in `pyproject.toml` may be imported. A new dependency needs a decision
+  entry and an edit to `pyproject.toml` in the same PR.
+
+#### Registering and running
+- **C17.** Registration is one line in `models/registry.py`, replacing your placeholder comment. Edit
+  only your own lines.
+  ```python
+  "B1_recent_fault": lambda target: RecentFaultRule(target),
+  ```
+- **C18.** Run both targets before opening the PR:
+  `python scripts/run_baselines.py --target a --baselines <id>` and the same for `b`. A contract
+  violation stops the run with `ContractError`; fix it, do not catch it.
+- **C19.** Test years stay untouched: never pass `--frozen`. Test is scored once, by Kanav, for frozen
+  configurations at Gate G3.
+- **C20.** Do not commit `reports/tables/baselines_*.csv`. Running with `--baselines <id>` rewrites those
+  files with only your baseline and the floors, so committing them causes conflicts. Run
+  `git restore reports/tables/` before committing and paste the printed table into the PR summary.
+  Farhan's T0 builds the committed table from all registered baselines at the end.
+- **C21.** Plot at least one turbine with `scripts/plot_risk_timeline.py --scores` using your scores
+  (`data/interim/scores/`), and look at it before opening the PR.
+
+#### Tests every baseline must have
+In `tests/test_<module>.py`, on synthetic data (no real data in tests):
+1. **Contract:** `assert check_score_contract(fitted, rows) == []`.
+2. **Train only:** `fit` raises `ValueError` when given a validation row or an unlabelled row.
+3. **Fit isolation:** changing every non-train row of the table (values and labels) does not change the
+   fitted baseline's scores on a fixed set of rows. Template:
+   ```python
+   def test_fit_ignores_other_splits():
+       table = make_table()
+       other = table.copy()
+       mask = other["split"] != "train"
+       other.loc[mask, feature_cols] = other.loc[mask, feature_cols] * 7 + 3
+       other.loc[mask, "label"] = 1
+       a = make().fit(labelled(table, "train"), CFG).score(table.iloc[:50])
+       b = make().fit(labelled(other, "train"), CFG).score(table.iloc[:50])
+       pd.testing.assert_series_equal(a, b)
+   ```
+4. **Signal:** on a synthetic table where the positive class has a clearly higher value of the input,
+   positives score higher than negatives on average.
+5. **Missing values:** a row with NaN in each input column still gets a finite score.
+6. **Both targets:** the class builds for `"a"` and `"b"` and rejects any other target.
+7. **Determinism:** two fits on the same table give identical scores.
+8. Anything specific to your baseline (the curve recovers a known synthetic curve, ties are broken as
+   documented, and so on).
+
+#### Merge conflicts
+`models/registry.py`, `configs/protocol.yaml` and `docs/DECISIONS.md` are edited by everyone. Conflicts
+there are expected and trivial: `git merge origin/main` before opening the PR and keep both sides. Do not
+reorder or reformat other people's lines.
+
+#### PR checklist (copy into the PR description)
+```markdown
+- [ ] Class, id and registry line follow C1 to C4 and C17
+- [ ] fit and score follow C5 to C10 (no label use in score, no other-row use, finite scores)
+- [ ] Settings in protocol.yaml with a decision entry (C11, C12); seed from cfg (C13)
+- [ ] New features built by build_features.py with a look-ahead check; documented (C14, C15)
+- [ ] The 8 required tests pass; ruff check . and pytest pass
+- [ ] Both targets run on validation; table pasted below; baselines_*.csv not committed (C18, C20)
+- [ ] Timeline plot looked at (C21); test years untouched (C19)
+- [ ] Limitations stated (ties, proxies, missing values, what it cannot do)
+```
 
 ## 3. Kanav: interface, runner and the ridge normal-behaviour model
 
@@ -213,7 +336,8 @@ Shared by B4 and the later models. A fitted object with `fit(train)` and `transf
   day-state columns and the fault-history columns. Not allowed: keys, quality flags and counts (see
   `feature_columns`).
 - Model: `LogisticRegression` with `class_weight="balanced"` and L2 penalty. Choose `C` from a small
-  grid (for example 0.01, 0.1, 1) on **validation**, log the grid and the choice. Fixed solver and
+  grid (for example 0.01, 0.1, 1) on **validation** in a tuning script (rule C11), log the grid and the
+  choice, and store the chosen value in `configs/protocol.yaml`. Fixed solver and
   `max_iter`, `random_state` from the seed.
 - Because the columns are heavily correlated, also try an L1 or elastic-net variant only if time allows,
   and say so as an extra.
@@ -242,7 +366,8 @@ Shared by B4 and the later models. A fitted object with `fit(train)` and `transf
 ### 6.2 B2: recent-alarm-count rule
 - Score from the 7-day alarm columns. Variants to run and report: `alarm_total_w7`,
   `alarm_tier2_w7`, tier 1 plus 2, and one per documented code. Pick **one** primary variant by
-  validation PR-AUC, and report the others next to it.
+  validation PR-AUC in a tuning script (rule C11), store it in `configs/protocol.yaml`, and report the
+  others next to it.
 - Expect weather-driven alarms (icing, high and low wind) to make this partly a seasonal rule. Check the
   per-month pattern of the score and mention it. The 2022 drop in codes 20 and 25 affects the counts
   across years; state it.
