@@ -2,6 +2,11 @@
 
 Record dataset surprises here (missing sensors, unit changes, upgrades, timestamp issues, duplicate rows).
 
+Last reviewed: **2026-10-22**. Entries are dated observations of particular data
+inventories/experiments, not universal statements. In particular, the current
+2018–2025 raw inventory includes 2019 sensor tables; earlier missing-2019 entries
+below describe the earlier inventory. The current notebook uses target A only.
+
 | Date | Table / field | What we found | How we handle it | Owner |
 |------|---------------|---------------|------------------|-------|
 | 2026-10-21 | processed `turbines_YYYY.xlsx` `Alarmcode`/`AlarmEvents` | Only ~0.2% of raw alarms survive (alarm-only rows were removed by cleaning; 1,331 of 706,572 for Mar to Dec 2018). | Build alarm labels from raw `tblAlarmLog` (`scripts/build_alarm_table.py`); ignore these columns. | Kanav |
@@ -30,3 +35,9 @@ Record dataset surprises here (missing sensors, unit changes, upgrades, timestam
 | 2026-10-22 | label rows | After exclusions 37% to 50% of rows are positive; consecutive days overlap in their 30-day windows. | Compare against the prevalence dummy; bootstrap over turbines. | Farhan |
 | 2026-10-22 | recall at 1 false alarm per turbine-month | A random score reaches episode recall 0.79 (A) and 0.84 (B) on test at this budget, because alerts hit a 30-day window by chance. | Keep the brief's budget; always show the random floor next to it (settled in D-020). | Farhan |
 | 2026-10-22 | feature table | 12 of 110 sensor columns are over 50% missing (sensors only present in some years); about 6% to 8% of labelled rows have no producing interval. | Choose columns and imputation on train years only at the modelling step (D-021). | Revael |
+| 2026-10-22 | 2304510 / 2023 target-A timeline | Features exist on all 365 days, but only 228 are scored: 107 excluded-zone days, 29 in-episode days, and one day without a usable summary label. April 13–May 12 is a 30-day exclusion-zone gap. | Do not interpret blank risk timelines as missing raw sensors or low risk. Current code scores labelled evaluation days only; full-feature-day operational scoring is pending (D-028). | Codex |
+| 2026-10-22 | model input selection | The current multi-year notebook retains 321 inputs; a smaller single-year model retained different inputs and alarm codes. Some rolling features can vary even when the underlying daily mean is constant. | Read the current run's `features.csv`, filter `used=True`, and avoid applying earlier feature counts to a different fitted model. | Codex |
+| 2026-10-22 | configured alarms versus retained model inputs | Multi-year training retains individual seven-day counts for 3130, 10105, 1005, 8000, 8230, 20, 25. Aggregate tier/total inputs can still include configured codes whose individual feature was dropped. | Distinguish raw event history, the 12-code modelling filter, and training-only feature selection; none deletes the raw CSVs. | Codex |
+| 2026-10-22 | constant/random scores and classifier risk | Constant scores have average precision equal to prevalence; random scores can detect episodes by repeated guesses in a 30-day warning window. Balanced classifier outputs are not calibrated probabilities. | Show prevalence, random and sensor-rule references beside episode recall, actual false alarms and lead time. Do not read score 0.8 as a verified 80% failure probability. | Codex |
+| 2026-10-22 | single-turbine uncertainty and single-class windows | Turbine-bootstrap intervals collapse with one turbine. The earlier within-2018 experiment has only one viable fold per target and all-positive test days. | Omit between-turbine intervals and report class support; use the later-year holdout for the current notebook rather than claiming meaningful three-fold CV from that earlier run. | Codex |
+| 2026-10-22 | target-A labels and daily history | The outcome is a future `TimeErr`-defined episode, not an alarm code or a confirmed component failure. Known fault history is also a model input. | Keep future labels separate from past/today's history. Validate `TimeErr` meaning and availability; record label exclusions and forecast horizon explicitly. | Codex |

@@ -1,9 +1,57 @@
 # Modelling plan
 
-**Status 2026-10-21: planning closed.** The current plan is this summary, `docs/project/roadmap.md` (schedule, owners, gates) and `docs/project/DECISIONS.md` (D-001 to D-014).
-Sections below are kept as the working history. Where they conflict with this summary, this summary and the decision log win; superseded sections are marked.
+## Current implementation update — 2026-10-22
 
-## Current plan (v2)
+The active walkthrough is the [single-turbine notebook](../../notebooks/01_single_turbine_fault_prediction.ipynb),
+using **target A only** (D-026–D-028). The older v2 plan and exploration below
+remain project history; where they differ from this update, this update and
+the latest decision-log entries describe the current experiment.
+
+- **Scope:** turbine 2304510, 2018–2025. Fit on 2018–2021, choose alert thresholds
+  on 2022, and evaluate unseen 2023–2025 days. This is a local protocol copy;
+  the original shared experiment's year splits are unchanged.
+- **Outcome:** a new daily-fault-time episode within 30 days. Fault days have
+  recorded `TimeErr >= 4` hours; episodes use the seven-day gap rule. Labels
+  are 1/0 or missing with a reason. Alarm codes are historical inputs, not labels.
+  Target B is deferred in the active workflow, not deleted from historical code.
+- **Implemented models:** balanced logistic regression and random forest,
+  compared with the relative high-temperature/pressure rule, constant scores,
+  and seeded random scores. No LightGBM, SHAP, normal-behaviour residual model,
+  or trained cross-turbine inference workflow has been added in this experiment.
+- **Inputs:** 321 retained features: 62 producing sensor means, 35 daily sensor
+  maxima, six operating summaries, 205 seven-day trends, 11 alarm-history
+  features, and two known-fault-history features. Retained individual alarm
+  counts are 3130, 10105, 1005, 8000, 8230, 20 and 25, plus tier/total counts.
+  Wind inputs include producing means for `PrWindSp`, `SeWindSp`, `AcWindSp`,
+  daily `wind_mean`/`wind_std`, and trailing statistics. The saved feature audit
+  is authoritative; selection and imputation/scaling use training rows only.
+- **Interpretation:** risk scores rank eligible days; they are not calibrated
+  fault probabilities. Compare episode recall with actual false alarms and
+  lead time, not recall alone. A simple sensor rule remains competitive; ML
+  superiority has not been established. One turbine cannot support a
+  between-turbine bootstrap confidence interval.
+- **Plot coverage:** the current timeline plots scored evaluation days only.
+  In 2023 all 365 days have feature rows, but only 228 are scored: 107 days
+  are excluded by the 31–60-day zone, 29 are in episodes, and one lacks a usable
+  daily-summary label. Continuous operational scoring has been discussed but
+  **has not been implemented**. A blank plot interval is not a low-risk prediction.
+- **Other turbines:** changing `STATION` and running the notebook retrains for
+  that turbine. Applying a frozen model to a different turbine is a separate
+  transfer experiment and still needs a dedicated inference/evaluation workflow.
+- **Evidence:** notebook executed end to end; 19 focused tests passed in the
+  notebook update. Later explanatory documentation checks do not constitute
+  additional model training or a new test-suite run.
+
+See [usage and outputs](../multi_year/SINGLE_TURBINE.md) and
+[the latest decision entries](DECISIONS.md). Notebook exports are under
+`data/processed/multi_year/2018_2025/turbine_2304510/target_a_notebook/` and
+the matching `reports/figures/multi_year/` station/year subfolder.
+
+**Historical status 2026-10-21: planning closed.** This earlier summary covered
+D-001 to D-014. Sections below are retained as working history; the implementation
+update above and later decision entries take precedence for the active experiment.
+
+## Historical plan (v2, 2026-10-21)
 
 - **Data:** raw tables 2016 to 2026-04 (D-004). Alarms from raw `tblAlarmLog` only. `TimeStamp` is the interval end, daily rows the day start (D-013). Cleaning rules and flags in D-015, columns in D-016, wind speed from the primary channel (D-017). Measured active power and 10-min error time exist in `tblSCTurGrid` and `tblSCTurFlag` but are not in `data/raw`; proxies are used for now (D-018).
 - **O2 targets (D-003, D-007, D-008):** A = episodes of `tblDailySummary.TimeErr` >= 4 h with a 7-day gap; B = runs of at least 18 consecutive 10-min intervals with rpm < 200 and wind >= 4 m/s, 7-day gap. Both trained and reported; they agree at day level with F1 about 0.8, so they are not independent.

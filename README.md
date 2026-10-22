@@ -66,14 +66,22 @@ On top of that, every alert comes with an explanation (SHAP and residual attribu
 | Labels for targets A and B | Done and verified (see below) |
 | Evaluation harness and random-score floor | Done |
 | Daily features and look-ahead test | Done |
-| Baselines, normal-behaviour models, LightGBM | Planned |
+| Single-turbine logistic/forest, sensor-rule and dummy references | Implemented and evaluated in the target-A notebook |
+| Normal-behaviour models and LightGBM | Planned |
 | Robustness analyses and SHAP | Planned |
 | Report and ethics review | Planned |
 
-Dates, owners and review gates are in [`docs/project/roadmap.md`](docs/project/roadmap.md). There are no model
-results yet; this README will link to them when they exist.
+Dates, owners and review gates are in [`docs/project/roadmap.md`](docs/project/roadmap.md).
+The current [target-A notebook](notebooks/01_single_turbine_fault_prediction.ipynb)
+contains executed single-turbine results for training 2018–2021, validation 2022,
+and testing 2023–2025. Model superiority is not established; compare sensor/random
+references and actual false-alarm rates. See D-028 for the audited result snapshot.
 
-### What the labels look like (`reports/tables/label_summary.csv`)
+### Historical shared-pipeline label snapshot
+
+The following table is from the earlier two-target shared experiment, not the
+current target-A notebook. Current notebook class support and label counts are
+displayed in its data-processing section.
 
 | Target | Split | Labelled rows | Positive | Episodes |
 |---|---|---|---|---|

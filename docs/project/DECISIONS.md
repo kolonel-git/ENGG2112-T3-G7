@@ -422,6 +422,44 @@ Status is **decided** or **open** (value to be fixed during the work and logged 
   kernel selection, Run All, output folders, threshold selection versus risk
   calibration, and held-out test limitations.
 
+### D-028: Reconcile logbooks with verified notebook results and interpretation
+- Date: 2026-10-22
+- Owner: Codex, requested by the user
+- Status: decided; documentation reconciliation, no model/protocol change
+- Context: Follow-up questions clarified timeline gaps, exact inputs, label
+  semantics, wind data, and retraining versus transfer. These findings needed
+  recording across the decision log, roadmap, modelling plan and data traps.
+- Evidence: The saved target-A notebook feature audit retains 321 inputs:
+  62 producing sensor means, 35 daily maxima, six operating summaries, 205
+  seven-day trends, 11 alarm-history features, and two fault-history features.
+  Individual retained alarm counts are 3130, 10105, 1005, 8000, 8230, 20, 25;
+  there are also three tier counts and a total. Wind features are retained.
+  This selection belongs to the 2018–2021-fitted, 2304510 notebook models;
+  it must not be confused with earlier within-year selections.
+- Plot finding: The 2023 source has feature rows for all 365 days. Only 228
+  are scored: 107 days are in the 31–60-day exclusion zone, 29 are in an
+  episode, and one has no usable daily-summary label. Current gaps chiefly
+  reflect evaluation eligibility. Continuous scoring on all feature days
+  remains proposed, not implemented.
+- Current scope: Target A only; a new recorded fault-time episode within 30
+  days, with `TimeErr >= 4` hours defining fault days and the seven-day episode
+  gap rule. Training 2018–2021, validation 2022, testing 2023–2025. Changing
+  STATION retrains; a frozen-model cross-turbine inference runner is still pending.
+- Recorded test_all results: logistic average precision 0.6153, episode recall
+  0.7500, false alarms/turbine-month 1.2855; forest 0.6146, 0.0625, 0.0415;
+  sensor rule 0.6035, 0.6250, 0.2903; random 0.5598, 0.8750, 1.0782.
+  Prevalence/constant average precision is 0.5572. All scorers use 734 held-out
+  days. These rates differ, so recall alone cannot establish model superiority.
+- Documentation: Add a current implementation summary to the modelling plan,
+  update roadmap focus/pending work, append dated data traps, and correct the
+  root README's outdated statement that there are no model results. Preserve
+  older entries as dated history and do not imply the broader LightGBM/SHAP/
+  normal-behaviour programme is implemented.
+- Validation: Re-read saved feature/metric artifacts and audit findings; check
+  documentation links. No new training or software-test run is claimed for
+  this documentation-only change. D-027 records the executed notebook and 19
+  passing focused tests from the implementation update.
+
 ## Open decisions
 - Dataset version: confirm v2.1.0 with the teammate who downloaded the data (D-004).
 - Licence: none chosen; README carries a TODO.
