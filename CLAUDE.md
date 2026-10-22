@@ -30,6 +30,7 @@ SWT-2.3-VS-82 turbines, 10-min data, CC-BY-4.0). Tables: tblSCTurTemp, tblSCTurb
 - Features come from `scripts/build_features.py` (D-021): row (StationId, Day) uses data to the end of Day only. Any new feature must pass `scripts/check_feature_leakage.py`. Choose columns and imputation on train years only.
 - Score and plot every day that has features; only metrics use labelled rows (D-022). Use `evaluation/plotting.py` so blank days are explained by a status band.
 - New baselines and models implement `models.base.Baseline` (D-023): `fit` on labelled train rows only, `score` any day with features, no use of labels, no dependence on other rows. Test with `check_score_contract`.
-- Evaluate with `src/wt_predmaint/evaluation/metrics.py` (D-020): scored frames hold labelled rows only; the threshold is chosen on validation and frozen for test; intervals bootstrap turbines. Always report the random-score floor (`reports/tables/baselines_dummy.csv`) next to recall at the false alarm budget.
+- Run baselines with `scripts/run_baselines.py` (D-024); register new ones in `models/registry.py`. Test years are scored only with `--frozen`.
+- Evaluate with `src/wt_predmaint/evaluation/metrics.py` (D-020): scored frames hold labelled rows only; the threshold is chosen on validation and frozen for test; intervals bootstrap turbines. Always report the random-score floor (`reports/tables/baselines_<target>.csv`) next to recall at the false alarm budget.
 - Fit anything (scalers, imputers, normal-behaviour models, thresholds) on train years only; the test years are scored once per frozen configuration.
 - **Never invent results or references.** Report only what was actually computed; cite only sources actually verified.

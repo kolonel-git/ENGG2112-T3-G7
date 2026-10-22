@@ -59,7 +59,7 @@ Precedence from highest: `in_episode`, `purged`, `positive`, `zone`, `censored`,
 | B | train / val / test | 20,911 / 8,827 / 17,281 | 47.8% / 49.2% / 50.5% | 434 / 209 / 382 |
 
 A random score already reaches episode recall of about 0.8 at the false alarm budget (D-020), so
-always read results next to `reports/tables/baselines_dummy.csv`.
+always read results next to `reports/tables/baselines_<target>.csv`.
 
 ## 2. Features
 

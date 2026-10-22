@@ -85,7 +85,7 @@ results yet; this README will link to them when they exist.
 Positives are common after the exclusions (37 to 50% of rows), and the 30-day window is wide. A
 **random score** already reaches episode recall of 0.79 (target A) and 0.84 (target B) on the test
 years at 1 false alarm per turbine-month, and a constant score gets a PR-AUC equal to the positive
-rate. Any model must be compared with these floors (`reports/tables/baselines_dummy.csv`,
+rate. Any model must be compared with these floors (`reports/tables/baselines_<target>.csv`,
 decision D-020), and every results table shows them.
 
 ## Known limits
@@ -144,7 +144,7 @@ about 15 GB of yearly zips). Then run, in order:
 | `python scripts/build_features.py` | daily feature table `data/interim/features/daily_features.parquet` and `reports/tables/feature_summary.csv` |
 | `python scripts/check_feature_leakage.py` | re-computes random feature rows with the future deleted and fails if any value changes |
 | `python scripts/plot_risk_timeline.py --station <id> --column <col>` | `reports/figures/timeline_*.png`: one turbine's line with bands showing why days are blank |
-| `python scripts/run_dummy_baselines.py` | constant and random-score floors in `reports/tables/baselines_dummy.csv` |
+| `python scripts/run_baselines.py` | constant and random-score floors in `reports/tables/baselines_<target>.csv` |
 
 Metadata only: `python scripts/download_data.py --only Hill_of_Towie_data_dictionary.md --out data/raw/metadata`
 

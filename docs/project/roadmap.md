@@ -18,7 +18,8 @@ Decisions behind this roadmap are in `docs/project/DECISIONS.md`; the technical 
 | Cleaning layer (`data/clean.py`, `data/daily.py`, `scripts/build_clean_data.py`) | Done on branch `kanav/cleaning-layer` (D-015 to D-017); 10.14M rows 2016 to 2026-04, flags for outage months and suspect wind |
 | Labels for targets A and B (`labels/episodes.py`, `labels/horizon.py`, `scripts/build_labels.py`) | Done on branch `kanav/labels` (D-019); brute-force verified, 13 tests |
 | Daily features and look-ahead test (`features/daily.py`, `features/leakage.py`, `scripts/build_features.py`) | Done on branch `kanav/eval-harness` (D-021); 70,816 turbine-days, 366 columns, no look-ahead found |
-| Evaluation harness (`evaluation/metrics.py`, `splits.py`, `scripts/run_dummy_baselines.py`) | Done on branch `kanav/eval-harness` (D-020); random-score floor computed; brief's budget kept (D-020) |
+| Baseline interface and runner (`models/base.py`, `evaluation/runner.py`, `scripts/run_baselines.py`) | Done on branch `kanav/model-runner` (D-023, D-024); floors run through it, no real baseline registered yet |
+| Evaluation harness (`evaluation/metrics.py`, `splits.py`, `scripts/run_baselines.py`) | Done on branch `kanav/eval-harness` (D-020); random-score floor computed; brief's budget kept (D-020) |
 | Missing tables `tblSCTurGrid` (power) and `tblSCTurFlag` (error time) | Skipped for now; proxies used (D-018) |
 | Labels, features, baselines, models, evaluation | Wk2 onward (below) |
 
@@ -46,7 +47,7 @@ Dates: TODO (add once the submission deadline is confirmed). Week numbers are re
 ### Wk2 Cleaning layer, labels, evaluation harness
 - **Cleaning layer** (Parvez; first version built by Kanav, done): join the three SCADA tables from raw, de-duplicate, mask sentinels per table, flag outage months and suspect wind sensors. Output: `src/wt_predmaint/data/clean.py`, `daily.py`, tests. Parvez to review and extend.
 - **Labels** (Revael; first version built by Kanav, done): episode builders for target A (`TimeErr`) and target B (SCADA stops); horizon labels with the 30-day positive window, 30 to 60-day exclusion, in-episode, purge and censoring rules (D-019). Output: `src/wt_predmaint/labels/`, tests. Revael to review. The feature-side leakage test comes with the features.
-- **Evaluation harness** (Farhan; first version built by Kanav, done): PR-AUC, recall at 1 false alarm per turbine-month, event-level lead time, turbine bootstrap, year-split helper and leave-one-turbine-out folds (D-020). Output: `src/wt_predmaint/evaluation/`, 11 tests on synthetic scores, `reports/tables/baselines_dummy.csv`. Farhan to review. The brief's budget stays; random scores already reach recall 0.79 to 0.84 at budget 1, so every table shows that floor (D-020).
+- **Evaluation harness** (Farhan; first version built by Kanav, done): PR-AUC, recall at 1 false alarm per turbine-month, event-level lead time, turbine bootstrap, year-split helper and leave-one-turbine-out folds (D-020). Output: `src/wt_predmaint/evaluation/`, 11 tests on synthetic scores, `reports/tables/baselines_<target>.csv`. Farhan to review. The brief's budget stays; random scores already reach recall 0.79 to 0.84 at budget 1, so every table shows that floor (D-020).
 - **Gate G1** (end Wk2): cleaning, labels and harness merged; data frozen. Target thresholds are chosen and logged (D-007, D-008, 2026-10-22).
 
 ### Wk3 Features, baselines and O1
