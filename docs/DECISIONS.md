@@ -380,14 +380,18 @@ Status is **decided** or **open** (value to be fixed during the work and logged 
 - Upgrade analysis needs `Hill_of_Towie_AeroUp_install_dates.csv` from Zenodo.
 
 
-## D-051 — B2 alarm comparison (Farhan, 2026-10-22)
+### D-051: B2 alarm comparison
+- Date: 2026-10-22
+- Owner: Farhan
 Compare total, tier2, tier1+tier2 and each of the twelve documented alarm codes.
 Use existing causal seven-day count features. Missing/nonfinite counts contribute zero;
 no random jitter breaks ties. Select primary separately per target by validation PR-AUC,
 with configured candidate order breaking exact ties. Save every candidate's metrics.
 Validation-only monthly mean counts document seasonality and codes 20/25 coverage changes.
 
-## D-052 — R1 healthy reference (Farhan, 2026-10-22)
+### D-052: R1 healthy reference
+- Date: 2026-10-22
+- Owner: Farhan
 Reuse Parvez H0 verbatim from commit 889a90c (healthy.py, report_healthy_rows.py, tests, HEALTHY_ROWS.md).
 The runner builds the mask from complete training label history before filtering labelled
 fitting rows. healthy_fit is training-selection metadata, never a scoring feature.
@@ -398,7 +402,9 @@ use pooled moments. Score maximum absolute z of the causal seven-day operating m
 Missing sensors are skipped; all missing scores are zero. No validation fitting or tuning.
 Fail explicitly if no sensor reference is usable. Export fitted counts/moments/fallback sources.
 
-## D-053 — T0 integration (Farhan, 2026-10-22)
+### D-053: T0 integration
+- Date: 2026-10-22
+- Owner: Farhan
 Preserve Revael P0/B4 commit e6c2428 and use its documented validation C grid/tuning script.
 Run every available registered baseline for A and B, full fleet and excluding 2304515,
 with shared floors, thresholds, episode metrics and configured bootstrap intervals.
