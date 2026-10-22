@@ -20,7 +20,7 @@ Cyrus (ethics and report) has no baseline package. Cyrus's input is the false-al
 which the results tables feed later.
 
 Already done, not part of the split: B0a prevalence dummy and B0b random-score floor
-(`scripts/run_dummy_baselines.py`, `reports/tables/baselines_dummy.csv`).
+(`scripts/run_baselines.py`, `reports/tables/baselines_<target>.csv`).
 
 ### Order of work
 
@@ -116,7 +116,10 @@ Any new daily feature must be built from data to the end of its day only and mus
 The Protocol above plus a small helper that joins the feature table to a label table for one target and
 one split. Merge it before anyone else's package, in a PR of its own.
 
-### 3.2 Runner (`evaluation/runner.py`, `scripts/run_baselines.py`)
+### 3.2 Runner (`evaluation/runner.py`, `scripts/run_baselines.py`; merged with D-024)
+To add your baseline: write the class, add one line to `models/registry.py`, then run
+`python scripts/run_baselines.py --target a --baselines <your id>`.
+
 - Input: a list of baselines, a target, and which splits to score.
 - For each baseline: fit on train, score all days with features, restrict to labelled rows for the
   metrics, pick the threshold on validation, write one row per (baseline, target, split) with
