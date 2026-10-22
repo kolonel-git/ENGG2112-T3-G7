@@ -228,51 +228,13 @@ Status is **decided** or **open** (value to be fixed during the work and logged 
   - Only trailing mean and spread are used; trends and cross-sensor ratios are not built. Add them only if baselines justify it.
   - Normal-behaviour residual features are not here yet; they need the fitted models.
 
-### D-022: Separate exploratory single-year baseline evaluation
+### D-022: Scores are drawn for every day with features; blanks are explained
 - Date: 2026-10-22
-- Owner: Codex, requested by the user
+- Owner: Kanav
 - Status: decided
-- Context: Local labels have no validation/test rows for the configured multi-year
-  evaluation. A separate within-2018 reference experiment was requested, with
-  documentation explaining its metrics and scope.
-- Decision: Place the constant/random within-year runner at
-  `scripts/single_year/run_year_baselines.py`, defaulting to 2018. Use three
-  chronological quarterly test blocks after Q1, expanding earlier calibration,
-  and the configured full label horizon to purge calibration/test overlap and
-  reserve outcome follow-up at each block end. Reuse existing labels and shared
-  evaluation metrics; report per-fold results to `baselines_dummy_cv_<year>.csv`.
-- Documentation: `docs/single_year/EVALUATION.md` defines every CSV column,
-  confidence intervals, thresholds, and limitations. `scripts/README.md` maps
-  script scopes; `docs/general/USAGE.md` links the new command and metric guide.
-- Consequences: This is an exploratory time-separated experiment using the same
-  turbine population, not predictive-model training, held-out-turbine validation,
-  or a replacement for the main held-out-year protocol. `protocol.yaml` and
-  existing result CSVs are unchanged by the reorganisation. Empty calibration
-  or test folds are skipped explicitly. The fold test references the new path.
-- Validation: Python syntax, runner root resolution, and local documentation
-  links checked. Pytest execution is unavailable in the terminal interpreter
-  because pytest is not installed; no new numerical performance claims are made.
-
-### D-023: Organise documentation by workflow scope
-- Date: 2026-10-22
-- Owner: Codex, requested by the user
-- Status: decided
-- Context: Setup, single-year evaluation, multi-year processing, and project
-  references were mixed in the top-level docs folder.
-- Decision: Add `docs/README.md` as the documentation index. Put general setup,
-  requirements, and Excel instructions in `docs/general/`; within-year usage
-  and metrics in `docs/single_year/`; and the shared data pipeline and held-out-year
-  evaluation instructions in `docs/multi_year/`. Move decision/planning documents
-  and dataset limitations into `docs/project/`, keeping source references in
-  `docs/reference/`. Update local links and path mentions, including config/source
-  comments and the dependency-install command.
-- Consequences: Install from the repository root with
-  `python -m pip install -r docs/general/requirements.txt`. Existing script paths,
-  evaluation settings, and output data are unchanged. Single-year experiments
-  still use the shared data builders. There is no dedicated held-out-turbine
-  runner; the guides distinguish this from existing time-based evaluations.
-- Validation: Local links and stale path references checked. This is a
-  documentation reorganisation; no data pipeline or model execution is required.
+- Context: plots of filtered data had many gaps (about 30% of the calendar has no label: 18% zone, 5% purged, 4% in episode, 1% censored for target A). Users read them as missing data.
+- Decision: a risk score or feature is computed and plotted for every turbine-day that has features, including days dropped from labelling. Dropped days are left out only when metrics are computed (D-019, D-020). `evaluation/plotting.py` and `scripts/plot_risk_timeline.py` draw the line on a gap-free calendar with three bands: day status (the 7 label statuses plus `no_data`), split, and where the value itself is NaN.
+- Consequences: a gap in the line now means the value is missing (for example 2019 has no temperature or pressure data; days with under 12 producing intervals), not that the day was dropped from labelling. Dropped days show as coloured bands under a continuous line.
 
 ## Open decisions
 - Dataset version: confirm v2.1.0 with the teammate who downloaded the data (D-004).
