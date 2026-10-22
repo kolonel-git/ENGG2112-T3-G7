@@ -115,4 +115,19 @@ b1_recent_fault:                     # D-050: fixed rules, not tuned on validati
   tie_weight: 0.5                    # bounded recency cannot overturn a one-day count gap
   missing_count: 0.0                 # no known history gives the lowest count contribution
 
+b2_alarm_count:
+  selected_variant: {a: tier1_2, b: code_10105}
+  candidates: [total, tier2, tier1_2, code_3130, code_10105, code_1005, code_8000, code_8210, code_8230, code_8234, code_8235, code_8236, code_20, code_25, code_102]
+  window_days: 7
+  missing_count: 0.0
+r1_zscore:
+  sensors: [wtc_GeOilTmp_mean, wtc_GenBeGTm_mean, wtc_GenBeRTm_mean, wtc_MainBTmp_mean, wtc_Gen1U1Tm_mean, wtc_Gen1V1Tm_mean, wtc_Gen1W1Tm_mean]
+  window_days: 7
+  minimum_healthy_rows: 30
+  minimum_std: 0.000001
+  missing_score: 0.0
+
+baseline_table:
+  exclude_stations: [2304515]
+
 seed: 42                              # D-010
