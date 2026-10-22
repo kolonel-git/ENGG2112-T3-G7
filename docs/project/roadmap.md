@@ -1,7 +1,7 @@
 # Project roadmap
 
 Group 7, ENGG2112. Predicting wind turbine degradation from Hill of Towie SCADA: explainable predictive maintenance.
-Last updated 2026-10-21. Owners follow the project brief: **Parvez** data acquisition and cleaning; **Revael** features and labelling;
+Last updated 2026-10-22. Owners follow the project brief: **Parvez** data acquisition and cleaning; **Revael** features and labelling;
 **Kanav** modelling and tuning; **Farhan** evaluation harness and cost analysis; **Cyrus** ethics review and report integration.
 Decisions behind this roadmap are in `docs/project/DECISIONS.md`; the technical plan is in `docs/project/modelling_plan.md`.
 
@@ -18,6 +18,10 @@ Decisions behind this roadmap are in `docs/project/DECISIONS.md`; the technical 
 | Cleaning layer (`data/clean.py`, `data/daily.py`, `scripts/build_clean_data.py`) | Done on branch `kanav/cleaning-layer` (D-015 to D-017); 10.14M rows 2016 to 2026-04, flags for outage months and suspect wind |
 | Labels for targets A and B (`labels/episodes.py`, `labels/horizon.py`, `scripts/build_labels.py`) | Done on branch `kanav/labels` (D-019); brute-force verified, 13 tests |
 | Daily features and look-ahead test (`features/daily.py`, `features/leakage.py`, `scripts/build_features.py`) | Done on branch `kanav/eval-harness` (D-021); 70,816 turbine-days, 366 columns, no look-ahead found |
+| Exploratory single-year logistic classifier and visualisations | Implemented for 2018 (D-024), separate from the main multi-year model work; [instructions and feature summary](../single_year/CLASSIFIER.md). Initial performance is inconsistent across folds. |
+| One-turbine single-year experiment | Implemented with separate script/output folders (D-025); [guide and data limitations](../single_year/SINGLE_TURBINE.md). Default 2304510/2018 has only one viable fold per target. |
+| One-turbine 2018–2025 baseline classifiers | Implemented and run end-to-end (D-026): logistic regression, random forest, sensor rule and dummy references; [one-command instructions](../multi_year/SINGLE_TURBINE.md). Default test years are 2023–2025. |
+| Interactive target-A walkthrough | Executed notebook with separate processing/training/validation/evaluation sections (D-027); [start here](../../notebooks/01_single_turbine_fault_prediction.ipynb). Multi-year workflow now defaults to A only. |
 | Evaluation harness (`evaluation/metrics.py`, `splits.py`, `scripts/run_dummy_baselines.py`) | Done on branch `kanav/eval-harness` (D-020); random-score floor computed; brief's budget kept (D-020) |
 | Missing tables `tblSCTurGrid` (power) and `tblSCTurFlag` (error time) | Skipped for now; proxies used (D-018) |
 | Labels, features, baselines, models, evaluation | Wk2 onward (below) |

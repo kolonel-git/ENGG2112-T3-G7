@@ -70,7 +70,8 @@ copies of the same alarm source in its search tree.
 
 | Task | Instructions |
 |---|---|
-| Within-year baseline experiment, default 2018 | [Single-year workflow](../single_year/README.md) |
+| One-command single-turbine experiment over 2018–2025 | [Multi-year single-turbine workflow](../multi_year/SINGLE_TURBINE.md) |
+| Within-year classifier, plots, and baselines, default 2018 | [Single-year workflow](../single_year/README.md) |
 | Data preparation and evaluation across multiple years | [Multi-year workflow](../multi_year/WORKFLOW.md) |
 | Excel exports for human inspection | [Excel export and cleaning](EXCEL_EXPORTS.md) |
 

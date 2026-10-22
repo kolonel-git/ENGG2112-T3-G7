@@ -236,7 +236,7 @@ Status is **decided** or **open** (value to be fixed during the work and logged 
   evaluation. A separate within-2018 reference experiment was requested, with
   documentation explaining its metrics and scope.
 - Decision: Place the constant/random within-year runner at
-  `scripts/single_year/run_year_baselines.py`, defaulting to 2018. Use three
+  `scripts/single_year/all_turbines/run_year_baselines.py`, defaulting to 2018. Use three
   chronological quarterly test blocks after Q1, expanding earlier calibration,
   and the configured full label horizon to purge calibration/test overlap and
   reserve outcome follow-up at each block end. Reuse existing labels and shared
@@ -273,6 +273,154 @@ Status is **decided** or **open** (value to be fixed during the work and logged 
   runner; the guides distinguish this from existing time-based evaluations.
 - Validation: Local links and stale path references checked. This is a
   documentation reorganisation; no data pipeline or model execution is required.
+
+### D-024: Train and visualise an exploratory within-year classifier
+- Date: 2026-10-22
+- Owner: Codex, requested by the user
+- Status: decided; exploratory defaults, not tuned
+- Context: Dummy scores do not use sensor inputs. The user requested a real
+  single-year classifier, plots, and a summary of features actually used.
+- Decision: Add `scripts/single_year/all_turbines/train_classifier.py`, defaulting to 2018,
+  and reusable training helpers in `src/wt_predmaint/models/single_year.py`.
+  Fit separate balanced, L2 logistic regressions per target and fold. Test on
+  August, September, and October; calibrate the threshold in an earlier 90-day
+  block with full-label-horizon purges between training/calibration/test periods.
+  Require test horizons to end within the selected year. These folds differ
+  from the earlier dummy-only experiment because training needs a third period.
+- Features: Reuse the daily-feature selector, excluding keys and quality metadata.
+  Training-only selection removes constant columns and columns over 80% missing;
+  median imputation and scaling are also fitted only on training data. Save
+  exact feature selection and standardized coefficients per fold. No tuning or
+  probability calibration is performed; class-weighted scores are not interpreted
+  as calibrated probabilities. Lack of convergence stops the run.
+- Evaluation: Recompute constant/random references on the same rows; freeze
+  thresholds from calibration. Save models, held-out daily scores/alerts, metrics,
+  episode detections, feature audits, and a protocol snapshot under
+  `data/processed/single_year/<year>/`. Existing baseline CSVs remain separate.
+- Visualisation: `plot_classifier.py` reads these saved outputs and writes PNG
+  fold comparisons, precision–recall and recall/false-alarm curves, confusion
+  matrices, turbine timelines, lead-time distributions, and feature weights to
+  `reports/figures/single_year/<year>/`. Threshold sweeps describe test behaviour;
+  they must not be used to retune the frozen threshold on test outcomes.
+- Validation: 17 focused tests passed, including temporal separation,
+  training-only preprocessing, model persistence, an end-to-end synthetic
+  train/plot run, and existing evaluation/baseline-fold checks. The real 2018
+  run completed all six target/fold models using 100 bootstrap draws, with
+  321–322 retained inputs; plots were generated and representative figures
+  inspected. Initial performance is inconsistent and often exceeds the test
+  false-alarm budget. No claim of reliable prediction skill is made.
+- Documentation and dependencies: Add `docs/single_year/CLASSIFIER.md`, update
+  usage/index/roadmap links, and declare joblib for model persistence. Main
+  multi-year protocol settings are unchanged. Fold artifacts are research
+  models, not a final deployment model; reruns replace named outputs without
+  removing old artifacts from subsequently skipped folds (see run manifest).
+
+### D-025: Isolate one-turbine experiments and organise scripts by scope
+- Date: 2026-10-22
+- Owner: Codex, requested by the user
+- Status: decided
+- Context: The user requested within-year training and evaluation for one turbine
+  first, with folders clearly distinguishing this from pooled-turbine experiments.
+- Decision: Organise `scripts/single_year/` into `single_turbine/` entry points
+  (default 2304510, year 2018) and shared `all_turbines/` runners. The selected
+  turbine filters features, labels, and episodes before fitting, calibration,
+  or evaluation. Reuse the same model and chronological fold rules. Record
+  station/scope in artifacts and the run manifest. Update test paths and guides.
+- Outputs: Group classifier artifacts and plots under
+  `single_year/<year>/turbine_<id>/` or `single_year/<year>/all_turbines/` in
+  their respective data/processed and reports/figures roots. Move existing
+  generated 2018 pooled artifacts into the all_turbines subfolder without
+  deleting or replacing them. Dummy-only table paths remain unchanged.
+- Evaluation: Keep skipping folds without both training/calibration classes;
+  do not reduce purges to manufacture extra folds. Omit turbine-bootstrap
+  intervals for single-turbine tests. Report single-class test support in the
+  console, metrics, and plot title. Add the single-turbine usage/limitations guide.
+- Local observation: Turbine 2304510 in 2018 supports only the August fold for
+  each target; the other calibration periods contain positives only. The viable
+  tests have 27 positive days and no negatives each. These are one holdout per
+  target, not complete three-fold CV, and cannot establish discrimination or
+  false-alarm performance. There are only 31 training days per target.
+- Validation: The expanded focused suite passed 18 tests, including single-
+  and pooled-turbine end-to-end runs, station isolation, omitted one-turbine
+  intervals, temporal separation, and existing metric checks. Local single-
+  turbine model fitting and plotting completed. Documentation links checked.
+
+### D-026: One-command 2018–2025 single-turbine classifier experiment
+- Date: 2026-10-22
+- Owner: Codex, requested by the user
+- Status: decided; baseline model choices are fixed defaults, not tuned
+- Context: The user requested baseline classifiers, metric evaluation, plots,
+  and one entry point for a single turbine over 2018–2025. The present raw
+  inventory now contains all required tables for every requested year, including
+  2019; earlier absence notes described the earlier inventory.
+- Decision: Add `scripts/multi_year/single_turbine/main.py` to run preparation,
+  training/evaluation, and plotting sequentially with the same interpreter and
+  fail immediately on a failed stage. Default station is 2304510. Fit on
+  2018–2021, select alert thresholds on 2022, and test on 2023–2025. Apply this
+  split to a private protocol copy; do not alter the main project protocol.
+- Preparation: Add station-filtered chunk readers and source-metadata-verified
+  per-year caches under a separate experiment directory. Reuse shared cleaning,
+  trailing features, alarm selection, and A/B episode/horizon-label functions.
+  Use one expected turbine when flagging isolated-station coverage. Purge the
+  full 60-day label horizon at split boundaries. Audit missing feature rows
+  before excluding them from scored exposure; do not impute entire absent days.
+- Models: Balanced L2 logistic regression and a 300-tree random forest (depth 6,
+  leaf size 10), with training-only column selection, median imputation and scaling.
+  Compare with constant/random scorers and a simple high-temperature/pressure
+  rule based on training medians/IQRs. Freeze calibration thresholds for all tests.
+- Outputs: Save overall and per-year average precision, episode recall, lead time,
+  false-alarm rate, daily precision/recall/F1, confusion counts, and support.
+  Save exact feature audits, scores, models, detections, coverage and protocol
+  snapshot. Omit between-turbine intervals for this single-turbine experiment.
+  Plot comparisons, threshold curves, confusion matrices, feature weights,
+  yearly risk timelines and lead-time distributions. Keep these outputs separate
+  from single-year runs and existing shared-pipeline files.
+- Validation: The one-command run completed on the actual eight-year raw data.
+  Target A used 1,077 training, 192 calibration and 734 test days; B used 1,013,
+  157 and 710. Initial logistic average precision was approximately 0.615 (A)
+  and 0.619 (B); simple sensor/random references remain competitive on several
+  metrics. No general claim of classifier superiority is made. Synthetic
+  end-to-end orchestration/plotting, source station isolation, local configuration,
+  temporal purging, fail-fast behaviour, and metric/rule checks are covered by tests.
+- Documentation: Add `docs/multi_year/SINGLE_TURBINE.md` and a script scope guide.
+  Explain that using 2018–2025 in an experiment does not mean fitting on test
+  years, that scores are uncalibrated, and that annual episode counts must not
+  be summed as unique events. Source CSVs and previous experiment outputs remain
+  unchanged. Reruns overwrite same-named outputs within the selected experiment.
+
+### D-027: Make the target-A notebook the primary interactive walkthrough
+- Date: 2026-10-22
+- Owner: Codex, requested by the user
+- Status: decided
+- Context: Separate scripts/results were difficult to follow. The user requested
+  one Jupyter notebook with distinct processing, training, validation, and
+  evaluation sections, and asked to drop target B for now.
+- Decision: Add `notebooks/01_single_turbine_fault_prediction.ipynb`, defaulting
+  to turbine 2304510 over 2018–2025, with target A only. Explain TimeErr-based
+  fault days/episodes and the next-30-day outcome before showing code. Display
+  preprocessing, split/class support, fitted features, validation thresholds,
+  test metrics, inline plots, and saved artifacts in execution order. Preserve
+  the chronological train/validation/test split from D-026.
+- Implementation: Reuse shared preparation/fitting/evaluation functions while
+  making training and threshold selection explicit in separate notebook cells.
+  Move sensor-rule/daily-metric helpers into `models/baselines.py` for shared
+  notebook/CLI use. Multi-year preparation and CLI runners now default to A;
+  target builders run lazily so A-only preparation does not construct B labels.
+  Keep legacy B source and historical artifacts without reading/training them
+  in this workflow. The existing single-year legacy workflows are not changed.
+- Outputs: Save notebook-specific results and figures under `target_a_notebook/`
+  within the existing station/year experiment directories. Save the notebook
+  with real executed tables and plots visible, plus an executed copy alongside
+  exported results. Rerunning replaces the notebook's named exports. Existing
+  script results remain separate.
+- Validation: The entire notebook executed successfully using actual cached
+  2018–2025 station data in a Python notebook kernel; format validation passed.
+  The 19 focused multi-year/evaluation tests passed, with the orchestration test
+  asserting that default results contain only A and no B model artifacts.
+- Documentation: Add `notebooks/README.md`, link the notebook from the project
+  README/document index, and update the multi-year guide and roadmap. Explain
+  kernel selection, Run All, output folders, threshold selection versus risk
+  calibration, and held-out test limitations.
 
 ## Open decisions
 - Dataset version: confirm v2.1.0 with the teammate who downloaded the data (D-004).

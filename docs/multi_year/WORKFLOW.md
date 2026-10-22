@@ -1,4 +1,4 @@
-# Multi-year modelling workflow
+# Multi-year modelling workflowFor the new **single-turbine, one-command 2018–2025 experiment**, see[this guide](SINGLE_TURBINE.md). The workflow below is the original sharedpipeline using the main project protocol.
 
 First follow [general setup](../general/USAGE.md), prepare raw CSVs, and install dependencies.
 Run these commands from the repository root in order, waiting for each to finish:

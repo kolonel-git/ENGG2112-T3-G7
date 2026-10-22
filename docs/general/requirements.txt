@@ -17,6 +17,7 @@
 # matplotlib>=3.7      - plotting
 # pyarrow>=14.0        - Parquet reading and writing
 # pyyaml>=6.0          - reading configs/protocol.yaml (imported as yaml)
+# joblib>=1.3          - saving and loading fitted classifier pipelines
 #
 # Development, notebook, and Excel dependencies:
 # openpyxl>=3.1        - Excel inspection and tests

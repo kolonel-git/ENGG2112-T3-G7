@@ -1,5 +1,25 @@
 # Single-year experiments
 
+To start with **one turbine only**, follow [the single-turbine guide](SINGLE_TURBINE.md):
+
+```powershell
+python scripts/single_year/single_turbine/train_classifier.py
+python scripts/single_year/single_turbine/plot_classifier.py
+```
+
+Defaults are 2018 and turbine 2304510. The `all_turbines/` commands below pool
+turbines instead. See [the script folder guide](../../scripts/single_year/README.md).
+
+For a trained logistic classifier, daily risk scores, feature summaries, and PNG
+visualisations, use [the classifier workflow](CLASSIFIER.md):
+
+```powershell
+python scripts/single_year/all_turbines/train_classifier.py --year 2018
+python scripts/single_year/all_turbines/plot_classifier.py --year 2018
+```
+
+The dummy-only workflow below remains available independently.
+
 Use this workflow to evaluate constant and random dummy baselines within a
 selected calendar year. The default is **2018**. These reference scorers do not
 train on sensor features.
@@ -16,13 +36,13 @@ results, nor does it require separate validation/test years.
 ## Run from the repository root
 
 ```powershell
-python scripts/single_year/run_year_baselines.py
+python scripts/single_year/all_turbines/run_year_baselines.py
 ```
 
 Choose another year or reduce the bootstrap draws for a quicker experiment:
 
 ```powershell
-python scripts/single_year/run_year_baselines.py --year 2018 --resamples 100
+python scripts/single_year/all_turbines/run_year_baselines.py --year 2018 --resamples 100
 ```
 
 Alternatively, change `YEAR` near the top of the script. The command-line value

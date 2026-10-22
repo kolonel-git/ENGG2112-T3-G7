@@ -113,8 +113,18 @@ The full list, with the evidence, is in [`docs/project/DATA_TRAPS.md`](docs/proj
 
 ## Quickstart
 
+For the clearest step-by-step view, open
+[the single-turbine fault-prediction notebook](notebooks/01_single_turbine_fault_prediction.ipynb).
+It shows processing, training, validation and evaluation for **target A only**.
+
 Browse the [documentation index](docs/README.md) for general, single-year, and
 multi-year instructions.
+
+To run the complete 2018–2025 single-turbine classifier experiment (preparation,
+training, held-out evaluation, and plots), use
+`python scripts/multi_year/single_turbine/main.py`.
+See [the experiment guide](docs/multi_year/SINGLE_TURBINE.md) for the year split
+and output locations.
 
 For step-by-step installation, pipeline commands, Excel exports, and troubleshooting,
 see [How to use this repository](docs/general/USAGE.md).

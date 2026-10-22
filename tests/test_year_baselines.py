@@ -6,7 +6,7 @@ from pathlib import Path
 import pandas as pd
 
 folds = runpy.run_path(
-    str(Path(__file__).resolve().parents[1] / "scripts/single_year/run_year_baselines.py")
+    str(Path(__file__).resolve().parents[1] / "scripts/single_year/all_turbines/run_year_baselines.py")
 )["chronological_folds"]
 
 

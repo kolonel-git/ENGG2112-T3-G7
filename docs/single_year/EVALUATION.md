@@ -1,8 +1,12 @@
 # Single-year baseline evaluation
 
+This page describes the dummy-only runner. For the trained classifier and its
+three-period fold design, see [classifier training and plots](CLASSIFIER.md).
+The metric definitions below are shared by both workflows.
+
 ## Purpose and running
 
-`scripts/single_year/run_year_baselines.py` evaluates constant and random scores
+`scripts/single_year/all_turbines/run_year_baselines.py` evaluates constant and random scores
 within one year, defaulting to **2018**. These are reference baselines, not trained
 sensor-based models. They need the episode and label files from `build_labels.py`;
 they do not read the feature table.
@@ -10,8 +14,8 @@ they do not read the feature table.
 From the repository root, using the Python environment with the dependencies installed:
 
 ```powershell
-python scripts/single_year/run_year_baselines.py
-python scripts/single_year/run_year_baselines.py --year 2018 --resamples 100
+python scripts/single_year/all_turbines/run_year_baselines.py
+python scripts/single_year/all_turbines/run_year_baselines.py --year 2018 --resamples 100
 ```
 
 Change `YEAR` in the script or use `--year`. Default results are written to
