@@ -96,8 +96,8 @@ preprocessing_p0:                     # D-040: learned on labelled train rows on
 baseline_b4:                          # D-041, D-042
   c_grid: [0.01, 0.1, 1.0]
   selected_c:                         # filled only after validation tuning; test remains untouched
-    a: TODO
-    b: TODO
+    a: 0.01
+    b: 0.01
   selection_metric: pr_auc
   selection_tie_break: smallest_c
   solver: liblinear
@@ -107,3 +107,24 @@ baseline_b4:                          # D-041, D-042
   coefficient_top_n: 20
 
 seed: 42                              # D-010
+
+# H0 supplied by Parvez (889a90c); R1 uses complete training label history.
+healthy:
+  start_year: 2016
+  end_year: 2025
+  recovery_days: 7
+  cut_in_wind_ms: 4.0
+b2_alarm_count:
+  selected_variant: {a: tier1_2, b: code_10105}
+  candidates: [total, tier2, tier1_2, code_3130, code_10105, code_1005, code_8000, code_8210, code_8230, code_8234, code_8235, code_8236, code_20, code_25, code_102]
+  window_days: 7
+  missing_count: 0.0
+r1_zscore:
+  sensors: [wtc_GeOilTmp_mean, wtc_GenBeGTm_mean, wtc_GenBeRTm_mean, wtc_MainBTmp_mean, wtc_Gen1U1Tm_mean, wtc_Gen1V1Tm_mean, wtc_Gen1W1Tm_mean]
+  window_days: 7
+  minimum_healthy_rows: 30
+  minimum_std: 0.000001
+  missing_score: 0.0
+
+baseline_table:
+  exclude_stations: [2304515]

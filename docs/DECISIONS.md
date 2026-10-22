@@ -322,3 +322,33 @@ Status is **decided** or **open** (value to be fixed during the work and logged 
 - Handling of the four flagged `suspect_wind` turbine-years (flag only for now, D-015): decide per model whether to exclude them.
 - Whether the 2022 drop of alarms 20 and 25 (about 60%) reflects a controller change; relevant to alarm-count features across years.
 - Upgrade analysis needs `Hill_of_Towie_AeroUp_install_dates.csv` from Zenodo.
+
+
+## D-051 — B2 alarm comparison (Farhan, 2026-10-22)
+Compare total, tier2, tier1+tier2 and each of the twelve documented alarm codes.
+Use existing causal seven-day count features. Missing/nonfinite counts contribute zero;
+no random jitter breaks ties. Select primary separately per target by validation PR-AUC,
+with configured candidate order breaking exact ties. Save every candidate's metrics.
+Validation-only monthly mean counts document seasonality and codes 20/25 coverage changes.
+
+## D-052 — R1 healthy reference (Farhan, 2026-10-22)
+Reuse Parvez H0 verbatim from commit 889a90c (healthy.py, report_healthy_rows.py, tests, HEALTHY_ROWS.md).
+The runner builds the mask from complete training label history before filtering labelled
+fitting rows. healthy_fit is training-selection metadata, never a scoring feature.
+Use seven configured operating temperature sensors: per-turbine healthy daily mean and
+population standard deviation, minimum 30 observations and std > 1e-6. Otherwise use pooled
+healthy-training moments; disable sensors with no usable pooled reference. Unseen turbines
+use pooled moments. Score maximum absolute z of the causal seven-day operating mean.
+Missing sensors are skipped; all missing scores are zero. No validation fitting or tuning.
+Fail explicitly if no sensor reference is usable. Export fitted counts/moments/fallback sources.
+
+## D-053 — T0 integration (Farhan, 2026-10-22)
+Preserve Revael P0/B4 commit e6c2428 and use its documented validation C grid/tuning script.
+Run every available registered baseline for A and B, full fleet and excluding 2304515,
+with shared floors, thresholds, episode metrics and configured bootstrap intervals.
+No test scoring or frozen flag. B3 and R2 remain pending until their implementations arrive;
+T0 is a reproducible available-baseline comparison, not final team sign-off.
+
+Validation selection: B2 A=tier1_2 (PR-AUC 0.517018), B=code_10105 (0.510763).
+B4 C=0.01 for both targets (A 0.4474, B 0.4511), chosen by the predeclared PR-AUC rule.
+These are development selections, not authorization to score held-out test years.
