@@ -329,12 +329,16 @@ Status is **decided** or **open** (value to be fixed during the work and logged 
 ### D-041: B4 logistic settings and validation tuning
 - Date: 2026-10-22
 - Owner: Revael
-- Status: open only for the target-specific selected C values; tuning protocol decided
+- Status: decided (selected C frozen 2026-10-23 after validation tuning)
 - Context: L2 regularisation strength is not fixed by the brief and may differ between targets. It must be selected on validation outside `fit` (C11), without touching test years.
 - Options considered: C in {0.01, 0.1, 1.0}; validation PR-AUC or recall-at-budget as the selection metric; smaller or larger C for an exact tie; L2 alone or an extra L1/elastic-net variant.
 - Decision: `scripts/tune_b4_logistic.py` compares C = 0.01, 0.1 and 1.0 separately for A and B through the shared runner, selects highest validation PR-AUC, and breaks an exact tie toward the smaller C. The primary model is balanced L2 logistic regression with `liblinear`, `max_iter=2000`, `tol=1e-4`, and the protocol seed. An unexpected non-finite model probability falls back to the neutral score 0.5. L1/elastic-net is out of scope for the primary baseline.
-- Results: `baseline_b4.selected_c.a` and `.b` remain `TODO` until the validation Parquet files are available and the tuning script has run. No value is inferred from synthetic tests, and test years have not been inspected.
-- Consequences: a normal B4 run fails clearly while either requested target is still `TODO`; after tuning, the chosen values and validation comparison must be added here before the baseline is frozen.
+- Results (re-run by Kanav 2026-10-23 on the full prepared data, validation only, 1,000 bootstrap resamples): C = 0.01 had the highest
+  validation PR-AUC for both targets (A: 0.4474, 0.4382 and 0.4336 for C = 0.01, 0.1 and 1.0; B: 0.4511, 0.4473 and 0.4451). The values are frozen as
+  `baseline_b4.selected_c.a = 0.01` and `.b = 0.01`. Tables: `reports/tables/b4_logistic_tuning.csv`, `b4_logistic_validation.csv` and
+  `b4_logistic_coefficients.csv`. B4 stays below the random score's PR-AUC on validation (A 0.4474 against 0.4649; B 0.4511 against 0.4830), so it
+  does not demonstrate useful early warning. Test years were not scored.
+- Consequences: a B4 run fails clearly if either requested target's `selected_c` is `TODO`; both are now set, so `scripts/run_baselines.py` works with the default registry.
 
 ### D-042: B4 coefficient reporting
 - Date: 2026-10-22

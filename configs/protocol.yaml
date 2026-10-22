@@ -101,8 +101,8 @@ preprocessing_p0:                     # D-040: learned on labelled train rows on
 baseline_b4:                          # D-041, D-042
   c_grid: [0.01, 0.1, 1.0]
   selected_c:                         # filled only after validation tuning; test remains untouched
-    a: TODO
-    b: TODO
+    a: 0.01                           # validation tuning, 2026-10-23 (D-041)
+    b: 0.01
   selection_metric: pr_auc
   selection_tie_break: smallest_c
   solver: liblinear
