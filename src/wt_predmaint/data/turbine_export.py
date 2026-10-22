@@ -179,7 +179,7 @@ def write_workbook(db: sqlite3.Connection, output: Path, stations: list[str]) ->
 
 
 def export_turbines(input_dir: Path, output: Path, pattern: str = "*.csv") -> dict:
-    """Outer-join sensors and alarm starts on exact (StationId, TimeStamp) keys."""
+    """Find CSVs recursively and outer-join sensors and alarms on exact time keys."""
     output.parent.mkdir(parents=True, exist_ok=True)
     report = {"inputs": {}, "missing_features": {}, "exact_duplicates_removed": {},
               "rounded_duplicates_merged": {},
@@ -194,10 +194,18 @@ def export_turbines(input_dir: Path, output: Path, pattern: str = "*.csv") -> di
             sensor_stations: set[str] = set()
             alarm_stations: set[str] = set()
             for table in [*FEATURES, "tblAlarmLog"]:
-                paths = sorted(p for p in input_dir.glob(pattern)
-                               if p.name.startswith(table + "_"))
+                paths = sorted(p for p in input_dir.rglob(pattern)
+                               if p.is_file() and p.name.startswith(table + "_"))
                 if not paths:
-                    raise ValueError(f"No input files for {table} matching {pattern}")
+                    if table not in FEATURES:
+                        raise ValueError(f"No input files for {table} matching {pattern}")
+                    print(f"No {table} files found; its sensor features are unavailable",
+                          flush=True)
+                    report["inputs"][table] = []
+                    report["missing_features"][table] = list(FEATURES[table])
+                    report["exact_duplicates_removed"][table] = 0
+                    report["rounded_duplicates_merged"][table] = 0
+                    continue
                 report["inputs"][table] = [str(p.resolve()) for p in paths]
                 missing: set[str] = set()
                 duplicates = 0

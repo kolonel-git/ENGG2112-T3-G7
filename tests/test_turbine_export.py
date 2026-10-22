@@ -23,6 +23,30 @@ from wt_predmaint.data.turbine_export import (
 
 
 class TurbineExportTests(unittest.TestCase):
+    def test_absent_sensor_table_is_reported_and_cleaned(self) -> None:
+        (self.root / "tblSCTurPress_test.csv").unlink()
+        report = export_turbines(self.root, self.output)
+        self.assertEqual(report["inputs"]["tblSCTurPress"], [])
+        self.assertEqual(report["missing_features"]["tblSCTurPress"],
+                         FEATURES["tblSCTurPress"])
+        cleaned = clean_workbook(self.output, self.root / "cleaned.xlsx")
+        self.assertEqual(sum(s["kept_rows"] for s in cleaned["sheets"].values()), 2)
+
+    def test_nested_year_folder_preserves_year_filter(self) -> None:
+        nested = self.root / "2018" / "2018"
+        nested.mkdir(parents=True)
+        for path in self.root.glob("*.csv"):
+            path.rename(nested / path.name.replace("_test", "_2018_06"))
+        # A different year's file must not be read by the year-specific pattern.
+        (nested / "tblSCTurPress_2019_06.csv").write_text("invalid\n", encoding="utf-8")
+
+        report = export_turbines(self.root, self.output, "*_2018_*.csv")
+
+        self.assertEqual(report["rows_per_station"], {"2304510": 2, "2304511": 1})
+        for paths in report["inputs"].values():
+            self.assertEqual(len(paths), 1)
+            self.assertEqual(Path(paths[0]).parent, nested)
+
     def test_day_first_pressure_dates(self) -> None:
         self.assertEqual(timestamp("1/10/2018 0:00"), "2018-10-01 00:00:00")
         self.assertEqual(timestamp("13/10/2018 12:30:15"), "2018-10-13 12:30:15")

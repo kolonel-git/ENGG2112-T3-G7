@@ -39,6 +39,11 @@ Change **`YEAR_FOLDER = "2018"`** near the top of `export_turbines.py` to `"2019
 for another year, or pass `--year 2019`. The script reads only that year's folder,
 for example `data/raw/2018/`, and automatically names both output files for that year:
 
+CSV discovery includes nested folders. If an entire sensor table is absent (for
+example, pressure in the current 2019 folder), its features are reported as
+unavailable and left blank in interim, then removed from the processed workbook.
+The alarm table is still required.
+
 - `data/interim/turbine_exports/turbines_2018.xlsx`: all selected readings and alarms.
 - `data/processed/turbine_exports/turbines_2018.xlsx`: the cleaned annual workbook.
 

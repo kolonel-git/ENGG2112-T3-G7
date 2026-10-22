@@ -15,7 +15,7 @@ from wt_predmaint.data.turbine_export import export_turbines  # noqa: E402
 
 # CHANGE ONLY THIS folder name to process another year under data/raw/.
 # Example: "2019" reads data/raw/2019 and writes turbines_2019.xlsx.
-YEAR_FOLDER = "2018"
+YEAR_FOLDER = "2019"
 
 
 def main() -> None:
