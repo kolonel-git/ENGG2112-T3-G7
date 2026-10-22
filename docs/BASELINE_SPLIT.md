@@ -1,9 +1,9 @@
 # Baseline work split
 
 Four people, four packages. Written 2026-10-22. It turns the baseline list in
-[modelling_plan.md](modelling_plan.md) section 7.3 (with D-011) into work orders. Read
+[modelling_plan.md](project/modelling_plan.md) section 7.3 (with D-011) into work orders. Read
 [FEATURES_AND_LABELS.md](FEATURES_AND_LABELS.md) and decisions D-019 to D-022 in
-[DECISIONS.md](DECISIONS.md) first. The rules in [CLAUDE.md](../CLAUDE.md) apply to everything here.
+[DECISIONS.md](project/DECISIONS.md) first. The rules in [CLAUDE.md](../CLAUDE.md) apply to everything here.
 
 Nothing below is a result. Numbers appear only once someone has computed them with the scripts.
 
@@ -269,6 +269,12 @@ To add your baseline: write the class, add one line to `models/registry.py`, the
 ## 4. Parvez: healthy rows (H0) and the power-curve proxy (B3)
 
 ### 4.1 H0: healthy-row mask (`models/healthy.py`), first
+Implemented (D-030): [API, choices and count reproduction](HEALTHY_ROWS.md).
+`healthy_days` and `healthy_intervals` return index-aligned train-only masks.
+Recovery is seven days; unknown prior train history is excluded conservatively.
+The configurable 2016–2025 scope still obeys the protocol's train-year selection.
+Reproduce the count table with `python scripts/report_healthy_rows.py`.
+
 Rows that describe normal behaviour. B3, R1 and R2 all use it, so it comes first and is a small PR.
 Proposed definition (change in a decision entry if you disagree):
 - Day-level mask, train years only.

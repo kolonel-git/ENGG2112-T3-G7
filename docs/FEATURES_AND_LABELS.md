@@ -1,5 +1,10 @@
 # Labels and features reference
 
+H0 normal-behaviour fitting now uses [healthy-day and interval masks](HEALTHY_ROWS.md)
+(D-030), scoped to 2016–2025 and train years only. It selects target-specific
+negative labels with clear quality flags and a seven-day recovery buffer.
+It is a training-selection helper, not a new risk feature or a revised label definition.
+
 Reference for the O2 labels (D-005, D-019) and the daily feature table (D-021). Counts come from the
 files built on 2026-10-22; if the code changes, rebuild and update this page. Sensor groupings are
 read from the column names (the data dictionary in `data/raw/metadata/` is the authority), so treat
@@ -158,5 +163,5 @@ Kept in the table for filtering and checking, excluded by `feature_columns`:
   ratios.
 - Features are not model-ready: no scaling or imputation has been applied.
 
-See D-019 and D-021 in [DECISIONS.md](DECISIONS.md) for the reasoning and
-[DATA_TRAPS.md](DATA_TRAPS.md) for the data problems behind these choices.
+See D-019 and D-021 in [DECISIONS.md](project/DECISIONS.md) for the reasoning and
+[DATA_TRAPS.md](project/DATA_TRAPS.md) for the data problems behind these choices.

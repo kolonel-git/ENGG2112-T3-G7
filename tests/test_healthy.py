@@ -3,6 +3,9 @@
 from __future__ import annotations
 
 import copy
+import subprocess
+import sys
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -169,3 +172,71 @@ def test_inputs_are_unchanged_and_invalid_contracts_are_rejected() -> None:
         healthy_days(pd.concat([labels, labels.iloc[[0]]]), features, cfg, "a")
     with pytest.raises(ValueError, match="quality flags"):
         healthy_days(labels, features.drop(columns="outage_month"), cfg, "a")
+
+
+def test_qualifying_stop_run_crosses_training_year_boundary() -> None:
+    _, _, cfg = tables()
+    days = pd.date_range("2017-12-01", "2018-01-31")
+    labels = pd.DataFrame(
+        {"StationId": 1, "Day": days, "status": "negative", "label": 0, "split": "train"}
+    )
+    features = labels[["StationId", "Day"]].assign(outage_month=False, suspect_wind=False)
+    scada = pd.DataFrame(
+        {
+            "StationId": 1,
+            "TimeStamp": pd.date_range("2017-12-31 23:00", periods=18, freq="10min"),
+            "wtc_GenRpm_mean": 100.0,
+            "wtc_PrWindSp_mean": 5.0,
+            "outage_month": False,
+            "suspect_wind": False,
+        }
+    )
+    mask = healthy_days(labels, features, cfg, "a")
+    assert mask.loc[features.Day.isin(pd.to_datetime(["2017-12-31", "2018-01-01"]))].all()
+    assert not healthy_intervals(labels, features, scada, cfg, "a").any()
+
+
+def test_report_marks_unavailable_years_and_never_keeps_validation(tmp_path: Path) -> None:
+    labels, features, _ = tables()
+    extra = features.iloc[[0]].assign(Day=pd.Timestamp("2023-01-10"))
+    features = pd.concat([features, extra], ignore_index=True)
+    labels = pd.concat(
+        [labels, labels.iloc[[0]].assign(Day=pd.Timestamp("2023-01-10"), split="test")],
+        ignore_index=True,
+    )
+    interim = tmp_path / "interim"
+    for folder in ("features", "labels", "clean"):
+        (interim / folder).mkdir(parents=True)
+    features.to_parquet(interim / "features/daily_features.parquet", index=False)
+    labels.to_parquet(interim / "labels/a_labels.parquet", index=False)
+    for year in (2020, 2023):
+        pd.DataFrame(
+            {
+                "StationId": 1,
+                "TimeStamp": pd.date_range(f"{year}-01-10 00:10", periods=2, freq="10min"),
+                "wtc_GenRpm_mean": 1200.0,
+                "wtc_PrWindSp_mean": 5.0,
+                "outage_month": False,
+                "suspect_wind": False,
+            }
+        ).to_parquet(interim / f"clean/scada_{year}.parquet", index=False)
+    output = tmp_path / "counts.csv"
+    command = [
+        sys.executable,
+        str(Path(__file__).resolve().parents[1] / "scripts/report_healthy_rows.py"),
+        "--interim",
+        str(interim),
+        "--targets",
+        "a",
+        "--output",
+        str(output),
+    ]
+    completed = subprocess.run(command, capture_output=True, text=True, check=False, timeout=30)
+    assert completed.returncode == 0, completed.stdout + completed.stderr
+    report = pd.read_csv(output).set_index("year")
+    assert report.index.tolist() == list(range(2016, 2026))
+    assert report.loc[2020, "healthy_days"] == 24
+    assert report.loc[2020, "healthy_intervals"] == 2
+    assert report.loc[2023, "healthy_days"] == report.loc[2023, "healthy_intervals"] == 0
+    assert pd.isna(report.loc[2016, "healthy_intervals"])
+    assert not report.loc[2016, "clean_scada_file_available"]
