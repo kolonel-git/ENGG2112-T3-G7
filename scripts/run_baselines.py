@@ -55,8 +55,9 @@ def main() -> None:
         episodes = pd.read_parquet(args.interim / "labels" / f"{target}_episodes.parquet")
         table = attach_labels(features, labels, cfg)
         result = run_baselines(
-            build(args.baselines, target), table, episodes, cfg, target, splits=splits,
-            frozen=args.frozen, exclude_stations=args.exclude, resamples=args.resamples,
+            build(args.baselines, target, interim=args.interim), table, episodes, cfg, target,
+            splits=splits, frozen=args.frozen, exclude_stations=args.exclude,
+            resamples=args.resamples,
         )  # fmt: skip
         variant = result.table["variant"].iloc[0]
         suffix = "" if variant == "all" else f"_{variant}"
