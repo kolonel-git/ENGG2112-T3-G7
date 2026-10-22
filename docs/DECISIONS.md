@@ -228,6 +228,14 @@ Status is **decided** or **open** (value to be fixed during the work and logged 
   - Only trailing mean and spread are used; trends and cross-sensor ratios are not built. Add them only if baselines justify it.
   - Normal-behaviour residual features are not here yet; they need the fitted models.
 
+### D-022: Scores are drawn for every day with features; blanks are explained
+- Date: 2026-10-22
+- Owner: Kanav
+- Status: decided
+- Context: plots of filtered data had many gaps (about 30% of the calendar has no label: 18% zone, 5% purged, 4% in episode, 1% censored for target A). Users read them as missing data.
+- Decision: a risk score or feature is computed and plotted for every turbine-day that has features, including days dropped from labelling. Dropped days are left out only when metrics are computed (D-019, D-020). `evaluation/plotting.py` and `scripts/plot_risk_timeline.py` draw the line on a gap-free calendar with three bands: day status (the 7 label statuses plus `no_data`), split, and where the value itself is NaN.
+- Consequences: a gap in the line now means the value is missing (for example 2019 has no temperature or pressure data; days with under 12 producing intervals), not that the day was dropped from labelling. Dropped days show as coloured bands under a continuous line.
+
 ## Open decisions
 - Dataset version: confirm v2.1.0 with the teammate who downloaded the data (D-004).
 - Licence: none chosen; README carries a TODO.

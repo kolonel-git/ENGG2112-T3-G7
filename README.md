@@ -135,6 +135,7 @@ about 15 GB of yearly zips). Then run, in order:
 | `python scripts/build_labels.py` | episodes and 30-day labels for targets A and B in `data/interim/labels/`, plus `reports/tables/label_summary.csv` |
 | `python scripts/build_features.py` | daily feature table `data/interim/features/daily_features.parquet` and `reports/tables/feature_summary.csv` |
 | `python scripts/check_feature_leakage.py` | re-computes random feature rows with the future deleted and fails if any value changes |
+| `python scripts/plot_risk_timeline.py --station <id> --column <col>` | `reports/figures/timeline_*.png`: one turbine's line with bands showing why days are blank |
 | `python scripts/run_dummy_baselines.py` | constant and random-score floors in `reports/tables/baselines_dummy.csv` |
 
 Metadata only: `python scripts/download_data.py --only Hill_of_Towie_data_dictionary.md --out data/raw/metadata`
@@ -148,6 +149,7 @@ Check the code with `pytest` and `ruff check .`.
 - `scripts/`: command-line entry points for the steps above
 - `docs/`: [`roadmap.md`](docs/roadmap.md) (schedule, owners, gates), [`DECISIONS.md`](docs/DECISIONS.md)
   (every decision, with an ID), [`DATA_TRAPS.md`](docs/DATA_TRAPS.md),
+  [`FEATURES_AND_LABELS.md`](docs/FEATURES_AND_LABELS.md) (every label and feature column),
   [`modelling_plan.md`](docs/modelling_plan.md), `reference/` (alarm code and data descriptions)
 - `notebooks/`: exploration only, named `NN_owner_topic.ipynb`; outputs are never committed
 - `reports/{figures,tables}`: generated outputs
