@@ -8,21 +8,27 @@ To add a baseline: write a class that follows ``models.base.Baseline``, then add
 from __future__ import annotations
 
 from collections.abc import Callable
+from pathlib import Path
 
 from wt_predmaint.models.base import Baseline
+from wt_predmaint.models.power_curve import PowerCurveProxy
 
 REGISTRY: dict[str, Callable[[str], Baseline]] = {
     # "B1_recent_fault": lambda target: RecentFaultRule(target),   # Farhan
     # "B2_alarm_count": lambda target: AlarmCountRule(target),      # Farhan
-    # "B3_power_curve": lambda target: PowerCurveProxy(target),     # Parvez
+    "B3_power_curve": lambda target: PowerCurveProxy(target),
     # "B4_logistic": lambda target: LogisticBaseline(target),       # Revael
 }
 
 
-def build(names: list[str] | None, target: str) -> list[Baseline]:
+def build(names: list[str] | None, target: str, *, interim: Path | None = None) -> list[Baseline]:
     """Baselines for ``names`` (all registered ones if None), in the order given."""
     chosen = list(REGISTRY) if names is None else names
     missing = [n for n in chosen if n not in REGISTRY]
     if missing:
         raise KeyError(f"unknown baselines {missing}; registered: {sorted(REGISTRY)}")
-    return [REGISTRY[n](target) for n in chosen]
+    baselines = [REGISTRY[n](target) for n in chosen]
+    for baseline in baselines:
+        if isinstance(baseline, PowerCurveProxy) and interim is not None:
+            baseline.interim = interim
+    return baselines

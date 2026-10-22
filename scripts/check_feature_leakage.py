@@ -6,6 +6,8 @@ when everything after the end of its day is deleted. Exits with status 1 on any 
     python scripts/check_feature_leakage.py --stations 4 --days 5
 """
 
+# ruff: noqa: E402 -- support direct IDE execution with src-layout imports
+
 from __future__ import annotations
 
 import argparse
@@ -14,7 +16,7 @@ from pathlib import Path
 
 # Support running this file directly from an IDE without installing the package.
 ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT / 'src'))
+sys.path.insert(0, str(ROOT / "src"))
 
 import numpy as np
 import pandas as pd
@@ -23,13 +25,13 @@ from wt_predmaint.config import load_protocol
 from wt_predmaint.features.leakage import check_no_lookahead
 
 
-
-
 def main() -> None:
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawTextHelpFormatter)
     p.add_argument("--interim", type=Path, default=ROOT / "data" / "interim")
     p.add_argument("--stations", type=int, default=4)
     p.add_argument("--days", type=int, default=5, help="random days per station")
+    p.add_argument("--b3", action="store_true", help="check B3 with a fixed train-fitted curve")
+    p.add_argument("--target", choices=["a", "b"], default="a")
     args = p.parse_args()
     cfg = load_protocol()
     rng = np.random.default_rng(int(cfg["seed"]))
@@ -51,7 +53,16 @@ def main() -> None:
             scada_parts.append(pd.read_parquet(f, filters=[("StationId", "==", int(s))]))
     scada = pd.concat(scada_parts, ignore_index=True)
 
-    problems = check_no_lookahead(scada, events, summary, cfg, cases)
+    if args.b3:
+        from wt_predmaint.models.base import attach_labels, labelled
+        from wt_predmaint.models.power_curve import PowerCurveProxy, check_b3_no_lookahead
+
+        labels = pd.read_parquet(args.interim / f"labels/{args.target}_labels.parquet")
+        train = labelled(attach_labels(table, labels, cfg), "train")
+        model = PowerCurveProxy(args.target, interim=args.interim).fit(train, cfg)
+        problems = check_b3_no_lookahead(model, scada, cfg, cases)
+    else:
+        problems = check_no_lookahead(scada, events, summary, cfg, cases)
     print(f"checked {len(cases)} turbine-days on turbines {sorted(int(s) for s in stations)}")
     if problems:
         for item in problems:

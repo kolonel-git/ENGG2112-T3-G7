@@ -312,6 +312,37 @@ Status is **decided** or **open** (value to be fixed during the work and logged 
   test model evaluation is implemented by H0. Source data and global split years
   are unchanged. Usage is documented in `docs/HEALTHY_ROWS.md`.
 
+## D-031 — B3 pooled healthy wind/RPM proxy (2026-10-22)
+- Implemented `models/power_curve.py` under the shared Baseline interface,
+  registered as `B3_power_curve`, with `scripts/run_b3_power_curve.py` and
+  `tests/test_power_curve.py`. See `docs/POWER_CURVE.md` for usage and outputs.
+- Pooled fleet medians in 0.5 m/s bins; working range 4–25 m/s inclusive;
+  minimum 30 intervals/bin; linear interpolation between supported centres,
+  no outer extrapolation. These are provisional operating choices, not verified
+  manufacturer limits or choices tuned on held-out data.
+- Target-specific H0 training intervals only; exclude stop runs, outages and
+  suspect-wind intervals from curve fitting. Exclude outage/suspect/nonfinite
+  intervals from scoring, but retain stop intervals as possible underperformance.
+- Tolerance is twice the population standard deviation of training residuals.
+  Daily exceedance share and signed mean shortfall use interval-start days.
+  Score is trailing 7-calendar-day mean share with configured minimum four
+  observed days. Unsupported windows fall back to zero, with evidence availability
+  exported separately; zero is not proof of healthy behaviour.
+- Full labels are used only for train-only H0 selection. Curve/tolerance remain
+  fixed when constructing validation features; test data is loaded only upon
+  explicit scoring (runner requires frozen mode). Score is a key lookup with no
+  label or batch dependence. CLI `--interim` is forwarded to B3 source paths.
+- Initial A validation: AP .454594, episode recall .215311, median lead 21 days,
+  false-alert days/turbine-month .998878; random recall .779904. B: AP .499860,
+  recall .302083, lead 21 days, false-alert rate .996538; random recall .760417.
+  These results fail to demonstrate useful early warning. No test evaluation.
+- Saved curves/plots, availability, fit diagnostics, scores and validation tables
+  for A/B. Fit uses 1,186,879 healthy A intervals and 938,075 B intervals.
+- Checks: 107 tests pass; changed Python files pass Ruff. Extended
+  `check_feature_leakage.py --b3` to recompute after future truncation at fixed fit:
+  two real sampled turbine-days passed, plus synthetic causal-window tests.
+  Full-repository Ruff has unrelated existing findings (including earlier notebook).
+
 ## Open decisions
 - Dataset version: confirm v2.1.0 with the teammate who downloaded the data (D-004).
 - Licence: none chosen; README carries a TODO.

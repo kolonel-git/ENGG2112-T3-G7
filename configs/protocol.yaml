@@ -93,3 +93,11 @@ healthy:
   end_year: 2025
   recovery_days: 7                    # exclude seven days after an episode ends
   cut_in_wind_ms: 4.0                 # operating proxy aligned with stop_min_wind_ms, not a verified manufacturer cut-in
+
+# B3 provisional physical-proxy settings; not tuned on validation/test (D-031).
+power_curve:
+  bin_width_ms: 0.5
+  wind_min_ms: 4.0
+  wind_max_ms: 25.0
+  min_bin_intervals: 30
+  tolerance_std_multiple: 2.0

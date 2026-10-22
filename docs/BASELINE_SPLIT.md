@@ -289,6 +289,10 @@ Proposed definition (change in a decision entry if you disagree):
 - Test: no validation or test day can ever be marked healthy.
 
 ### 4.2 B3: power-curve proxy (D-011)
+
+Implemented (D-031): see [B3 usage and initial validation](POWER_CURVE.md). Run
+`python scripts/run_b3_power_curve.py` for A/B validation and curve plots.
+
 **Idea:** a healthy turbine at a given wind speed turns at a given rotor speed. Learn that curve, then
 flag days where the turbine persistently runs below it. There is no measured power in our files
 (D-018), so rotor speed against wind speed stands in for the power curve.
