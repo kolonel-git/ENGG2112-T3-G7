@@ -84,4 +84,12 @@ features:                             # D-021: provisional choices, not tuned
   min_producing_intervals: 12         # a sensor's daily mean needs at least this many producing 10-min intervals (2 hours)
   window_min_days: 4                  # a 7-day window statistic needs at least this many observed days
 
+# H0 healthy fitting rows (D-030). Scope is the requested 2016 to 2025 data; the configured
+# train years still control eligibility, so validation and test days never qualify.
+healthy:
+  start_year: 2016
+  end_year: 2025
+  recovery_days: 7                    # exclude seven days after an episode ends
+  cut_in_wind_ms: 4.0                 # operating proxy aligned with stop_min_wind_ms, not a verified manufacturer cut-in
+
 seed: 42                              # D-010
