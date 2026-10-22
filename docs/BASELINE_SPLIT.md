@@ -38,7 +38,7 @@ development. Until then everything is evaluated on validation (2021 to 2022).
 
 ## 2. Shared contract
 
-### 2.1 Interface (Kanav writes `src/wt_predmaint/models/base.py` first)
+### 2.1 Interface (`src/wt_predmaint/models/base.py`, merged with D-023)
 
 Every baseline is a class with this shape. Code against it from day one; the stub will not change
 without a message to the group.
@@ -55,6 +55,7 @@ class Baseline(Protocol):
 - `fit` sees train-year rows only. It must not read validation or test rows, from anywhere.
 - `score` must work for **every** day that has features, including days with no label (D-022). Metrics
   later keep only labelled rows.
+- Call `require_train_only(train)` first in `fit`, and `check_score_contract(fitted, rows)` in your tests. `models/dummy.py` shows a complete example.
 - No missing scores. If a baseline cannot score a day, it returns a documented fallback value, not NaN.
 - All randomness reads `seed` from `configs/protocol.yaml`.
 
