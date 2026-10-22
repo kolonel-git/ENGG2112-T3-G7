@@ -317,6 +317,45 @@ Status is **decided** or **open** (value to be fixed during the work and logged 
   925,340 intervals, out of 68,299 feature days; `reports/tables/healthy_rows.csv`). The remark that `ruff check .` had 38 findings came from a
   branch that added `sys.path` shims to scripts; they are removed here and `ruff check .` passes.
 
+### D-040: Train-only preprocessing for P0
+- Date: 2026-10-22
+- Owner: Revael
+- Status: decided
+- Context: sensor coverage changes between years, about 12 base sensors are over 50% missing, and the linear baseline needs finite, comparable inputs without learning from validation or test.
+- Options considered: retain every column / keep columns observed in at least 50% or 80% of labelled train rows; mean or median imputation; missing indicators on or off; no clipping or train-quantile clipping.
+- Decision: P0 treats NaN and infinity as missing; keeps a column when at least 50% of labelled train values are finite (inclusive); then drops train-constant columns. It learns medians on train, does not add missing indicators in the primary run, does not clip, and standardises linear-model inputs with the train mean and population standard deviation. Column order and every learned statistic are frozen after `fit`; tree models may use the same object with scaling disabled.
+- Consequences: P0 is fitted separately for targets A and B because their labelled train rows differ. Missing sensor availability is not itself a primary B4 signal. `scripts/report_p0_preprocessing.py` reports retained/dropped columns and before/after non-finite shares for train and validation only.
+
+### D-041: B4 logistic settings and validation tuning
+- Date: 2026-10-22
+- Owner: Revael
+- Status: decided (selected C frozen 2026-10-23 after validation tuning)
+- Context: L2 regularisation strength is not fixed by the brief and may differ between targets. It must be selected on validation outside `fit` (C11), without touching test years.
+- Options considered: C in {0.01, 0.1, 1.0}; validation PR-AUC or recall-at-budget as the selection metric; smaller or larger C for an exact tie; L2 alone or an extra L1/elastic-net variant.
+- Decision: `scripts/tune_b4_logistic.py` compares C = 0.01, 0.1 and 1.0 separately for A and B through the shared runner, selects highest validation PR-AUC, and breaks an exact tie toward the smaller C. The primary model is balanced L2 logistic regression with `liblinear`, `max_iter=2000`, `tol=1e-4`, and the protocol seed. An unexpected non-finite model probability falls back to the neutral score 0.5. L1/elastic-net is out of scope for the primary baseline.
+- Results (re-run by Kanav 2026-10-23 on the full prepared data, validation only, 1,000 bootstrap resamples): C = 0.01 had the highest
+  validation PR-AUC for both targets (A: 0.4474, 0.4382 and 0.4336 for C = 0.01, 0.1 and 1.0; B: 0.4511, 0.4473 and 0.4451). The values are frozen as
+  `baseline_b4.selected_c.a = 0.01` and `.b = 0.01`. Tables: `reports/tables/b4_logistic_tuning.csv`, `b4_logistic_validation.csv` and
+  `b4_logistic_coefficients.csv`. B4 stays below the random score's PR-AUC on validation (A 0.4474 against 0.4649; B 0.4511 against 0.4830), so it
+  does not demonstrate useful early warning. Test years were not scored.
+- Consequences: a B4 run fails clearly if either requested target's `selected_c` is `TODO`; both are now set, so `scripts/run_baselines.py` works with the default registry.
+
+### D-042: B4 coefficient reporting
+- Date: 2026-10-22
+- Owner: Revael
+- Status: decided
+- Context: correlated, standardised window features make a full coefficient dump hard to read, while the report needs a compact first view of what the linear baseline associates with risk.
+- Decision: report the 20 largest positive and 20 largest negative standardised coefficients per target, with direction, rank and absolute magnitude. Describe them as model attribution/association, never as causal effects.
+- Consequences: `scripts/tune_b4_logistic.py` writes `reports/tables/b4_logistic_coefficients.csv` for the validation-selected candidate. Correlated features can split or reverse weights, so coefficients must be interpreted together with their preprocessing and limitations.
+
+### D-043: B4 primary population and sensitivity
+- Date: 2026-10-22
+- Owner: Revael
+- Status: decided
+- Context: four turbine-years have suspect wind signals, and turbine 2304515 is positive on almost every labelled validation day (D-019). Excluding either group only after seeing model results would make the primary population validation-selected.
+- Decision: the primary B4 fit/evaluation keeps all labelled train/validation rows and never uses the `suspect_wind` flag as a predictor. Report the runner's pre-specified sensitivity excluding turbine 2304515 separately; do not replace the primary result with it. Suspect-wind turbine-years remain a stated limitation rather than a post-hoc exclusion.
+- Consequences: B4 stays comparable with the other primary baselines and does not learn a quality flag, but wind-derived features in flagged years may be less reliable. Any later suspect-wind exclusion is a new, explicitly named sensitivity decision.
+
 ## Open decisions
 - Dataset version: confirm v2.1.0 with the teammate who downloaded the data (D-004).
 - Licence: none chosen; README carries a TODO.

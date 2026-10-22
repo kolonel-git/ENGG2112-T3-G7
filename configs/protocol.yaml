@@ -92,4 +92,23 @@ healthy:
   recovery_days: 7                    # exclude seven days after an episode ends
   cut_in_wind_ms: 4.0                 # operating proxy aligned with stop_min_wind_ms, not a verified manufacturer cut-in
 
+preprocessing_p0:                     # D-040: learned on labelled train rows only
+  min_observed_share: 0.5             # inclusive finite-value share needed to keep a column
+  add_missing_indicators: false       # primary linear baseline does not encode sensor availability
+  scale: true                         # train mean and population standard deviation
+  clip_quantiles: null                # no clipping in the primary baseline
+
+baseline_b4:                          # D-041, D-042
+  c_grid: [0.01, 0.1, 1.0]
+  selected_c:                         # filled only after validation tuning; test remains untouched
+    a: 0.01                           # validation tuning, 2026-10-23 (D-041)
+    b: 0.01
+  selection_metric: pr_auc
+  selection_tie_break: smallest_c
+  solver: liblinear
+  max_iter: 2000
+  tolerance: 0.0001
+  nonfinite_score_fallback: 0.5
+  coefficient_top_n: 20
+
 seed: 42                              # D-010
