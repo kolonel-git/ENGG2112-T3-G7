@@ -111,4 +111,8 @@ baseline_b4:                          # D-041, D-042
   nonfinite_score_fallback: 0.5
   coefficient_top_n: 20
 
+b1_recent_fault:                     # D-050: fixed rules, not tuned on validation
+  tie_weight: 0.5                    # bounded recency cannot overturn a one-day count gap
+  missing_count: 0.0                 # no known history gives the lowest count contribution
+
 seed: 42                              # D-010

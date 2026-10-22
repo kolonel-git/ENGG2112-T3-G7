@@ -356,6 +356,21 @@ Status is **decided** or **open** (value to be fixed during the work and logged 
 - Decision: the primary B4 fit/evaluation keeps all labelled train/validation rows and never uses the `suspect_wind` flag as a predictor. Report the runner's pre-specified sensitivity excluding turbine 2304515 separately; do not replace the primary result with it. Suspect-wind turbine-years remain a stated limitation rather than a post-hoc exclusion.
 - Consequences: B4 stays comparable with the other primary baselines and does not learn a quality flag, but wind-derived features in flagged years may be less reliable. Any later suspect-wind exclusion is a new, explicitly named sensitivity decision.
 
+### D-050: B1 recent-fault rules
+- Date: 2026-10-22
+- Owner: Farhan
+- Status: decided
+- Decision: `models/rules.py` implements three fixed scores, all using existing past-only target-A history for both targets (BASELINE_SPLIT 6.1).
+  - Primary `B1_recent_fault`: `fault_days_30 + tie_weight / (1 + days_since_fault_day)`, with `tie_weight = 0.5` from the new `b1_recent_fault` config block. Count is primary: the recency contribution is bounded below one count step. Recency breaks ties without randomness or using outcomes.
+  - Single-column comparisons: `B1_fault_count = fault_days_30` and `B1_fault_recency = 1 / (1 + days_since_fault_day)`.
+  - Missing recency (no known previous fault, or missing history) contributes zero: the limit of the formula for a fault infinitely long ago. Missing count contributes the configured zero fallback. This means unknown history is scored as no known faults, not proven health; report missing-history counts alongside results.
+  - No fitting or variant selection from outcomes. `fit` checks labelled train rows and reads config only. Each score is finite, indexed like the input, independent of labels/status and of other rows in the scoring batch (D-023).
+  - Ties can remain when both features match. Keep the strict threshold from D-020; report realised false alarms and any zero-alert result rather than adding arbitrary noise.
+- Evaluation: register all three with the shared runner (D-024). Validation only, both targets, constant and random floors included. Test is reserved for frozen configurations. Config choices are fixed before observing validation results.
+- Reproduction: `python scripts/run_b1_recent_fault.py` writes dedicated `b1_a.csv`, `b1_b.csv`, per-day validation scores and missing-history counts; `--exclude 2304515` writes separate sensitivity files. The general runner also accepts the three registered B1 names.
+- Data preparation: the supplied sibling raw folder contains 2019 sensor files, unlike the earlier copy described in DATA_TRAPS. SCADA conversion now defaults to the years in the protocol splits (with an explicit `--years` override), preserving D-006 and avoiding silently adding 2019 stop episodes. The source daily-summary history is still loaded by the existing daily loader, unchanged.
+- Results (validation only): primary B1 PR-AUC 0.559 / 0.550 and episode recall 0.225 / 0.219 for A / B, versus random recall 0.780 / 0.760. Excluding 2304515 gives primary recall 0.205 / 0.169, still below random 0.774 / 0.746. All three rules, floors and intervals are in `reports/tables/b1_*.csv`; interpretation and coverage are in `reports/B1_README.md`. No test scores were produced. Do not promote recency-only to primary after seeing validation outcomes.
+
 ## Open decisions
 - Dataset version: confirm v2.1.0 with the teammate who downloaded the data (D-004).
 - Licence: none chosen; README carries a TODO.
