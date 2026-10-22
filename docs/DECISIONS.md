@@ -250,6 +250,22 @@ Status is **decided** or **open** (value to be fixed during the work and logged 
 - Results: on real data the table matches the label counts (target A: train 22,309, validation 9,690, test 17,947 labelled rows; 4 test rows lack features), and both floors pass the contract check on 2,000 sampled validation days for each target.
 - Consequences: the runner (`evaluation/runner.py`) is the next step; rule baselines must handle tied scores (see BASELINE_SPLIT 2.3).
 
+### D-024: Runner for baselines
+- Date: 2026-10-22
+- Owner: Kanav
+- Status: decided
+- Context: the baseline split (D-023, `docs/BASELINE_SPLIT.md`) needs one way to evaluate any baseline, so results are comparable and every row sits next to the random floor (D-020).
+- Decision: implemented in `src/wt_predmaint/evaluation/runner.py`, `models/registry.py` and `scripts/run_baselines.py`.
+  - Per baseline: check the score contract on a seeded sample of 2,000 validation days (a violation stops the run with `ContractError`); fit on labelled train rows; score every day of the split that has features (D-022); choose the threshold on validation to meet the budget (D-009); evaluate with `evaluation_row`.
+  - Validation is always run. Test is scored only with `frozen=True` (`--frozen` in the script, which prints a warning): test years are scored once per frozen configuration.
+  - The constant and random floors are always added. Every row carries `random_floor_pr_auc`, `random_floor_recall` and `recall_minus_random_floor` for the same variant, target and split.
+  - `variant` is `all`, or `excl_<ids>` when turbines are excluded from fitting and evaluation (for example turbine 2304515, D-019); the sensitivity table gets its own file.
+  - Registering a baseline is one line in `REGISTRY`; nothing else changes.
+  - Outputs: `reports/tables/baselines_<target>.csv` (with `_<variant>` for a sensitivity run) and per-day scores in `data/interim/scores/` for `scripts/plot_risk_timeline.py --scores`.
+  - Replaces `scripts/run_dummy_baselines.py` and `baselines_dummy.csv` (D-020 results line); the floors now come from `models/dummy.py` (D-023).
+- Results (validation only, floors only; no real baseline is registered yet): constant score PR-AUC 0.470 (A) and 0.492 (B) with recall 0; random score recall 0.78 (A) and 0.76 (B) at 0.999 and 1.0 false alarms per turbine-month, median lead 20 and 21 days. These replace the D-020 random numbers, which used a shared random stream (D-023); the headline finding is unchanged.
+- Consequences: Farhan's T0 table (BASELINE_SPLIT 6.4) reads these files rather than recomputing. The test split has not been scored.
+
 ## Open decisions
 - Dataset version: confirm v2.1.0 with the teammate who downloaded the data (D-004).
 - Licence: none chosen; README carries a TODO.
