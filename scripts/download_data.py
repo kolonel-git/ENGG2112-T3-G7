@@ -94,6 +94,8 @@ def main() -> None:
     p.add_argument("--metadata-only", action="store_true", help="skip all year zips")
     p.add_argument("--include-large", action="store_true",
                    help="also fetch lidar_data.zip and turbine_fastlog.zip (~14 GB)")
+    p.add_argument("--only", nargs="+", metavar="NAME",
+                   help="download only these exact file names from the record")
     p.add_argument("--list", action="store_true", help="list files and sizes, then exit")
     p.add_argument("--dry-run", action="store_true", help="show what would be downloaded")
     args = p.parse_args()
@@ -104,7 +106,14 @@ def main() -> None:
     print(f"Version : {meta.get('version')}   Record: {rec['id']}")
     print(f"DOI     : {rec['doi']}   License: {meta.get('license', {}).get('id')}")
 
-    files = select_files(rec["files"], args.years, args.include_large, args.metadata_only)
+    if args.only:
+        known = {f["key"] for f in rec["files"]}
+        unknown = sorted(set(args.only) - known)
+        if unknown:
+            sys.exit(f"ERROR: not in record {rec['id']}: {unknown}")
+        files = sorted((f for f in rec["files"] if f["key"] in args.only), key=lambda f: f["key"])
+    else:
+        files = select_files(rec["files"], args.years, args.include_large, args.metadata_only)
     total = sum(f["size"] for f in files)
     print(f"Selected: {len(files)} files, {total / 1e9:.2f} GB")
     if args.list or args.dry_run:
