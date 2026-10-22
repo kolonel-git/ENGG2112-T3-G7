@@ -1,7 +1,7 @@
 target,split,labelled_rows,with_features,share_missing_values,rows_all_op_missing
-A,train,5629,5629,0.1223,704
-A,val,0,0,,0
-A,test,0,0,,0
-B,train,5214,5214,0.1307,710
-B,val,0,0,,0
-B,test,0,0,,0
+A,train,22309,22309,0.1813,1788
+A,val,9690,9690,0.2125,1475
+A,test,15968,15966,0.1406,1383
+B,train,21199,21199,0.1845,1794
+B,val,8827,8827,0.217,1403
+B,test,15491,15491,0.1395,1329

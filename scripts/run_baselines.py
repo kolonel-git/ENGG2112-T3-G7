@@ -10,10 +10,16 @@ data/interim/scores/ for plotting with scripts/plot_risk_timeline.py --scores.
     python scripts/run_baselines.py --target a --baselines B1_recent_fault
 """
 
+# ruff: noqa: E402 -- allow direct IDE execution with the src-layout package
+
 from __future__ import annotations
 
 import argparse
+import sys
 from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "src"))
 
 import pandas as pd
 
@@ -22,7 +28,6 @@ from wt_predmaint.evaluation.runner import run_baselines
 from wt_predmaint.models.base import attach_labels
 from wt_predmaint.models.registry import REGISTRY, build
 
-ROOT = Path(__file__).resolve().parents[1]
 SHOW = [
     "target", "split", "model", "prevalence", "pr_auc", "recall", "random_floor_recall",
     "median_lead_days", "false_alarms_per_turbine_month", "n_episodes",
