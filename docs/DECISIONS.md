@@ -266,6 +266,57 @@ Status is **decided** or **open** (value to be fixed during the work and logged 
 - Results (validation only, floors only; no real baseline is registered yet): constant score PR-AUC 0.470 (A) and 0.492 (B) with recall 0; random score recall 0.78 (A) and 0.76 (B) at 0.999 and 1.0 false alarms per turbine-month, median lead 20 and 21 days. These replace the D-020 random numbers, which used a shared random stream (D-023); the headline finding is unchanged.
 - Consequences: Farhan's T0 table (BASELINE_SPLIT 6.4) reads these files rather than recomputing. The test split has not been scored.
 
+### D-030: H0 healthy training days and ten-minute intervals
+- Date: 2026-10-22
+- Owner: Parvez (implemented with Codex, requested by the user)
+- Status: decided; operational defaults, not tuned using validation/test
+- Context: BASELINE_SPLIT 4.1 requires a shared healthy-row selector for B3, R1,
+  and R2, using the 2016–2025 data scope and the existing model-interface helpers.
+- Decision: Add `models/healthy.py` with `healthy_days(labels, features, cfg,
+  target)` and `healthy_intervals(labels, features, scada, cfg, target)`. These
+  return boolean masks aligned with their input rows; H0 is a selector, not a
+  Baseline risk scorer. Reuse `attach_labels`, `require_train_only`, interval-start
+  day assignment, and shared stop-run detection. No hidden file reads or fitting.
+- Day rules: Require both configured training-year membership and declared train
+  split, `negative` status with label 0, and explicitly false outage/suspect-wind
+  flags. Add the separate `healthy` protocol block with scope 2016–2025 and a
+  seven-day recovery buffer. Seven days matches the existing weekly context and
+  provides a conservative post-episode settling period; it is not empirically
+  optimised or a claim about mechanical recovery time.
+- Recovery: Infer recovery from the supplied complete target-specific train-label
+  history, including in-episode/unlabelled rows. Exclude the seven days following
+  an episode's end; require complete preceding calendar history, so missing days
+  and training-block starts also get a buffer. Never use validation/test history
+  or target A's fault-history input to establish target B recovery.
+- Intervals: Require a healthy interval-start day, clear quality flags, finite
+  rpm/wind, and wind >= configurable 4.0 m/s. This is an operating cut-in proxy
+  aligned with the existing stop wind threshold; a provider/manufacturer cut-in
+  specification has not been verified locally. Exclude whole qualifying stop
+  runs using existing configured rpm/wind/duration rules. Find runs across complete
+  clean training history, including midnight/year boundaries, before day selection.
+- Report: Add `scripts/report_healthy_rows.py` writing
+  `reports/tables/healthy_rows.csv`, by target/turbine/year over the scoped decade.
+  Missing clean-year files produce blank interval counts and an availability flag.
+  Local shared inputs computed A=2,291 healthy days/247,738 intervals and
+  B=1,735 days/169,163 intervals. These are partial-source counts: only 2018/2019
+  shared clean files are present, and 2019 is not a configured train year.
+- Validation: Full pytest suite passed (102 tests, including 11 H0 cases).
+  Changed Python files pass Ruff. `ruff check .` reports 38 existing findings
+  in unrelated files; those were not expanded into this small H0 implementation.
+  Tests cover exclusion of held-out/spoofed splits and out-of-scope years,
+  held-out perturbation invariance, exact recovery bounds, missing history and
+  flags, finite inputs, cut-in equality, station isolation, index/input preservation,
+  midnight/year-crossing stop runs, and reproducible missing-year reporting.
+- Consequences: B3/R1/R2 may fit on these selected training rows without changing
+  their score contract. No B3 curve, R1/R2 estimator, fault classifier or validation/
+  test model evaluation is implemented by H0. Source data and global split years
+  are unchanged. Usage is documented in `docs/HEALTHY_ROWS.md`.
+- Review note (Kanav, 2026-10-23): the healthy-day and interval counts quoted above came from a
+  partial source (only the 2018 and 2019 clean files) and are superseded by the table regenerated
+  from the full clean data (target A: 11,255 healthy days and 1,186,895 healthy 10-minute intervals; target B: 9,259 days and
+  925,340 intervals, out of 68,299 feature days; `reports/tables/healthy_rows.csv`). The remark that `ruff check .` had 38 findings came from a
+  branch that added `sys.path` shims to scripts; they are removed here and `ruff check .` passes.
+
 ## Open decisions
 - Dataset version: confirm v2.1.0 with the teammate who downloaded the data (D-004).
 - Licence: none chosen; README carries a TODO.
