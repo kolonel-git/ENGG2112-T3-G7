@@ -66,7 +66,8 @@ On top of that, every alert comes with an explanation (SHAP and residual attribu
 | Labels for targets A and B | Done and verified (see below) |
 | Evaluation harness and random-score floor | Done |
 | Daily features and look-ahead test | Done |
-| Baselines, normal-behaviour models, LightGBM | B1 complete on validation; others planned |
+| Baselines B1 to B4, R1 and the two floors | Done on validation years (`reports/tables/t0_validation.csv`); test years not scored |
+| Normal-behaviour models (R2) and LightGBM | Planned |
 | Robustness analyses and SHAP | Planned |
 | Report and ethics review | Planned |
 
