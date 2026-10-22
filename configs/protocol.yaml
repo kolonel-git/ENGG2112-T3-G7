@@ -84,4 +84,8 @@ features:                             # D-021: provisional choices, not tuned
   min_producing_intervals: 12         # a sensor's daily mean needs at least this many producing 10-min intervals (2 hours)
   window_min_days: 4                  # a 7-day window statistic needs at least this many observed days
 
+b1_recent_fault:                     # D-050: fixed rules, not tuned on validation
+  tie_weight: 0.5                    # bounded recency cannot overturn a one-day count gap
+  missing_count: 0.0                 # no known history gives the lowest count contribution
+
 seed: 42                              # D-010
