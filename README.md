@@ -66,7 +66,8 @@ On top of that, every alert comes with an explanation (SHAP and residual attribu
 | Labels for targets A and B | Done and verified (see below) |
 | Evaluation harness and random-score floor | Done |
 | Daily features and look-ahead test | Done |
-| Baselines, normal-behaviour models, LightGBM | B1 complete on validation; others planned |
+| Baselines B1 to B4, R1 and the two floors | Done on validation years (`reports/tables/t0_validation.csv`); test years not scored |
+| Normal-behaviour models (R2) and LightGBM | Planned |
 | Robustness analyses and SHAP | Planned |
 | Report and ethics review | Planned |
 
@@ -137,6 +138,7 @@ about 15 GB of yearly zips). Then run, in order:
 | `python scripts/build_labels.py` | episodes and 30-day labels for targets A and B in `data/interim/labels/`, plus `reports/tables/label_summary.csv` |
 | `python scripts/build_features.py` | daily feature table `data/interim/features/daily_features.parquet` and `reports/tables/feature_summary.csv` |
 | `python scripts/check_feature_leakage.py` | re-computes random feature rows with the future deleted and fails if any value changes |
+| `python scripts/make_report_figures.py` | all report figures in `reports/figures/01_data` to `05_baselines` and the index `reports/figures/README.md` |
 | `python scripts/plot_risk_timeline.py --station <id> --column <col>` | `reports/figures/timeline_*.png`: one turbine's line with bands showing why days are blank |
 | `python scripts/run_baselines.py` | constant and random-score floors in `reports/tables/baselines_<target>.csv` |
 | `python scripts/run_b1_recent_fault.py` | all three B1 rules and current floors on validation for A and B, plus missing-history counts |

@@ -130,4 +130,12 @@ r1_zscore:
 baseline_table:
   exclude_stations: [2304515]
 
+# B3 provisional physical-proxy settings; not tuned on validation or test (D-031).
+power_curve:
+  bin_width_ms: 0.5
+  wind_min_ms: 4.0
+  wind_max_ms: 25.0
+  min_bin_intervals: 30
+  tolerance_std_multiple: 2.0
+
 seed: 42                              # D-010

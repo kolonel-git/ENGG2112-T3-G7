@@ -19,6 +19,8 @@ Decisions behind this roadmap are in `docs/DECISIONS.md`; the technical plan is 
 | Labels for targets A and B (`labels/episodes.py`, `labels/horizon.py`, `scripts/build_labels.py`) | Done on branch `kanav/labels` (D-019); brute-force verified, 13 tests |
 | Daily features and look-ahead test (`features/daily.py`, `features/leakage.py`, `scripts/build_features.py`) | Done on branch `kanav/eval-harness` (D-021); 70,816 turbine-days, 366 columns, no look-ahead found |
 | Baseline interface and runner (`models/base.py`, `evaluation/runner.py`, `scripts/run_baselines.py`) | Done on branch `kanav/model-runner` (D-023, D-024); floors run through it, no real baseline registered yet |
+| Report figures (`reporting/`, `scripts/make_report_figures.py`) | 30 figures in `reports/figures/01_data` to `05_baselines`, with an index (D-025); extend with every new step |
+| Baselines B1 to B4, R1, healthy rows (H0) and preprocessing (P0), table T0 (`models/`, `features/prepare.py`, `scripts/make_baseline_table.py`) | Done on validation years (D-030 to D-053); test years not scored. R1 has the best validation PR-AUC (A 0.577, B 0.588 against random 0.465 and 0.483); no baseline reaches random-score recall at the false-alarm budget |
 | Evaluation harness (`evaluation/metrics.py`, `splits.py`, `scripts/run_baselines.py`) | Done on branch `kanav/eval-harness` (D-020); random-score floor computed; brief's budget kept (D-020) |
 | Missing tables `tblSCTurGrid` (power) and `tblSCTurFlag` (error time) | Skipped for now; proxies used (D-018) |
 | Labels, features, baselines, models, evaluation | Wk2 onward (below) |
