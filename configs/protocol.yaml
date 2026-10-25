@@ -84,9 +84,14 @@ features:                             # D-021: provisional choices, not tuned
   min_producing_intervals: 12         # a sensor's daily mean needs at least this many producing 10-min intervals (2 hours)
   window_min_days: 4                  # a 7-day window statistic needs at least this many observed days
 
-b1_recent_fault:                     # D-050: fixed rules, not tuned on validation
-  tie_weight: 0.5                    # bounded recency cannot overturn a one-day count gap
-  missing_count: 0.0                 # no known history gives the lowest count contribution
+# H0 healthy fitting rows (D-030). Scope is the requested 2016 to 2025 data; the configured
+# train years still control eligibility, so validation and test days never qualify.
+healthy:
+  start_year: 2016
+  end_year: 2025
+  recovery_days: 7                    # exclude seven days after an episode ends
+  cut_in_wind_ms: 4.0                 # operating proxy aligned with stop_min_wind_ms, not a verified manufacturer cut-in
+
 preprocessing_p0:                     # D-040: learned on labelled train rows only
   min_observed_share: 0.5             # inclusive finite-value share needed to keep a column
   add_missing_indicators: false       # primary linear baseline does not encode sensor availability
@@ -96,7 +101,7 @@ preprocessing_p0:                     # D-040: learned on labelled train rows on
 baseline_b4:                          # D-041, D-042
   c_grid: [0.01, 0.1, 1.0]
   selected_c:                         # filled only after validation tuning; test remains untouched
-    a: 0.01
+    a: 0.01                           # validation tuning, 2026-10-23 (D-041)
     b: 0.01
   selection_metric: pr_auc
   selection_tie_break: smallest_c
@@ -106,14 +111,10 @@ baseline_b4:                          # D-041, D-042
   nonfinite_score_fallback: 0.5
   coefficient_top_n: 20
 
-seed: 42                              # D-010
+b1_recent_fault:                     # D-050: fixed rules, not tuned on validation
+  tie_weight: 0.5                    # bounded recency cannot overturn a one-day count gap
+  missing_count: 0.0                 # no known history gives the lowest count contribution
 
-# H0 supplied by Parvez (889a90c); R1 uses complete training label history.
-healthy:
-  start_year: 2016
-  end_year: 2025
-  recovery_days: 7
-  cut_in_wind_ms: 4.0
 b2_alarm_count:
   selected_variant: {a: tier1_2, b: code_10105}
   candidates: [total, tier2, tier1_2, code_3130, code_10105, code_1005, code_8000, code_8210, code_8230, code_8234, code_8235, code_8236, code_20, code_25, code_102]
@@ -128,3 +129,13 @@ r1_zscore:
 
 baseline_table:
   exclude_stations: [2304515]
+
+# B3 provisional physical-proxy settings; not tuned on validation or test (D-031).
+power_curve:
+  bin_width_ms: 0.5
+  wind_min_ms: 4.0
+  wind_max_ms: 25.0
+  min_bin_intervals: 30
+  tolerance_std_multiple: 2.0
+
+seed: 42                              # D-010

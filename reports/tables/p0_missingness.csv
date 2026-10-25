@@ -1,0 +1,5 @@
+target,split,n_rows,n_input_columns,n_retained_columns,n_output_columns,nonfinite_share_before,nonfinite_share_after
+A,train,30628,366,323,323,0.18168123243062706,0.0
+A,val,14954,366,323,323,0.21302413010097998,0.0
+B,train,30628,366,322,322,0.18168123243062706,0.0
+B,val,14954,366,322,322,0.21302413010097998,0.0

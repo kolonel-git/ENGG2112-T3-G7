@@ -39,6 +39,15 @@ def test_pr_auc_perfect_and_constant() -> None:
     assert np.isnan(pr_auc(np.zeros(4), np.arange(4.0)))
 
 
+def test_empty_evaluation_and_validation_are_rejected() -> None:
+    empty = turbine_frame(1, []).iloc[:0]
+    for evaluate_empty in (evaluate, bootstrap_turbines):
+        with pytest.raises(ValueError, match="empty scored frame"):
+            evaluate_empty(empty, episodes_for([1]), 0.6, CFG)
+    with pytest.raises(ValueError, match="labelled validation data"):
+        threshold_for_budget(np.array([]), np.array([]), 1, 30.4375)
+
+
 def test_threshold_respects_budget_and_ties() -> None:
     label = np.zeros(61, dtype=int)  # 61 days = 2.004 turbine-months, so 2 false alarms allowed
     score = np.arange(61, dtype=float)

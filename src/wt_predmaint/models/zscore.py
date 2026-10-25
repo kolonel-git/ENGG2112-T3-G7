@@ -1,5 +1,9 @@
 """R1: fixed H0 healthy-training moments and maximum absolute sensor z-score."""
 
+from __future__ import annotations
+
+from typing import Any
+
 import numpy as np
 import pandas as pd
 
@@ -10,12 +14,12 @@ class ZScoreReference:
     name = "R1_zscore"
     requires_healthy_rows = True
 
-    def __init__(self, target):
+    def __init__(self, target: str) -> None:
         if target not in {"a", "b"}:
             raise ValueError("target must be a or b")
         self.target = target
 
-    def fit(self, train, cfg):
+    def fit(self, train: pd.DataFrame, cfg: dict[str, Any]) -> ZScoreReference:
         require_train_only(train)
         s = cfg["r1_zscore"]
         if "healthy_fit" not in train:
@@ -56,7 +60,7 @@ class ZScoreReference:
             raise ValueError("no usable healthy sensor reference")
         return self
 
-    def sensor_scores(self, rows):
+    def sensor_scores(self, rows: pd.DataFrame) -> pd.DataFrame:
         out = pd.DataFrame(index=rows.index)
         for sensor in self.sensors:
             pairs = [
@@ -71,5 +75,5 @@ class ZScoreReference:
             out[sensor] = (v - means) / stds
         return out.replace([np.inf, -np.inf], np.nan)
 
-    def score(self, rows):
+    def score(self, rows: pd.DataFrame) -> pd.Series:
         return self.sensor_scores(rows).abs().max(axis=1).fillna(self.fallback).astype("float64")
