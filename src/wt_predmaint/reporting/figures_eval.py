@@ -71,7 +71,7 @@ def _episodes(ctx: Ctx, target: str) -> pd.DataFrame:
     "Evaluation",
     "At the project's budget of 1 false alarm per turbine-month a random score detects about three "
     "quarters of episodes and every baseline is below it; only R1 is above the random line, and only at "
-    "the tightest budgets (about 0.25 per turbine-month or less for A, 0.5 or less for B).",
+    "the tightest sampled budgets (0.25 per turbine-month or less for both targets); B ties at 0.5.",
     "data/interim/scores/*_val.parquet, labels, episodes; evaluation/metrics.py",
     VAL_NOTE + " Each point re-chooses the threshold for its budget on the same validation rows. "
     "Real scores alert in streaks on neighbouring days, so the same number of false alarms covers "
@@ -79,7 +79,7 @@ def _episodes(ctx: Ctx, target: str) -> pd.DataFrame:
 )
 def recall_vs_budget(ctx: Ctx) -> Figure:
     ev = ctx.cfg["evaluation"]
-    budgets = [0.05, 0.1, 0.25, 0.5, 0.75, 1.0, 1.5, 2.0]
+    budgets = sorted(ctx.cfg["budget_analysis"]["budgets"])
     fig, axes = plt.subplots(1, 2, figsize=(12, 4.4), sharey=True)
     for ax, target in zip(axes, ("a", "b"), strict=True):
         eps = _episodes(ctx, target)
@@ -531,3 +531,41 @@ def _timeline_factory(ctx_model: str, label: str, letter: str) -> None:
 
 for _i, (_model, _label, _) in enumerate(MODELS[:-1]):
     _timeline_factory(_model, _label, "abcde"[_i])
+
+
+@figure(
+    "F27",
+    "04_evaluation",
+    "alert_burden_vs_missed_episodes",
+    "False-alert days versus missed episodes",
+    "Evaluation",
+    "Each point trades labelled false-alert days against missed evaluable episodes; "
+    "the full fleet and excluded-turbine panels expose sensitivity to turbine 2304515.",
+    "reports/tables/alert_budget_validation.csv; scripts/analyse_alert_budgets.py (D-054)",
+    VAL_NOTE + " Exploratory point estimates with a threshold per budget. "
+    "Alert days are not maintenance visits or monetary costs. No cooldown is used.",
+)
+def alert_burden(ctx: Ctx) -> Figure:
+    table = ctx.table("alert_budget_validation")
+    variants = list(table.variant.unique())
+    fig, axes = plt.subplots(len(variants), 2, figsize=(11, 4 * len(variants)), squeeze=False)
+    for row, variant in enumerate(variants):
+        for ax, target in zip(axes[row], ("A", "B"), strict=True):
+            selected = table.loc[table.variant.eq(variant) & table.target.eq(target)]
+            for model, label, colour in MODELS:
+                points = selected.loc[selected.model.eq(model)].sort_values("budget")
+                ax.plot(points.false_alert_days, points.missed_episodes, marker="o", ms=3,
+                        color=colour, label=label, ls="--" if model == "B0b_random" else "-")
+                official = points.loc[points.budget.eq(
+                    ctx.cfg["evaluation"]["false_alarm_budget_per_turbine_month"])]
+                ax.scatter(official.false_alert_days, official.missed_episodes,
+                           color=colour, marker="D", s=35, zorder=5)
+            scope = "full fleet" if variant == "all" else "excluding turbine 2304515"
+            ax.set_title(f"Target {target}: {scope}")
+            ax.set_xlabel("false-alert days on labelled validation rows")
+            ax.set_ylabel("missed evaluable episodes")
+    handles, labels = axes[0, 0].get_legend_handles_labels()
+    fig.legend(handles, labels, loc="lower center", ncol=3, bbox_to_anchor=(0.5, 0))
+    fig.suptitle("Alert burden and missed episodes (diamonds: official budget)", fontsize=12)
+    fig.tight_layout(rect=(0, 0.07, 1, 0.97))
+    return fig

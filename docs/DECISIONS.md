@@ -471,3 +471,19 @@ T0 is a reproducible available-baseline comparison, not final team sign-off.
 Validation selection: B2 A=tier1_2 (PR-AUC 0.517018), B=code_10105 (0.510763).
 B4 C=0.01 for both targets (A 0.4474, B 0.4511), chosen by the predeclared PR-AUC rule.
 These are development selections, not authorization to score held-out test years.
+
+
+### D-054 — Validation alert-burden analysis after baseline integration
+- **Date:** 2026-10-25
+- **Owner:** Farhan
+- **Decision:** Extend the D-025/F15 budget grid into reproducible tables for all available
+  baselines, both targets and both T0 fleet variants. Move the existing grid into protocol.yaml.
+  Reuse fixed validation scores and the shared strict threshold/episode evaluator. Rechoose
+  thresholds separately at each budget; do not refit or retune models for this analysis.
+- **Outputs:** Allowed and realised false-alarm rates, false-alert days, total labelled alert
+  days, detected/missed evaluable episodes, lead time, prevalence and the random floor at the
+  same target/fleet/budget. Counts are operational burden proxies, not monetary costs or work
+  orders; no cooldown or new event-matching rule is introduced.
+- **Limits:** Exploratory validation point estimates, no additional significance claim or
+  budget selection. Keep the official D-009 budget at 1. Test years remain untouched. B3 is
+  merged; R2 and main LightGBM are still absent, so extend these tables when they arrive.

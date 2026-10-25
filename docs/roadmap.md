@@ -59,6 +59,10 @@ Dates: TODO (add once the submission deadline is confirmed). Week numbers are re
 - **Gate G2** (end Wk3): baseline results on validation years; indicator plots; thresholds chosen on validation only.
 
 ### Wk4 Main models
+- **Baseline cost/recall analysis** (Farhan, 2026-10-25): validation-only budget sweep completed
+  for B1–B4/R1 and floors, full fleet and excluding 2304515 (D-054).
+  `reports/ALERT_BUDGET_ANALYSIS.md` and figure F27 show false-alert days versus missed episodes.
+  Extend to R2/LightGBM when available; official budget and test freeze are unchanged.
 - Class-weighted LightGBM for A and B, small validation-only tuning (Kanav); cost analysis of false alarm budget vs recall (Farhan).
 - Optional autoencoder only if baselines and LightGBM are done and time remains.
 - **Gate G3**: frozen model configs; one run on the test years, results table.
