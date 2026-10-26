@@ -1,6 +1,10 @@
 from pathlib import Path
 
-from wt_predmaint.reporting import figures_data, figures_eval  # noqa: F401  (registers figures)
+from wt_predmaint.reporting import (  # noqa: F401  (registers figures)
+    figures_data,
+    figures_eval,
+    figures_nbm,
+)
 from wt_predmaint.reporting.context import Ctx
 from wt_predmaint.reporting.style import REGISTRY, apply_style, save
 
@@ -19,7 +23,14 @@ def test_registry_ids_and_files_are_unique_and_documented() -> None:
 
 def test_every_figure_folder_is_one_of_the_report_sections() -> None:
     folders = {s.folder for s in REGISTRY}
-    assert folders == {"01_data", "02_labels", "03_features", "04_evaluation", "05_baselines"}
+    assert folders == {
+        "01_data",
+        "02_labels",
+        "03_features",
+        "04_evaluation",
+        "05_baselines",
+        "06_nbm",
+    }
 
 
 def test_label_geometry_figure_uses_the_protocol_windows(tmp_path: Path) -> None:

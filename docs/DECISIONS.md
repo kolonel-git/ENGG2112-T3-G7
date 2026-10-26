@@ -471,3 +471,16 @@ T0 is a reproducible available-baseline comparison, not final team sign-off.
 Validation selection: B2 A=tier1_2 (PR-AUC 0.517018), B=code_10105 (0.510763).
 B4 C=0.01 for both targets (A 0.4474, B 0.4511), chosen by the predeclared PR-AUC rule.
 These are development selections, not authorization to score held-out test years.
+
+### D-054: Ridge normal-behaviour models and the O1 indicator
+- Date: 2026-10-26
+- Owner: Kanav
+- Status: provisional; values below are proposals for team confirmation, not tuned on validation or test
+- Context: O1 needs a degradation indicator from the gap between predicted and observed temperatures on healthy rows (`modelling_plan.md` 6). The plan left inputs, targets, smoothing and the healthy-row source as TODO.
+- Decision: `models/nbm.py` fits one ridge per target on daily producing-interval means (`op_` columns of the D-021 feature table), with turbine offsets removed by a within-turbine fit so slopes are shared and each turbine keeps its own offset. Inputs: primary wind speed, generator rpm, main-shaft rpm, ambient and nacelle temperature. Targets: gearbox oil, generator bearings (G and R), main bearing, the three stator windings, transformer oil, hydraulic oil, IMS generator bearing. Ridge alpha 1.0 and a 7-day trailing smoothing window are fixed, not tuned. All values are in the `nbm` block of `configs/protocol.yaml`.
+- Fit rows: healthy train days that are healthy for both target A and target B (D-030), so the model does not depend on the target choice (7,635 days; 5,718 usable after input and target availability). Test years are never read.
+- Residual: `predicted - observed`, divided by the turbine's healthy train residual spread (fleet spread when a turbine has fewer than 100 rows). Positive means cooler than expected. A turbine unseen in training uses the fleet offset and spread.
+- Indicator: largest absolute 7-day trailing smoothed residual over the sensors (needs 4 observed days, `features.window_min_days`). Looks backwards only; a test perturbs future rows and checks the smoothed value does not move.
+- Results on validation years (`reports/tables/nbm_*.csv`, F32, F33): train R-squared from 0.11 (hydraulic oil) to 0.95 (windings). Standardised residual means on healthy-looking validation days range from -0.92 (main bearing) to +0.61 (gearbox oil), so there is drift between train and validation years. The indicator's mean is higher in each of the four windows before an episode than far from one (target A: 1.9 to 2.5 against 1.8; B: 1.8 to 2.7 against 1.6), but it does not rise as the episode nears and the medians are 1.4 to 1.6 everywhere. Treat it as a weak signal until the residual features are tested inside the O2 models.
+- Not done: lagged inputs (thermal delay), per-sensor target pruning, LightGBM NBM, `PowerRef`, autoencoder. Residual columns are in `data/interim/features/nbm_residuals.parquet` and are not yet joined into the O2 feature table (that must pass `scripts/check_feature_leakage.py` first).
+- Consequences: new figures F32 and F33 in `06_nbm`. Whether alpha, smoothing window and the sensor list are accepted is an open item for the team.

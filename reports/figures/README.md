@@ -38,6 +38,8 @@ and target B is orange wherever both appear.
 | F26c | Risk timeline for one turbine: B2 alarm counts | Baselines | [05_baselines/F26c_timeline_B2_alarm_count.png](05_baselines/F26c_timeline_B2_alarm_count.png) |
 | F26d | Risk timeline for one turbine: B3 power curve | Baselines | [05_baselines/F26d_timeline_B3_power_curve.png](05_baselines/F26d_timeline_B3_power_curve.png) |
 | F26e | Risk timeline for one turbine: B4 logistic | Baselines | [05_baselines/F26e_timeline_B4_logistic.png](05_baselines/F26e_timeline_B4_logistic.png) |
+| F32 | NBM: fit quality and validation-year shift per sensor | O1 degradation indicator | [06_nbm/F32_nbm_validation_shift.png](06_nbm/F32_nbm_validation_shift.png) |
+| F33 | NBM indicator against time to the next episode | O1 degradation indicator | [06_nbm/F33_nbm_indicator_vs_lead.png](06_nbm/F33_nbm_indicator_vs_lead.png) |
 
 ## F01: Data coverage by turbine and month
 
@@ -308,3 +310,21 @@ and target B is orange wherever both appear.
 - **Report section:** Baselines
 - **Built from:** data/interim/scores/a_all_B4_logistic_val.parquet, labels, episodes; evaluation/plotting.py
 - **Read with:** Target A, first turbine in the labels, validation years only. Rule and z-score baselines give days without usable inputs a fallback score, which shows as drops in the line.
+
+## F32: NBM: fit quality and validation-year shift per sensor
+
+![NBM: fit quality and validation-year shift per sensor](06_nbm/F32_nbm_validation_shift.png)
+
+- **Takeaway:** Train R-squared is high for the generator windings and low for hydraulic oil temperature. On healthy-looking validation days the standardised residual has a non-zero mean for several sensors, so part of any indicator signal is drift between the train and validation years.
+- **Report section:** O1 degradation indicator
+- **Built from:** reports/tables/nbm_fit.csv (models/nbm.py, scripts/build_nbm.py)
+- **Read with:** Validation years (2021 to 2022) only; models are fitted on healthy train days (2016 to 2020). Mean z of 0 and sd of 1 would mean validation days look exactly like the training days; days are negative-labelled and flag-free.
+
+## F33: NBM indicator against time to the next episode
+
+![NBM indicator against time to the next episode](06_nbm/F33_nbm_indicator_vs_lead.png)
+
+- **Takeaway:** The mean indicator is modestly higher in each of the four windows before an episode than far from one, but it does not rise as the episode nears (15 to 30 days is highest) and the median hardly moves, so the indicator is a weak early-warning signal on its own.
+- **Report section:** O1 degradation indicator
+- **Built from:** reports/tables/nbm_lead.csv (models/nbm.py, scripts/build_nbm.py)
+- **Read with:** Validation years (2021 to 2022) only; models are fitted on healthy train days (2016 to 2020). Indicator is the largest absolute 7-day smoothed standardised residual over sensors; in-episode days are excluded; turbine-day counts are in the CSV.

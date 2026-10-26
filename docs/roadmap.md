@@ -21,6 +21,7 @@ Decisions behind this roadmap are in `docs/DECISIONS.md`; the technical plan is 
 | Baseline interface and runner (`models/base.py`, `evaluation/runner.py`, `scripts/run_baselines.py`) | Done on branch `kanav/model-runner` (D-023, D-024); floors run through it, no real baseline registered yet |
 | Report figures (`reporting/`, `scripts/make_report_figures.py`) | 30 figures in `reports/figures/01_data` to `05_baselines`, with an index (D-025); extend with every new step |
 | Baselines B1 to B4, R1, healthy rows (H0) and preprocessing (P0), table T0 (`models/`, `features/prepare.py`, `scripts/make_baseline_table.py`) | Done on validation years (D-030 to D-053); test years not scored. R1 has the best validation PR-AUC (A 0.577, B 0.588 against random 0.465 and 0.483); no baseline reaches random-score recall at the false-alarm budget |
+| Ridge normal-behaviour models and O1 indicator (`models/nbm.py`, `scripts/build_nbm.py`) | Done on branch `kanav/nbm` (D-054, provisional values): 10 sensors, validation-year check, indicator against time to episode (F32, F33). Weak signal; LightGBM NBM, lags and joining residuals into the O2 table still to do |
 | Evaluation harness (`evaluation/metrics.py`, `splits.py`, `scripts/run_baselines.py`) | Done on branch `kanav/eval-harness` (D-020); random-score floor computed; brief's budget kept (D-020) |
 | Missing tables `tblSCTurGrid` (power) and `tblSCTurFlag` (error time) | Skipped for now; proxies used (D-018) |
 | Labels, features, baselines, models, evaluation | Wk2 onward (below) |
@@ -54,7 +55,7 @@ Dates: TODO (add once the submission deadline is confirmed). Week numbers are re
 
 ### Wk3 Features, baselines and O1
 - **Features** (Revael; first version built by Kanav, done): daily aggregates over producing intervals, 7-day trailing windows, alarm-count features, operating-state fractions, fault history (D-021). Output: `src/wt_predmaint/features/`, a look-ahead test and 11 tests. Residual features from the normal-behaviour models come next.
-- **Normal-behaviour models** (Kanav): ridge and LightGBM trained on train-year healthy rows; daily residual features. Output: `src/wt_predmaint/models/nbm.py`.
+- **Normal-behaviour models** (Kanav): ridge (done, D-054) and LightGBM trained on train-year healthy rows; daily residual features. Output: `src/wt_predmaint/models/nbm.py`.
 - **Baselines** (Kanav, Farhan): prevalence dummy, recent-fault rule, rpm-vs-wind power-curve proxy (D-011), class-weighted logistic regression. Output: first results table.
 - **Gate G2** (end Wk3): baseline results on validation years; indicator plots; thresholds chosen on validation only.
 
