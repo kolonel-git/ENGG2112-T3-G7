@@ -158,7 +158,8 @@ Check the code with `pytest` and `ruff check .`.
   [`BASELINE_SPLIT.md`](docs/BASELINE_SPLIT.md) (who builds which baseline, and what each must deliver),
   [`modelling_plan.md`](docs/modelling_plan.md), `reference/` (alarm code and data descriptions)
 - `notebooks/`: exploration only, named `NN_owner_topic.ipynb`; outputs are never committed
-- `reports/{figures,tables}`: generated outputs
+- `reports/{figures,tables}`: generated outputs; [`REVAEL_FEATURES_AND_LABELS.md`](reports/REVAEL_FEATURES_AND_LABELS.md)
+  is the reviewed labels/features report section and traceability map
 - `data/{raw,interim,processed}`: git-ignored, never committed
 - `tests/`: unit tests on synthetic data
 

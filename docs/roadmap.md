@@ -1,7 +1,7 @@
 # Project roadmap
 
 Group 7, ENGG2112. Predicting wind turbine degradation from Hill of Towie SCADA: explainable predictive maintenance.
-Last updated 2026-10-21. Owners follow the project brief: **Parvez** data acquisition and cleaning; **Revael** features and labelling;
+Last updated 2026-10-27. Owners follow the project brief: **Parvez** data acquisition and cleaning; **Revael** features and labelling;
 **Kanav** modelling and tuning; **Farhan** evaluation harness and cost analysis; **Cyrus** ethics review and report integration.
 Decisions behind this roadmap are in `docs/DECISIONS.md`; the technical plan is in `docs/modelling_plan.md`.
 
@@ -16,8 +16,8 @@ Decisions behind this roadmap are in `docs/DECISIONS.md`; the technical plan is 
 | O2 target decision | Done (D-003): fault-time episodes from `tblDailySummary` plus SCADA-derived stops; alarm codes become features |
 | Split, windows, metrics decided | Done (D-005 to D-010) |
 | Cleaning layer (`data/clean.py`, `data/daily.py`, `scripts/build_clean_data.py`) | Done on branch `kanav/cleaning-layer` (D-015 to D-017); 10.14M rows 2016 to 2026-04, flags for outage months and suspect wind |
-| Labels for targets A and B (`labels/episodes.py`, `labels/horizon.py`, `scripts/build_labels.py`) | Done on branch `kanav/labels` (D-019); brute-force verified, 13 tests |
-| Daily features and look-ahead test (`features/daily.py`, `features/leakage.py`, `scripts/build_features.py`) | Done on branch `kanav/eval-harness` (D-021); 70,816 turbine-days, 366 columns, no look-ahead found |
+| Labels for targets A and B (`labels/episodes.py`, `labels/horizon.py`, `scripts/build_labels.py`) | Done on branch `kanav/labels` (D-019); reviewed and signed off by Revael on 2026-10-27 |
+| Daily features and look-ahead test (`features/daily.py`, `features/leakage.py`, `scripts/build_features.py`) | Done on branch `kanav/eval-harness` (D-021); reviewed and signed off by Revael on 2026-10-27; 70,816 turbine-days, 366 columns, no look-ahead found |
 | Baseline interface and runner (`models/base.py`, `evaluation/runner.py`, `scripts/run_baselines.py`) | Done on branch `kanav/model-runner` (D-023, D-024); floors run through it, no real baseline registered yet |
 | Report figures (`reporting/`, `scripts/make_report_figures.py`) | 30 figures in `reports/figures/01_data` to `05_baselines`, with an index (D-025); extend with every new step |
 | Baselines B1 to B4, R1, healthy rows (H0) and preprocessing (P0), table T0 (`models/`, `features/prepare.py`, `scripts/make_baseline_table.py`) | Done on validation years (D-030 to D-053); test years not scored. R1 has the best validation PR-AUC (A 0.577, B 0.588 against random 0.465 and 0.483); no baseline reaches random-score recall at the false-alarm budget |
@@ -48,12 +48,12 @@ Dates: TODO (add once the submission deadline is confirmed). Week numbers are re
 
 ### Wk2 Cleaning layer, labels, evaluation harness
 - **Cleaning layer** (Parvez; first version built by Kanav, done): join the three SCADA tables from raw, de-duplicate, mask sentinels per table, flag outage months and suspect wind sensors. Output: `src/wt_predmaint/data/clean.py`, `daily.py`, tests. Parvez to review and extend.
-- **Labels** (Revael; first version built by Kanav, done): episode builders for target A (`TimeErr`) and target B (SCADA stops); horizon labels with the 30-day positive window, 30 to 60-day exclusion, in-episode, purge and censoring rules (D-019). Output: `src/wt_predmaint/labels/`, tests. Revael to review. The feature-side leakage test comes with the features.
+- **Labels** (Revael; first version built by Kanav, done): episode builders for target A (`TimeErr`) and target B (SCADA stops); horizon labels with the 30-day positive window, 30 to 60-day exclusion, in-episode, purge and censoring rules (D-019). Output: `src/wt_predmaint/labels/`, tests and `reports/REVAEL_FEATURES_AND_LABELS.md`. Revael reviewed and signed off on 2026-10-27. The feature-side leakage test comes with the features.
 - **Evaluation harness** (Farhan; first version built by Kanav, done): PR-AUC, recall at 1 false alarm per turbine-month, event-level lead time, turbine bootstrap, year-split helper and leave-one-turbine-out folds (D-020). Output: `src/wt_predmaint/evaluation/`, 11 tests on synthetic scores, `reports/tables/baselines_<target>.csv`. Farhan to review. The brief's budget stays; random scores already reach recall 0.79 to 0.84 at budget 1, so every table shows that floor (D-020).
 - **Gate G1** (end Wk2): cleaning, labels and harness merged; data frozen. Target thresholds are chosen and logged (D-007, D-008, 2026-10-22).
 
 ### Wk3 Features, baselines and O1
-- **Features** (Revael; first version built by Kanav, done): daily aggregates over producing intervals, 7-day trailing windows, alarm-count features, operating-state fractions, fault history (D-021). Output: `src/wt_predmaint/features/`, a look-ahead test and 11 tests. Residual features from the normal-behaviour models come next.
+- **Features** (Revael; first version built by Kanav, done): daily aggregates over producing intervals, 7-day trailing windows, alarm-count features, operating-state fractions, fault history (D-021). Output: `src/wt_predmaint/features/`, a look-ahead test, figures F11–F14 and `reports/REVAEL_FEATURES_AND_LABELS.md`. Revael reviewed and signed off on 2026-10-27; the combined targeted label/feature/figure suite passes 27 tests. Residual features from the normal-behaviour models come next.
 - **Normal-behaviour models** (Kanav): ridge and LightGBM trained on train-year healthy rows; daily residual features. Output: `src/wt_predmaint/models/nbm.py`.
 - **Baselines** (Kanav, Farhan): prevalence dummy, recent-fault rule, rpm-vs-wind power-curve proxy (D-011), class-weighted logistic regression. Output: first results table.
 - **Gate G2** (end Wk3): baseline results on validation years; indicator plots; thresholds chosen on validation only.
