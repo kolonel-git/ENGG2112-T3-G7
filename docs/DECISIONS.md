@@ -523,3 +523,12 @@ These are development selections, not authorization to score held-out test years
 - **Limits:** Exploratory validation point estimates, no additional significance claim or
   budget selection. Keep the official D-009 budget at 1. Test years remain untouched. B3 is
   merged; R2 and main LightGBM are still absent, so extend these tables when they arrive.
+
+### D-058: R2, the NBM indicator as an O2 baseline
+- Date: 2026-10-27
+- Owner: Kanav
+- Status: decided; fixed before looking at the result
+- Context: `docs/BASELINE_SPLIT.md` assigns R2 (ridge normal-behaviour model) to the baseline set, and the alert-burden notes (D-054) listed R2 as pending. The NBM (D-057) existed but its indicator was not a registered baseline, so it was missing from T0.
+- Decision: `models/nbm_indicator.py` registers `R2_nbm_indicator`. The score of a turbine-day is its `nbm_indicator` (largest absolute 7-day smoothed standardised residual over the 10 NBM sensors, fleet-relative as frozen in D-055). Nothing is fitted in the baseline; the NBM was fitted on healthy train days in `scripts/build_nbm.py`. A day without an indicator scores `nbm.indicator_missing_score` (0.0), so every day with features is scored (D-022). `scripts/make_baseline_table.py` and `scripts/run_baselines.py` join the NBM columns through `models.nbm.attach_nbm`.
+- Result (validation years; `reports/tables/t0_validation.csv`, full fleet): PR-AUC A 0.496 and B 0.533 against the random floor 0.465 and 0.483 and R1 at 0.577 and 0.588. Recall at the budget is 0.383 (A) and 0.458 (B) against a random floor of 0.78 and 0.76. So the indicator is above the random floor on PR-AUC but below R1 and below the floor on recall at the budget. Existing baselines are unchanged.
+- Consequences: T0 and the alert-burden tables (D-054) were regenerated with R2 and the LightGBM models (D-056) included; the other models' numbers did not change, except B4 logistic in the fifth or sixth decimal place (solver noise between reruns, no effect on any reading). Figures with a fixed model list (F15 to F26) do not show R2 or L1 yet.

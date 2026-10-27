@@ -146,6 +146,7 @@ nbm:
   smoothing_days: 7                   # trailing window for the smoothed residual
   fleet_relative: true                # subtract the day's fleet median residual; chosen on validation (D-055)
   fleet_min_turbines: 5               # turbines needed on a day for a fleet median
+  indicator_missing_score: 0.0        # R2 score for a day with no indicator (D-058)
   minimum_fit_rows: 200               # healthy rows needed to fit one target
   minimum_turbine_rows: 100           # healthy rows needed for a turbine's own residual spread
   minimum_std: 0.000001
