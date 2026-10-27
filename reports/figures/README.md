@@ -38,6 +38,7 @@ and target B is orange wherever both appear.
 | F26c | Risk timeline for one turbine: B2 alarm counts | Baselines | [05_baselines/F26c_timeline_B2_alarm_count.png](05_baselines/F26c_timeline_B2_alarm_count.png) |
 | F26d | Risk timeline for one turbine: B3 power curve | Baselines | [05_baselines/F26d_timeline_B3_power_curve.png](05_baselines/F26d_timeline_B3_power_curve.png) |
 | F26e | Risk timeline for one turbine: B4 logistic | Baselines | [05_baselines/F26e_timeline_B4_logistic.png](05_baselines/F26e_timeline_B4_logistic.png) |
+| F27 | False-alert days versus missed episodes | Evaluation | [04_evaluation/F27_alert_burden_vs_missed_episodes.png](04_evaluation/F27_alert_burden_vs_missed_episodes.png) |
 
 ## F01: Data coverage by turbine and month
 
@@ -169,7 +170,7 @@ and target B is orange wherever both appear.
 
 ![Episode recall as the false-alarm budget changes](04_evaluation/F15_recall_vs_false_alarm_budget.png)
 
-- **Takeaway:** At the project's budget of 1 false alarm per turbine-month a random score detects about three quarters of episodes and every baseline is below it; only R1 is above the random line, and only at the tightest budgets (about 0.25 per turbine-month or less for A, 0.5 or less for B).
+- **Takeaway:** At the project's budget of 1 false alarm per turbine-month a random score detects about three quarters of episodes and every baseline is below it; only R1 is above the random line, and only at the tightest sampled budgets (0.25 per turbine-month or less for both targets); B ties at 0.5.
 - **Report section:** Evaluation
 - **Built from:** data/interim/scores/*_val.parquet, labels, episodes; evaluation/metrics.py
 - **Read with:** Validation years (2021 to 2022) only; thresholds are chosen on validation. Test years are not scored. Each point re-chooses the threshold for its budget on the same validation rows. Real scores alert in streaks on neighbouring days, so the same number of false alarms covers fewer distinct 30-day windows than scattered random alerts (D-009 uses no cooldown).
@@ -308,3 +309,12 @@ and target B is orange wherever both appear.
 - **Report section:** Baselines
 - **Built from:** data/interim/scores/a_all_B4_logistic_val.parquet, labels, episodes; evaluation/plotting.py
 - **Read with:** Target A, first turbine in the labels, validation years only. Rule and z-score baselines give days without usable inputs a fallback score, which shows as drops in the line.
+
+## F27: False-alert days versus missed episodes
+
+![False-alert days versus missed episodes](04_evaluation/F27_alert_burden_vs_missed_episodes.png)
+
+- **Takeaway:** Each point trades labelled false-alert days against missed evaluable episodes; the full fleet and excluded-turbine panels expose sensitivity to turbine 2304515.
+- **Report section:** Evaluation
+- **Built from:** reports/tables/alert_budget_validation.csv; scripts/analyse_alert_budgets.py (D-054)
+- **Read with:** Validation years (2021 to 2022) only; thresholds are chosen on validation. Test years are not scored. Exploratory point estimates with a threshold per budget. Alert days are not maintenance visits or monetary costs. No cooldown is used.
