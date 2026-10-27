@@ -170,3 +170,7 @@ lgbm:
   importance_top_n: 20
 
 seed: 42                              # D-010
+
+# D-054: descriptive validation sensitivity, not a replacement for the official budget.
+budget_analysis:
+  budgets: [0.05, 0.1, 0.25, 0.5, 0.75, 1.0, 1.5, 2.0]

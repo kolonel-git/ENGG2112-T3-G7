@@ -11,6 +11,7 @@ import argparse
 from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
 
+from wt_predmaint.config import load_protocol
 from wt_predmaint.data.scada import TABLES, read_scada_year
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -34,9 +35,11 @@ def main() -> None:
     p.add_argument("--raw", type=Path, default=ROOT / "data" / "raw")
     p.add_argument("--out", type=Path, default=ROOT / "data" / "interim" / "scada")
     p.add_argument("--workers", type=int, default=4)
+    p.add_argument("--years", type=int, nargs="+", help="default: years in protocol splits")
     args = p.parse_args()
     args.out.mkdir(parents=True, exist_ok=True)
-    jobs = [(args.raw, args.out, t, y) for y in range(2016, 2027) for t in TABLES]
+    years = args.years or sorted({y for ys in load_protocol()["splits"].values() for y in ys})
+    jobs = [(args.raw, args.out, t, y) for y in years for t in TABLES]
     with ProcessPoolExecutor(max_workers=args.workers) as pool:
         for line in pool.map(convert, jobs):
             print(line, flush=True)

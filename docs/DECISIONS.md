@@ -507,3 +507,19 @@ These are development selections, not authorization to score held-out test years
 - Result with the provisional settings, validation years, one run, nothing tuned (`reports/tables/baselines_a.csv`, `baselines_b.csv`): PR-AUC A 0.445 and 0.443 with NBM, B 0.447 and 0.440 with NBM, against the random floor 0.465 (A) and 0.483 (B) and R1 at 0.577 and 0.588. Recall at the budget is 0.13 and 0.11 (A), 0.20 and 0.22 (B), against a random floor of 0.78 and 0.76. B4 logistic is at the same level (0.447, 0.451).
 - Diagnosis (train years only, no validation data used): PR-AUC on the training rows is 0.94 for target A but 0.475 when the model is fitted on 2016 to 2018 and scored on 2020, so the fit does not carry across years. The largest gain features are window means of pressure, humidity, tower-frequency and an internal temperature (`A21IntTm`); `DATA_TRAPS.md` records cross-year drift for some pressure and temperature sensors (`HydPress`, `MainBTmp`), but drift in these particular features was not tested, so the cause is not established.
 - Consequences: the supervised models do not beat the random floor on validation with these features. This is reported as it is. The Day 2 grid also varies regularisation only; any change of feature set (for example drift-robust columns only) would be a separate, logged decision made on validation, not on test. If nothing beats R1 on validation, R1 stays the best model and L1 is reported as a model that does not generalise across years.
+
+
+### D-054 — Validation alert-burden analysis after baseline integration
+- **Date:** 2026-10-25
+- **Owner:** Farhan
+- **Decision:** Extend the D-025/F15 budget grid into reproducible tables for all available
+  baselines, both targets and both T0 fleet variants. Move the existing grid into protocol.yaml.
+  Reuse fixed validation scores and the shared strict threshold/episode evaluator. Rechoose
+  thresholds separately at each budget; do not refit or retune models for this analysis.
+- **Outputs:** Allowed and realised false-alarm rates, false-alert days, total labelled alert
+  days, detected/missed evaluable episodes, lead time, prevalence and the random floor at the
+  same target/fleet/budget. Counts are operational burden proxies, not monetary costs or work
+  orders; no cooldown or new event-matching rule is introduced.
+- **Limits:** Exploratory validation point estimates, no additional significance claim or
+  budget selection. Keep the official D-009 budget at 1. Test years remain untouched. B3 is
+  merged; R2 and main LightGBM are still absent, so extend these tables when they arrive.
