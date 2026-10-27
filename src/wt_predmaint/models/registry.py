@@ -12,6 +12,7 @@ from pathlib import Path
 
 from wt_predmaint.models.alarm import AlarmCountRule
 from wt_predmaint.models.base import Baseline
+from wt_predmaint.models.lgbm import LightGBMBaseline
 from wt_predmaint.models.logistic import LogisticBaseline
 from wt_predmaint.models.power_curve import PowerCurveProxy
 from wt_predmaint.models.rules import RecentFaultRule
@@ -25,6 +26,8 @@ REGISTRY: dict[str, Callable[[str], Baseline]] = {
     "R1_zscore": lambda target: ZScoreReference(target),
     "B3_power_curve": lambda target: PowerCurveProxy(target),  # Parvez
     "B4_logistic": lambda target: LogisticBaseline(target),  # Revael
+    "L1_lgbm": lambda target: LightGBMBaseline(target),
+    "L1_lgbm_nbm": lambda target: LightGBMBaseline(target, use_nbm=True),
 }
 
 

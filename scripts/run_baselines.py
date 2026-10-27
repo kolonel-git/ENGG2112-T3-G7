@@ -41,6 +41,9 @@ def main() -> None:
 
     cfg = load_protocol()
     features = pd.read_parquet(args.interim / "features" / "daily_features.parquet")
+    nbm_path = args.interim / "features" / "nbm_residuals.parquet"
+    if nbm_path.exists():  # NBM columns (D-054, D-055); other baselines ignore them
+        features = features.merge(pd.read_parquet(nbm_path), on=["StationId", "Day"], how="left")
     splits = ("val", "test") if args.frozen else ("val",)
     if args.frozen:
         print("WARNING: scoring the test years. Use only for a frozen configuration.")
