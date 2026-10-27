@@ -144,8 +144,29 @@ nbm:
   targets: [op_wtc_GeOilTmp_mean, op_wtc_GenBeGTm_mean, op_wtc_GenBeRTm_mean, op_wtc_MainBTmp_mean, op_wtc_Gen1U1Tm_mean, op_wtc_Gen1V1Tm_mean, op_wtc_Gen1W1Tm_mean, op_wtc_TraOilTF_mean, op_wtc_HydOilTm_mean, op_wtc_IMSGenTm_mean]
   ridge_alpha: 1.0
   smoothing_days: 7                   # trailing window for the smoothed residual
+  fleet_relative: true                # subtract the day's fleet median residual; chosen on validation (D-055)
+  fleet_min_turbines: 5               # turbines needed on a day for a fleet median
   minimum_fit_rows: 200               # healthy rows needed to fit one target
   minimum_turbine_rows: 100           # healthy rows needed for a turbine's own residual spread
   minimum_std: 0.000001
+
+# Class-weighted LightGBM (D-056). `selected` holds provisional defaults until scripts/tune_lgbm.py
+# has chosen them on validation (then frozen, with a D-entry); the grid is the whole search.
+lgbm:
+  selected:
+    a: {num_leaves: 15, n_estimators: 200, learning_rate: 0.05, min_child_samples: 200}
+    b: {num_leaves: 15, n_estimators: 200, learning_rate: 0.05, min_child_samples: 200}
+  grid:
+    num_leaves: [7, 15, 31]
+    n_estimators: [100, 300]
+    learning_rate: [0.05]
+    min_child_samples: [200]
+  subsample: 0.8
+  colsample_bytree: 0.5
+  reg_lambda: 1.0
+  selection_metric: pr_auc
+  selection_tie_break: simplest        # fewest leaves, then fewest trees
+  nonfinite_score_fallback: 0.5
+  importance_top_n: 20
 
 seed: 42                              # D-010

@@ -315,16 +315,16 @@ and target B is orange wherever both appear.
 
 ![NBM: fit quality and validation-year shift per sensor](06_nbm/F32_nbm_validation_shift.png)
 
-- **Takeaway:** Train R-squared is high for the generator windings and low for hydraulic oil temperature. On healthy-looking validation days the standardised residual has a non-zero mean for several sensors, so part of any indicator signal is drift between the train and validation years.
+- **Takeaway:** Train R-squared is high for the generator windings and low for hydraulic oil. On healthy-looking validation days the own-turbine residual has a non-zero mean for most sensors (up to about 0.9 standard deviations); subtracting the day's fleet median brings every sensor to within about 0.2.
 - **Report section:** O1 degradation indicator
-- **Built from:** reports/tables/nbm_fit.csv (models/nbm.py, scripts/build_nbm.py)
-- **Read with:** Validation years (2021 to 2022) only; models are fitted on healthy train days (2016 to 2020). Mean z of 0 and sd of 1 would mean validation days look exactly like the training days; days are negative-labelled and flag-free.
+- **Built from:** reports/tables/nbm_fit.csv, nbm_fleet_compare.csv (models/nbm.py, scripts/build_nbm.py)
+- **Read with:** Validation years (2021 to 2022) only; models are fitted on healthy train days (2016 to 2020). Mean z of 0 would mean validation days look like the training days; days are negative-labelled and flag-free. The fleet-relative version also removes any fleet-wide change (D-055).
 
 ## F33: NBM indicator against time to the next episode
 
 ![NBM indicator against time to the next episode](06_nbm/F33_nbm_indicator_vs_lead.png)
 
-- **Takeaway:** The mean indicator is modestly higher in each of the four windows before an episode than far from one, but it does not rise as the episode nears (15 to 30 days is highest) and the median hardly moves, so the indicator is a weak early-warning signal on its own.
+- **Takeaway:** With either residual the indicator is only slightly higher in the windows before an episode than far from one, it does not rise steadily as the episode nears, and the fleet-relative version shrinks the contrast further, so the indicator is a weak early-warning signal on its own.
 - **Report section:** O1 degradation indicator
-- **Built from:** reports/tables/nbm_lead.csv (models/nbm.py, scripts/build_nbm.py)
-- **Read with:** Validation years (2021 to 2022) only; models are fitted on healthy train days (2016 to 2020). Indicator is the largest absolute 7-day smoothed standardised residual over sensors; in-episode days are excluded; turbine-day counts are in the CSV.
+- **Built from:** reports/tables/nbm_lead_variants.csv (models/nbm.py, scripts/build_nbm.py)
+- **Read with:** Validation years (2021 to 2022) only; models are fitted on healthy train days (2016 to 2020). Indicator is the largest absolute 7-day smoothed standardised residual over sensors; in-episode days are excluded; turbine-day counts are in the CSV. The two panels use different scales because the fleet-relative residual has a smaller spread.

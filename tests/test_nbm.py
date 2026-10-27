@@ -125,3 +125,40 @@ def test_smoothing_needs_min_days_and_treats_gaps_as_missing() -> None:
 def test_indicator_is_max_absolute_value() -> None:
     smoothed = pd.DataFrame({"nbm_w7_A": [1.0, -3.0], "nbm_w7_B": [-2.0, 1.0]})
     assert indicator(smoothed).tolist() == [2.0, 3.0]
+
+
+def test_fleet_relative_removes_common_drift_and_uses_same_day_only() -> None:
+    from wt_predmaint.models.nbm import fleet_relative
+
+    days = pd.date_range("2018-01-01", periods=3)
+    keys = pd.DataFrame({"StationId": [1, 2, 3] * 3, "Day": np.repeat(days, 3)})
+    res = pd.DataFrame({"nbm_res_A": [1.0, 2.0, 3.0, 11.0, 12.0, 13.0, 5.0, 5.0, 5.0]})
+    out = fleet_relative(res, keys, min_turbines=3)["nbm_res_A"]
+    assert out.tolist() == [-1.0, 0.0, 1.0] * 2 + [0.0, 0.0, 0.0]
+    # a later day cannot change an earlier day's value
+    later = res.copy()
+    later.iloc[6:] = 1000.0
+    assert np.allclose(fleet_relative(later, keys, 3)["nbm_res_A"].iloc[:6], out.iloc[:6])
+    # too few turbines on a day gives missing, not a one-turbine "median"
+    assert fleet_relative(res.iloc[:2], keys.iloc[:2], 3)["nbm_res_A"].isna().all()
+
+
+def test_nbm_lookahead_check_passes_and_catches_a_leak(monkeypatch: pytest.MonkeyPatch) -> None:
+    import wt_predmaint.models.nbm as nbm_module
+
+    cfg = make_cfg()
+    cfg["nbm"].update(fleet_relative=True, fleet_min_turbines=2)
+    model, frame = fitted()
+    cases = [(1, pd.Timestamp("2018-03-01")), (2, pd.Timestamp("2018-04-10"))]
+    assert nbm_module.check_nbm_no_lookahead(model, frame, cfg, cases) == []
+
+    real = nbm_module.nbm_features
+
+    def leaky(m, f, c, fleet=None):  # adds a column built from the whole table (the future)
+        out = real(m, f, c, fleet)
+        out["nbm_leak"] = float(f[TARGET].mean())
+        return out
+
+    monkeypatch.setattr(nbm_module, "nbm_features", leaky)
+    problems = nbm_module.check_nbm_no_lookahead(model, frame, cfg, cases)
+    assert problems and "nbm_leak" in problems[0]["columns"]

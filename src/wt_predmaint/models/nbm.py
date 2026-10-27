@@ -20,6 +20,8 @@ import numpy as np
 import pandas as pd
 from sklearn.linear_model import Ridge
 
+from wt_predmaint.models.healthy import healthy_days
+
 KEYS = ["StationId", "Day"]
 PREFIX, SUFFIX = "op_wtc_", "_mean"
 
@@ -170,3 +172,85 @@ def smooth_residuals(
 def indicator(smoothed: pd.DataFrame) -> pd.Series:
     """Daily degradation indicator: largest absolute smoothed standardised residual over sensors."""
     return smoothed.abs().max(axis=1).astype("float32").rename("nbm_indicator")
+
+
+def fleet_relative(residuals: pd.DataFrame, keys: pd.DataFrame, min_turbines: int) -> pd.DataFrame:
+    """Subtract each day's fleet median residual from every turbine's residual (D-055).
+
+    The median uses only turbines observed on the same day, so day D never sees a later day. A
+    sensor-day with fewer than ``min_turbines`` observations becomes missing. This removes drift
+    shared by the whole fleet; it also removes any fleet-wide event, so it is a trade-off.
+    """
+    work = pd.concat([keys[KEYS], residuals.astype("float64")], axis=1)
+    grouped = work.groupby("Day")[list(residuals.columns)]
+    out = residuals.astype("float64") - grouped.transform("median")
+    return out.where(grouped.transform("count") >= min_turbines).astype("float32")
+
+
+def nbm_features(
+    model: NormalBehaviourModel,
+    features: pd.DataFrame,
+    cfg: dict[str, Any],
+    fleet: bool | None = None,
+) -> pd.DataFrame:
+    """Residual, smoothed residual and indicator columns for every row of ``features``.
+
+    ``fleet`` overrides ``nbm.fleet_relative`` from the protocol (used to compare both on
+    validation). Keys ``StationId`` and ``Day`` come first so the result joins on them.
+    """
+    s = cfg["nbm"]
+    use_fleet = bool(s["fleet_relative"]) if fleet is None else fleet
+    res = model.residuals(features)
+    if use_fleet:
+        res = fleet_relative(res, features[KEYS], int(s["fleet_min_turbines"]))
+    smooth = smooth_residuals(
+        res, features[KEYS], int(s["smoothing_days"]), int(cfg["features"]["window_min_days"])
+    )
+    out = pd.concat([features[KEYS], res, smooth], axis=1)
+    out["nbm_indicator"] = indicator(smooth)
+    return out
+
+
+def check_nbm_no_lookahead(
+    model: NormalBehaviourModel,
+    features: pd.DataFrame,
+    cfg: dict[str, Any],
+    cases: list[tuple[int, pd.Timestamp]],
+    fleet: bool | None = None,
+) -> list[dict[str, Any]]:
+    """Cases whose NBM columns change when every row after the day is deleted.
+
+    The fitted model is held fixed, as a scaler would be; only the rows the pipeline can see
+    change. An empty list means the residual, smoothed residual and indicator at (station, day) use
+    only data up to the end of that day, including the fleet median across turbines.
+    """
+    full = nbm_features(model, features, cfg, fleet).set_index(KEYS)
+    problems = []
+    for station, day in cases:
+        if (station, day) not in full.index:
+            continue
+        cut = nbm_features(model, features.loc[features["Day"] <= day], cfg, fleet)
+        cut = cut.set_index(KEYS)
+        a, b = full.loc[(station, day)], cut.loc[(station, day)]
+        bad = [
+            c
+            for c in full.columns
+            if not np.isclose(float(a[c]), float(b[c]), rtol=1e-4, atol=1e-5, equal_nan=True)
+        ]
+        if bad:
+            problems.append({"StationId": station, "Day": day, "columns": bad})
+    return problems
+
+
+def fit_nbm(
+    features: pd.DataFrame, labels: dict[str, pd.DataFrame], cfg: dict[str, Any]
+) -> tuple[NormalBehaviourModel, pd.Series]:
+    """Fit on healthy train days of targets A and B, leaving out ``baseline_table`` turbines.
+
+    ``labels`` maps "a" and "b" to the full label tables. Returns the model and the fit mask.
+    Turbines left out of the fit are still scored, with the fleet offset and spread.
+    """
+    held_out = cfg["baseline_table"]["exclude_stations"]
+    masks = [healthy_days(labels[t], features, cfg, t) for t in ("a", "b")]
+    healthy = masks[0] & masks[1] & ~features["StationId"].isin(held_out)
+    return NormalBehaviourModel(cfg).fit(features, healthy), healthy
