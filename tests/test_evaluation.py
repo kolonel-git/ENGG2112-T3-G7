@@ -149,3 +149,34 @@ def test_labelled_split_and_leave_one_turbine_out() -> None:
     assert all(h not in tr and len(tr) == 2 for tr, h in folds)
     with pytest.raises(ValueError):
         labelled_split(labels, "dev")
+
+
+@pytest.mark.parametrize("change", ["duplicate", "infinity", "missing_key"])
+def test_invalid_scored_rows_fail_before_metric_calculation(change: str) -> None:
+    frame = turbine_frame(1, [])
+    if change == "duplicate":
+        frame = pd.concat([frame, frame.iloc[:1]])
+    elif change == "infinity":
+        frame.loc[0, "score"] = np.inf
+    else:
+        frame.loc[0, "Day"] = pd.NaT
+    with pytest.raises(ValueError):
+        evaluate(frame, episodes_for([1]), 0.6, CFG)
+
+
+@pytest.mark.parametrize(
+    "labels,scores,budget,dpm",
+    [([0, 1], [0.1], 1, 30), ([0, 2], [0.1, 0.2], 1, 30),
+     ([0, 1], [0.1, np.inf], 1, 30), ([0], [0.1], -1, 30),
+     ([0], [0.1], np.nan, 30), ([0], [0.1], 1, 0)],
+)
+def test_invalid_budget_inputs_are_rejected(labels, scores, budget, dpm) -> None:
+    with pytest.raises(ValueError):
+        threshold_for_budget(np.array(labels), np.array(scores), budget, dpm)
+
+
+def test_detection_includes_day_minus_30_and_excludes_episode_start() -> None:
+    frame = turbine_frame(1, ["2020-01-16", "2020-02-14", "2020-02-15"])
+    assert detect_episodes(frame, episodes_for([1]), 0.6, 30).iloc[0].lead_days == 30
+    frame.loc[frame.Day.lt(START), "score"] = 0
+    assert not detect_episodes(frame, episodes_for([1]), 0.6, 30).iloc[0].detected

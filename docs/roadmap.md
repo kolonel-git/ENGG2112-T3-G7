@@ -1,7 +1,7 @@
 # Project roadmap
 
 Group 7, ENGG2112. Predicting wind turbine degradation from Hill of Towie SCADA: explainable predictive maintenance.
-Last updated 2026-10-21. Owners follow the project brief: **Parvez** data acquisition and cleaning; **Revael** features and labelling;
+Last updated 2026-10-28. Owners follow the project brief: **Parvez** data acquisition and cleaning; **Revael** features and labelling;
 **Kanav** modelling and tuning; **Farhan** evaluation harness and cost analysis; **Cyrus** ethics review and report integration.
 Decisions behind this roadmap are in `docs/DECISIONS.md`; the technical plan is in `docs/modelling_plan.md`.
 
@@ -64,6 +64,11 @@ Dates: TODO (add once the submission deadline is confirmed). Week numbers are re
   `reports/ALERT_BUDGET_ANALYSIS.md` and figure F27 show false-alert days versus missed episodes.
   Extend to R2/LightGBM when available; official budget and test freeze are unchanged.
 - Class-weighted LightGBM for A and B, small validation-only tuning (Kanav); cost analysis of false alarm budget vs recall (Farhan).
+- **Evaluation review and writing** (Farhan, 2026-10-28): D-020/D-024 signed off;
+  all 36 saved validation result rows verified including intervals and random floors.
+  [Review and handoff](EVALUATION_REVIEW.md), [report section](../reports/EVALUATION_AND_COST.md)
+  and a saved-results auditor are ready. F27 now includes new models automatically.
+  Actual LightGBM extension and final test-table sign-off depend on Kanav's G3 artefacts.
 - Optional autoencoder only if baselines and LightGBM are done and time remains.
 - **Gate G3**: frozen model configs; one run on the test years, results table.
 

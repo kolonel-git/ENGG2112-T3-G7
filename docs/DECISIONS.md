@@ -202,6 +202,7 @@ Status is **decided** or **open** (value to be fixed during the work and logged 
 - Results: `scripts/run_dummy_baselines.py` writes `reports/tables/baselines_dummy.csv`. A constant score gives PR-AUC equal to the prevalence (0.45 to 0.51) and recall 0. A random uniform score at the budget gives, on test, recall 0.79 (A) and 0.84 (B) with median lead time 22 days; on validation 0.81 and 0.79.
 - Finding: episode recall at 1 false alarm per turbine-month is easy to reach by chance. About 53% of scored days are negative, so a random alert rate near 6% of days meets the budget, and a 30-day window then contains at least one alert about 80% of the time. Random-score recall on test for target A: 0.79 at a budget of 1, 0.51 at 0.5, 0.34 at 0.25, 0.16 at 0.1, 0.06 at 0.05 (target B: 0.84, 0.65, 0.44, 0.21, 0.13). A model's recall at budget 1 therefore has about 0.2 of headroom above chance.
 - Resolution (Kanav, 2026-10-22): stay with the original project brief. The headline metric stays recall at 1 false alarm per turbine-month, no change to scope. Every results table carries the random-score floor next to it so the headroom is visible. No extra budgets are added.
+- Farhan review sign-off, 2026-10-28 (with Codex): threshold, exposure, strict ties, episode windows and fixed-threshold turbine bootstrap reviewed; current validation results reproduced from saved scores. Historical random-stream results above are superseded by D-023/D-024. See `docs/EVALUATION_REVIEW.md`; no final test sign-off is claimed.
 
 ### D-021: Daily features and the look-ahead test
 - Date: 2026-10-22
@@ -265,6 +266,7 @@ Status is **decided** or **open** (value to be fixed during the work and logged 
   - Replaces `scripts/run_dummy_baselines.py` and `baselines_dummy.csv` (D-020 results line); the floors now come from `models/dummy.py` (D-023).
 - Results (validation only, floors only; no real baseline is registered yet): constant score PR-AUC 0.470 (A) and 0.492 (B) with recall 0; random score recall 0.78 (A) and 0.76 (B) at 0.999 and 1.0 false alarms per turbine-month, median lead 20 and 21 days. These replace the D-020 random numbers, which used a shared random stream (D-023); the headline finding is unchanged.
 - Consequences: Farhan's T0 table (BASELINE_SPLIT 6.4) reads these files rather than recomputing. The test split has not been scored.
+- Farhan review sign-off, 2026-10-28 (with Codex): train-only fitting, all-feature-day scoring, validation-derived thresholds, frozen flag and matching random floors reviewed. All 36 current validation rows, including intervals, pass the saved-results audit. The frozen flag is not a once-only run lock; G3 and final test verification remain pending. See D-055 and `docs/EVALUATION_REVIEW.md`.
 
 ### D-030: H0 healthy training days and ten-minute intervals
 - Date: 2026-10-22
@@ -487,3 +489,26 @@ These are development selections, not authorization to score held-out test years
 - **Limits:** Exploratory validation point estimates, no additional significance claim or
   budget selection. Keep the official D-009 budget at 1. Test years remain untouched. B3 is
   merged; R2 and main LightGBM are still absent, so extend these tables when they arrive.
+
+### D-055: Evaluation review, saved-result audit and report handoff
+- Date: 2026-10-28
+- Owner: Farhan (with Codex)
+- Status: decided; current validation sign-off only
+- Context: Farhan's remaining assignment is to review the harness, extend the burden
+  analysis to frozen models, verify the single test table and write evaluation/cost.
+  Pulled main `232aa6b` has no R2/LightGBM implementation, G3 freeze or final test table.
+- Decision: retain D-020/D-024 metric semantics and the official budget of 1. Add
+  defensive checks for invalid scores/keys/threshold inputs and duplicate model names.
+  Add a saved-results auditor that recomputes point estimates, bootstrap intervals,
+  validation thresholds and matching random floors without model fitting or scoring.
+  Test false-alarm rates may exceed the validation budget; verify rather than recalibrate.
+- Outputs: `docs/EVALUATION_REVIEW.md`, `scripts/check_evaluation_results.py`,
+  `reports/tables/evaluation_audit.csv` and its input-hash manifest. All 36 current
+  validation rows reproduce. F27 discovers supplied models from the burden table;
+  its new-model coverage is tested with synthetic data, not claimed as LightGBM results.
+  `scripts/write_evaluation_section.py` generates `reports/EVALUATION_AND_COST.md`
+  from T0 and budget tables, with random recall beside every reported recall.
+- Limits: no configuration, metric, model-selection rule or official budget changed.
+  Burden counts are labelled alert days and missed inferred episodes, not currency
+  or maintenance visits. LightGBM numbers and final test sign-off require Kanav's
+  frozen artefacts; the auditor does not prove G3 approval or enforce a once-only run.

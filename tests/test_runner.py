@@ -157,3 +157,18 @@ def test_run_is_reproducible() -> None:
     a = run([ColumnScore("a")]).table
     b = run([ColumnScore("a")]).table
     pd.testing.assert_frame_equal(a, b)
+
+
+def test_duplicate_model_names_are_rejected() -> None:
+    with pytest.raises(ValueError, match="names must be unique"):
+        run([ColumnScore("a"), ColumnScore("a")])
+
+
+def test_changing_test_data_cannot_change_validation_results_or_thresholds() -> None:
+    table, episodes = synthetic()
+    original = run_baselines([ColumnScore("a")], table, episodes, CFG, "a", resamples=5)
+    other = table.copy()
+    other.loc[other.split.eq("test"), "x"] = 1e9
+    other.loc[other.split.eq("test"), "label"] = 1
+    changed = run_baselines([ColumnScore("a")], other, episodes, CFG, "a", resamples=5)
+    pd.testing.assert_frame_equal(original.table, changed.table)

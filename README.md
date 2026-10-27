@@ -86,10 +86,13 @@ required false-alarm budget. Learned-model results are still pending.
 ### Reading the metrics honestly
 
 Positives are common after the exclusions (37 to 50% of rows), and the 30-day window is wide. A
-**random score** already reaches episode recall of 0.79 (target A) and 0.84 (target B) on the test
-years at 1 false alarm per turbine-month, and a constant score gets a PR-AUC equal to the positive
-rate. Any model must be compared with these floors (`reports/tables/baselines_<target>.csv`,
-decision D-020), and every results table shows them.
+**random score** reaches validation episode recall of 0.780 (target A) and 0.760 (target B)
+at 1 false alarm per turbine-month in the current runner. A constant score gets a PR-AUC
+equal to the positive rate. Every model must be compared with matching floors
+([audited T0](reports/tables/t0_validation.csv), D-023/D-024). The
+[evaluation and cost section](reports/EVALUATION_AND_COST.md) reports the current
+validation results; [Farhan's review](docs/EVALUATION_REVIEW.md) records sign-off
+and the remaining G3 dependencies. Final frozen test results are pending.
 
 ## Known limits
 

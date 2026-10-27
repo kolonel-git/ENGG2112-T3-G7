@@ -70,7 +70,10 @@ def _add_floor_columns(table: pd.DataFrame) -> pd.DataFrame:
     keys = ["variant", "target", "split"]
     floor = table.loc[table["model"] == RANDOM_FLOOR, [*keys, *FLOOR_COLUMNS]]
     floor = floor.rename(columns=FLOOR_COLUMNS)
-    out = table.merge(floor, on=keys, how="left")
+    out = table.merge(floor, on=keys, how="left", validate="many_to_one", indicator=True)
+    if not out["_merge"].eq("both").all():
+        raise ValueError("every result needs its matching random floor")
+    out = out.drop(columns="_merge")
     out["recall_minus_random_floor"] = out["recall"] - out["random_floor_recall"]
     return out
 
@@ -98,6 +101,8 @@ def run_baselines(
         raise ValueError(f"unknown splits {sorted(unknown)}; choose from val and test")
     if "test" in splits and not frozen:
         raise ValueError("test years are scored once per frozen configuration: pass frozen=True")
+    if len({b.name for b in baselines}) != len(baselines):
+        raise ValueError("baseline names must be unique")
     for b in baselines:
         if b.target != target:
             raise ValueError(f"baseline {b.name} is for target {b.target!r}, not {target!r}")
