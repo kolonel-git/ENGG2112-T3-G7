@@ -27,7 +27,7 @@ def main() -> None:
     p.add_argument("--stations", type=int, default=4)
     p.add_argument("--days", type=int, default=5, help="random days per station")
     p.add_argument("--b3", action="store_true", help="check B3 with a fixed train-fitted curve")
-    p.add_argument("--nbm", action="store_true", help="check the NBM residual columns (D-054)")
+    p.add_argument("--nbm", action="store_true", help="check the NBM residual columns (D-057)")
     p.add_argument("--target", choices=["a", "b"], default="a")
     args = p.parse_args()
     cfg = load_protocol()

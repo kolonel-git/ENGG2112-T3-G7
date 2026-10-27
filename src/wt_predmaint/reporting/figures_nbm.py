@@ -1,4 +1,4 @@
-"""Report figures 32 and 33: normal-behaviour models and the O1 indicator (D-054, D-055, D-025)."""
+"""Report figures 32 and 33: normal-behaviour models and the O1 indicator (D-057, D-055, D-025)."""
 
 from __future__ import annotations
 

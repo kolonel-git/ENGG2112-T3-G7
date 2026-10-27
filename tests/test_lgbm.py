@@ -124,3 +124,23 @@ def test_importance_table_and_registry() -> None:
     assert imp.iloc[0]["feature"] in {"w3mean_signal", "w3std_signal", "wind_mean"}
     assert {"L1_lgbm", "L1_lgbm_nbm"} <= set(REGISTRY)
     assert [b.name for b in build(["L1_lgbm_nbm"], "b")] == ["L1_lgbm_nbm"]
+
+
+def test_nbm_variant_fails_loudly_without_nbm_columns() -> None:
+    train = labelled(make_table(), "train")
+    train = train.drop(columns=[c for c in train.columns if c.startswith("nbm_")])
+    with pytest.raises(ValueError, match="build_nbm"):
+        LightGBMBaseline("a", use_nbm=True).fit(train, CFG)
+    assert LightGBMBaseline("a").fit(train, CFG).columns_  # the plain variant is unaffected
+
+
+def test_attach_nbm_joins_once_and_is_a_no_op_without_the_file(tmp_path) -> None:
+    from wt_predmaint.models.nbm import attach_nbm
+
+    table = make_table().loc[:, ["StationId", "Day", "wind_mean"]]
+    assert attach_nbm(table, tmp_path) is table
+    (tmp_path / "features").mkdir()
+    nbm = table[["StationId", "Day"]].assign(nbm_indicator=1.0)
+    nbm.to_parquet(tmp_path / "features" / "nbm_residuals.parquet")
+    joined = attach_nbm(table, tmp_path)
+    assert len(joined) == len(table) and joined["nbm_indicator"].eq(1.0).all()

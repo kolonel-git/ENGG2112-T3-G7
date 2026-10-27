@@ -1,4 +1,4 @@
-"""Normal-behaviour models for O1 (D-054): ridge on healthy train days, residual as the indicator.
+"""Normal-behaviour models for O1 (D-057): ridge on healthy train days, residual as the indicator.
 
 One ridge regression per health-bearing temperature, predicting its daily producing-interval mean
 from operating conditions (wind, rpm, ambient and nacelle temperature). Turbines share the slopes
@@ -14,6 +14,7 @@ choose training rows) in ``fit`` only. ``residuals`` scores a row from that row 
 
 from __future__ import annotations
 
+from pathlib import Path
 from typing import Any
 
 import numpy as np
@@ -240,6 +241,18 @@ def check_nbm_no_lookahead(
         if bad:
             problems.append({"StationId": station, "Day": day, "columns": bad})
     return problems
+
+
+def attach_nbm(features: pd.DataFrame, interim: Path) -> pd.DataFrame:
+    """Join the saved NBM columns onto the feature table when ``nbm_residuals.parquet`` exists.
+
+    Every script that fits or scores models on the feature table calls this, so the NBM variants
+    always see the same columns. Without the file the table is returned unchanged.
+    """
+    path = interim / "features" / "nbm_residuals.parquet"
+    if not path.exists():
+        return features
+    return features.merge(pd.read_parquet(path), on=KEYS, how="left", validate="one_to_one")
 
 
 def fit_nbm(

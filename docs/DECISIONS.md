@@ -472,7 +472,7 @@ Validation selection: B2 A=tier1_2 (PR-AUC 0.517018), B=code_10105 (0.510763).
 B4 C=0.01 for both targets (A 0.4474, B 0.4511), chosen by the predeclared PR-AUC rule.
 These are development selections, not authorization to score held-out test years.
 
-### D-054: Ridge normal-behaviour models and the O1 indicator
+### D-057: Ridge normal-behaviour models and the O1 indicator
 - Date: 2026-10-26
 - Owner: Kanav
 - Status: provisional; values below are proposals for team confirmation, not tuned on validation or test
@@ -485,12 +485,13 @@ These are development selections, not authorization to score held-out test years
 - Not done: lagged inputs (thermal delay), per-sensor target pruning, LightGBM NBM, `PowerRef`, autoencoder. Residual columns are in `data/interim/features/nbm_residuals.parquet` and are not yet joined into the O2 feature table (that must pass `scripts/check_feature_leakage.py` first).
 - Consequences: new figures F32 and F33 in `06_nbm`. Whether alpha, smoothing window and the sensor list are accepted is an open item for the team.
 - Update 2026-10-27 (D-055): the validation numbers above are for the own-turbine residual. The saved columns are now fleet-relative, which removes most of the drift; F32 and F33 show both. The NBM is frozen.
+- Renumbered 2026-10-27: this entry was first logged as D-054, an ID Farhan's alert-burden analysis (PR #15) already holds on `main`; all references were changed to D-057.
 
 ### D-055: Final-sprint evaluation protocol and the fleet-relative NBM residual
 - Date: 2026-10-27
 - Owner: Kanav (proposed; for the team to confirm)
 - Status: decided for the sprint; written before any LightGBM or test-year result existed
-- Context: five days remain to the submission (assumed Sunday 2026-11-01, not yet confirmed with the coordinator). Positive windows cover 42 to 49% of days, so a random score reaches recall 0.79 to 0.84 at the budget of one false alarm per turbine-month and no baseline beats it (D-020, F15). The O1 indicator drifted between train and validation years (D-054).
+- Context: five days remain to the submission (assumed Sunday 2026-11-01, not yet confirmed with the coordinator). Positive windows cover 42 to 49% of days, so a random score reaches recall 0.79 to 0.84 at the budget of one false alarm per turbine-month and no baseline beats it (D-020, F15). The O1 indicator drifted between train and validation years (D-057).
 - Decision (O2 evaluation): the labels and windows of D-005 and D-019 stay as they are. Changing them would invalidate T0, the baseline tables and most of F01 to F33, and choosing a new window after seeing validation results would be selection on validation. Every model is reported with PR-AUC against the random-score floor, recall at the budget next to the random floor, event-level (episode) recall and median lead time, each with turbine-bootstrap intervals and positive counts (D-020). The headline claim is the comparison with the floor, not recall alone. A 7-day positive window is allowed only as a clearly labelled sensitivity run, and only if time remains; it is not a replacement and not tuned.
 - Decision (test years): scored once, in a single `--frozen` run for configurations frozen the day before. No second test run and no tuning after seeing test numbers. Robustness runs use validation years only.
 - Decision (NBM): compare own-turbine and fleet-relative residuals on validation years only, with the rule fixed in advance: adopt fleet-relative if the mean absolute validation mean of the standardised daily residual falls. Fleet-relative subtracts the same-day median residual of the turbines observed that day (at least `nbm.fleet_min_turbines`), so it looks at no later day. The rule is met: mean absolute validation mean z falls from 0.444 to 0.061 and the mean validation sd of z from 1.057 to 0.745 (`reports/tables/nbm_fleet_compare.csv`). `nbm.fleet_relative` is set to true and the NBM is frozen: no further changes to its inputs, targets, alpha or smoothing.

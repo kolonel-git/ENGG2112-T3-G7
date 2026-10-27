@@ -60,6 +60,8 @@ class LightGBMBaseline:
         if set(y.unique()) != {0, 1}:
             raise ValueError("LightGBM training rows must contain both label classes 0 and 1")
         candidates = lgbm_feature_columns(train, cfg, self.use_nbm)
+        if self.use_nbm and not any(c.startswith(NBM_PREFIX) for c in candidates):
+            raise ValueError("L1_lgbm_nbm needs the NBM columns: run scripts/build_nbm.py first")
         share = float(cfg["preprocessing_p0"]["min_observed_share"])
         x = train[candidates].apply(pd.to_numeric, errors="coerce").astype("float32")
         x = x.replace([np.inf, -np.inf], np.nan)

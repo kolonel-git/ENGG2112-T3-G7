@@ -20,6 +20,7 @@ import pandas as pd
 from wt_predmaint.config import load_protocol
 from wt_predmaint.evaluation.runner import run_baselines
 from wt_predmaint.models.base import attach_labels
+from wt_predmaint.models.nbm import attach_nbm
 from wt_predmaint.models.registry import REGISTRY, build
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -41,9 +42,7 @@ def main() -> None:
 
     cfg = load_protocol()
     features = pd.read_parquet(args.interim / "features" / "daily_features.parquet")
-    nbm_path = args.interim / "features" / "nbm_residuals.parquet"
-    if nbm_path.exists():  # NBM columns (D-054, D-055); other baselines ignore them
-        features = features.merge(pd.read_parquet(nbm_path), on=["StationId", "Day"], how="left")
+    features = attach_nbm(features, args.interim)  # NBM columns (D-057, D-055)
     splits = ("val", "test") if args.frozen else ("val",)
     if args.frozen:
         print("WARNING: scoring the test years. Use only for a frozen configuration.")

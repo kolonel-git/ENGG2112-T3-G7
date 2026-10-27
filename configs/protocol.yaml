@@ -138,7 +138,7 @@ power_curve:
   min_bin_intervals: 30
   tolerance_std_multiple: 2.0
 
-# Normal-behaviour models for O1 (D-054). Provisional choices, not tuned on validation or test.
+# Normal-behaviour models for O1 (D-057). Provisional choices, not tuned on validation or test.
 nbm:
   inputs: [op_wtc_PrWindSp_mean, op_wtc_GenRpm_mean, op_wtc_MainSRpm_mean, op_wtc_AmbieTmp_mean, op_wtc_NacelTmp_mean]
   targets: [op_wtc_GeOilTmp_mean, op_wtc_GenBeGTm_mean, op_wtc_GenBeRTm_mean, op_wtc_MainBTmp_mean, op_wtc_Gen1U1Tm_mean, op_wtc_Gen1V1Tm_mean, op_wtc_Gen1W1Tm_mean, op_wtc_TraOilTF_mean, op_wtc_HydOilTm_mean, op_wtc_IMSGenTm_mean]
