@@ -26,7 +26,11 @@ def _settings(cfg: dict[str, Any]) -> tuple[int, int, int, float]:
     start, end, recovery = (settings[k] for k in ("start_year", "end_year", "recovery_days"))
     if any(isinstance(v, bool) or not isinstance(v, int) for v in (start, end, recovery)):
         raise ValueError("healthy years and recovery_days must be integers")
+<<<<<<< HEAD
     if not 1900 <= start <= end <= 2200 or recovery < 0:
+=======
+    if start > end or recovery < 0:
+>>>>>>> 232aa6bb757fb5af3eb831e1b32c6b0d11515a8d
         raise ValueError("Invalid healthy year range or negative recovery_days")
     cut_in = float(settings["cut_in_wind_ms"])
     if not np.isfinite(cut_in) or cut_in < 0:
@@ -68,8 +72,11 @@ def healthy_days(
         raise ValueError(
             "Healthy masks need label keys/status/label/split and feature keys/quality flags"
         )
+<<<<<<< HEAD
     if not features["Day"].dropna().eq(features["Day"].dropna().dt.normalize()).all():
         raise ValueError("Feature Day must be day-resolution midnight timestamps")
+=======
+>>>>>>> 232aa6bb757fb5af3eb831e1b32c6b0d11515a8d
     result = pd.Series(False, index=features.index, name=f"healthy_{target}", dtype=bool)
     candidate = _train_days(features["Day"], cfg)
     if "split" in features:
@@ -78,6 +85,11 @@ def healthy_days(
     if not len(positions):
         return result
     f = features.iloc[positions][KEYS + FLAGS].copy()
+<<<<<<< HEAD
+=======
+    if not f["Day"].eq(f["Day"].dt.normalize()).all():
+        raise ValueError("Training feature Day must be day-resolution midnight timestamps")
+>>>>>>> 232aa6bb757fb5af3eb831e1b32c6b0d11515a8d
     lab = labels.loc[_train_days(labels["Day"], cfg) & labels["split"].eq("train")].copy()
     if "target" in lab:
         lab = lab.loc[lab["target"].str.lower().eq(target)]

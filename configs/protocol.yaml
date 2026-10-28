@@ -84,8 +84,63 @@ features:                             # D-021: provisional choices, not tuned
   min_producing_intervals: 12         # a sensor's daily mean needs at least this many producing 10-min intervals (2 hours)
   window_min_days: 4                  # a 7-day window statistic needs at least this many observed days
 
+# H0 healthy fitting rows (D-030). Scope is the requested 2016 to 2025 data; the configured
+# train years still control eligibility, so validation and test days never qualify.
+healthy:
+  start_year: 2016
+  end_year: 2025
+  recovery_days: 7                    # exclude seven days after an episode ends
+  cut_in_wind_ms: 4.0                 # operating proxy aligned with stop_min_wind_ms, not a verified manufacturer cut-in
+
+preprocessing_p0:                     # D-040: learned on labelled train rows only
+  min_observed_share: 0.5             # inclusive finite-value share needed to keep a column
+  add_missing_indicators: false       # primary linear baseline does not encode sensor availability
+  scale: true                         # train mean and population standard deviation
+  clip_quantiles: null                # no clipping in the primary baseline
+
+baseline_b4:                          # D-041, D-042
+  c_grid: [0.01, 0.1, 1.0]
+  selected_c:                         # filled only after validation tuning; test remains untouched
+    a: 0.01                           # validation tuning, 2026-10-23 (D-041)
+    b: 0.01
+  selection_metric: pr_auc
+  selection_tie_break: smallest_c
+  solver: liblinear
+  max_iter: 2000
+  tolerance: 0.0001
+  nonfinite_score_fallback: 0.5
+  coefficient_top_n: 20
+
+b1_recent_fault:                     # D-050: fixed rules, not tuned on validation
+  tie_weight: 0.5                    # bounded recency cannot overturn a one-day count gap
+  missing_count: 0.0                 # no known history gives the lowest count contribution
+
+b2_alarm_count:
+  selected_variant: {a: tier1_2, b: code_10105}
+  candidates: [total, tier2, tier1_2, code_3130, code_10105, code_1005, code_8000, code_8210, code_8230, code_8234, code_8235, code_8236, code_20, code_25, code_102]
+  window_days: 7
+  missing_count: 0.0
+r1_zscore:
+  sensors: [wtc_GeOilTmp_mean, wtc_GenBeGTm_mean, wtc_GenBeRTm_mean, wtc_MainBTmp_mean, wtc_Gen1U1Tm_mean, wtc_Gen1V1Tm_mean, wtc_Gen1W1Tm_mean]
+  window_days: 7
+  minimum_healthy_rows: 30
+  minimum_std: 0.000001
+  missing_score: 0.0
+
+baseline_table:
+  exclude_stations: [2304515]
+
+# B3 provisional physical-proxy settings; not tuned on validation or test (D-031).
+power_curve:
+  bin_width_ms: 0.5
+  wind_min_ms: 4.0
+  wind_max_ms: 25.0
+  min_bin_intervals: 30
+  tolerance_std_multiple: 2.0
+
 seed: 42                              # D-010
 
+<<<<<<< HEAD
 # H0 healthy fitting examples (D-030). Scope is the requested 2016–2025 data;
 # configured train years still control eligibility, so val/test never qualify.
 healthy:
@@ -93,3 +148,8 @@ healthy:
   end_year: 2025
   recovery_days: 7                    # exclude seven days after an episode ends
   cut_in_wind_ms: 4.0                 # operating proxy aligned with stop_min_wind_ms, not a verified manufacturer cut-in
+=======
+# D-054: descriptive validation sensitivity, not a replacement for the official budget.
+budget_analysis:
+  budgets: [0.05, 0.1, 0.25, 0.5, 0.75, 1.0, 1.5, 2.0]
+>>>>>>> 232aa6bb757fb5af3eb831e1b32c6b0d11515a8d

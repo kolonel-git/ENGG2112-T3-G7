@@ -5,22 +5,18 @@ Missing yearly clean files are reported as unavailable (blank interval counts),
 not silently counted as zero. This does not train or evaluate a baseline model.
 """
 
-# ruff: noqa: E402 -- allow direct IDE execution with the src-layout package
-
 from __future__ import annotations
 
 import argparse
-import sys
 from pathlib import Path
-
-ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT / "src"))
 
 import pandas as pd
 
 from wt_predmaint.config import load_protocol
 from wt_predmaint.data.clean import interval_start
 from wt_predmaint.models.healthy import healthy_days, healthy_intervals
+
+ROOT = Path(__file__).resolve().parents[1]
 
 
 def main() -> None:
