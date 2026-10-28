@@ -12,14 +12,7 @@ import sys
 from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
 
-<<<<<<< HEAD
-# Support running this file directly from an IDE without installing the package.
-ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT / 'src'))
-
-=======
 from wt_predmaint.config import load_protocol
->>>>>>> 232aa6bb757fb5af3eb831e1b32c6b0d11515a8d
 from wt_predmaint.data.scada import TABLES, read_scada_year
 
 
