@@ -37,7 +37,7 @@ Three objectives from the project brief, plus explanation:
 |---|---|---|---|
 | **O1** | Degradation indicator | Learn what "normal" looks like for a turbine (for example, how warm the gearbox should be at a given wind speed). How far today's readings drift from normal is a health score. | Built; weak, and drifts between years unless made relative to the fleet |
 | **O2** | Fault and downtime prediction | Will this turbine have a fault or a long stoppage in the next 30 days? | Built and tested once on the test years; not better than random |
-| **O3** | Robustness | Do the predictions still hold for a turbine the model never saw, or with a sensor group missing? | Leave-one-turbine-out and sensor-group dropout done (validation years); year-shift and upgrade analyses not done |
+| **O3** | Robustness | Do the predictions still hold for a turbine the model never saw, or with a sensor group missing? | Leave-one-turbine-out and sensor-group dropout done (validation years); upgrade analysis not done; a train-years year-shift check is in the exploratory runs |
 | | Explanation | Which signals does the model lean on? | SHAP done, stable across turbines; model attribution, not proof of cause |
 
 ## How it works
@@ -82,6 +82,7 @@ Three objectives from the project brief, plus explanation:
 | Normal-behaviour model and indicator (O1, R2) | Done; frozen (D-055, D-057, D-058) |
 | LightGBM (L1) | Done; settings frozen on validation (D-060) |
 | Single test-year run | Done once (D-061); not repeated |
+| Exploratory runs: fleet-relative features, low-capacity models | Done on validation years only (D-064); leads for future work, not tested on the test years |
 | SHAP and robustness | Done on validation years (D-062) |
 | Final report | In progress: `reports/report/main.tex` (items still to confirm are marked in red) |
 | Ethics review | In progress (Cyrus) |
@@ -122,6 +123,7 @@ Full tables with all models, 95% intervals, episode recall and false alarms are 
   (0.11); residual drift between the training and validation years (up to 0.9 standard deviations)
   falls to about 0.2 when residuals are made relative to the fleet; only slightly higher before
   episodes than far from them.
+- **Exploratory follow-up (validation years only, D-064):** fleet-relative features raised some validation scores (for example logistic regression for target A from 0.447 to 0.483, LightGBM for target B from 0.456 to 0.516), but every interval still contains the random-score value and the train-year year-shift check shows no consistent gain. A lead for future work, not a result; not scored on the test years.
 - **Robustness (validation):** removing any sensor group changes PR-AUC by at most 0.023; pooled
   PR-AUC with a turbine left out of training is at or below the pooled prevalence.
 - **Explanation:** SHAP ranks ambient and weather-linked inputs, pressure sensors and days since the
@@ -148,8 +150,8 @@ operational episodes, not confirmed component failures.
 - Turbine 2304515 is positive on 97% of its validation days; we report validation results with and
   without it, and did not score the variant without it on the test years.
 - No confirmed failure or maintenance records; "fault" and "degradation" are inferred.
-- The upgrade analysis needs the AeroUp installation dates, which are not in our files; a separate
-  year-shift test was not run.
+- The upgrade analysis needs the AeroUp installation dates, which are not in our files; a year-shift check
+  was run only on training years, as part of the exploratory runs.
 - It is a decision aid for planning inspections at most, not an automatic shutdown trigger, and on
   our evidence not yet a useful one.
 
@@ -198,6 +200,7 @@ about 15 GB of yearly zips). Then run, in order:
 | `python scripts/analyse_alert_budgets.py` | validation alert-burden tables over a budget grid (run `make_baseline_table.py` first) |
 | `python scripts/run_shap.py` | SHAP importance and its stability across turbines (validation years only) |
 | `python scripts/run_robustness.py` | sensor-group dropout and leave-one-turbine-out (validation years only) |
+| `python scripts/run_exploratory.py` | the 42 exploratory configurations on validation years and the train-year year-shift check: `reports/tables/exploratory_validation.csv` (D-064) |
 | `python scripts/make_report_figures.py` | all report figures in `reports/figures/01_data` to `07_explain_robustness` and the index `reports/figures/README.md` |
 | `python scripts/write_report_tables.py` | the LaTeX tables in `reports/report/tables/` from the result tables |
 | `python scripts/plot_risk_timeline.py --station <id> --column <col>` | `reports/figures/timeline_*.png`: one turbine's line with bands showing why days are blank |

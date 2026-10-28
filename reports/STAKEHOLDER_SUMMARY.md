@@ -64,6 +64,11 @@ speeds), so a warning system would need no new equipment.
    and temperature conditions, pressure readings and how long since the last fault. This describes
    the model, it does not prove a cause.
 
+8. **We tried two ideas to fix the problem, on earlier data only.** Removing what is shared by the
+   whole farm on a given day (weather and sensor drift) lifted some scores a little, but never beyond
+   the margin of error, and it was not checked on the later years. These are leads for a future study,
+   not results.
+
 ## What it means for decisions
 
 - **Do not use these models to decide which turbine to inspect or when.** They are not shown to be
