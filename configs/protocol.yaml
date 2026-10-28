@@ -207,6 +207,17 @@ exploratory:
     score_year: 2020
   resamples: 200                      # bootstrap resamples (exploratory; the frozen runs use 1,000)
 
+# Second exploratory round (D-065): rolling self-baseline features and a turbine-ranking metric.
+# Validation years only; the test years are never scored here.
+exploratory_round2:
+  feature_sets: [self, self_fleet]
+  window_days: 90                     # trailing window of a turbine's own feature values
+  min_days: 30                        # observed days needed in the window
+  ranking:
+    top_k: [3, 5]                     # turbines flagged each day out of those with a label that day
+    min_turbines: 10                  # days with fewer labelled turbines are skipped
+    resamples: 1000                   # bootstrap over calendar months
+
 seed: 42                              # D-010
 
 # D-054: descriptive validation sensitivity, not a replacement for the official budget.
