@@ -188,12 +188,64 @@ def exploratory_tables() -> None:
         write(name, lines)
 
 
+def round2_tables() -> None:
+    """Self-baseline PR-AUC and the turbine-ranking tables (D-065)."""
+    first = pd.read_csv(TABLES / "exploratory_validation.csv")
+    second = pd.read_csv(TABLES / "exploratory_self_baseline.csv")
+    d = pd.concat([first.loc[first["feature_set"] == "raw"], second], ignore_index=True)
+    d["label"] = d["model"] + " (" + d["setting"] + ")"
+    sets = ["raw", "self", "self_fleet"]
+    head = ["Raw", "Self", "Self+fleet"]
+    lines = [
+        r"\begin{tabular}{@{}lcccccc@{}}",
+        r"\toprule",
+        r" & \multicolumn{3}{c}{Target A} & \multicolumn{3}{c}{Target B} \\",
+        r"\cmidrule(lr){2-4}\cmidrule(lr){5-7}",
+        "Model (setting) & " + " & ".join(head * 2) + r" \\",
+        r"\midrule",
+    ]
+    for label in dict.fromkeys(d["label"]):
+        cells = []
+        for target in ("A", "B"):
+            for fs in sets:
+                v = d.loc[
+                    (d["label"] == label) & (d["target"] == target) & (d["feature_set"] == fs),
+                    "pr_auc",
+                ]
+                cells.append(f"{v.iloc[0]:.3f}")
+        lines.append(tex(label) + " & " + " & ".join(cells) + r" \\")
+    lines += [r"\bottomrule", r"\end{tabular}"]
+    write("expl2_val.tex", lines)
+
+    r = pd.read_csv(TABLES / "ranking_validation.csv")
+    lines = [
+        r"\begin{tabular}{@{}lcccc@{}}",
+        r"\toprule",
+        r" & \multicolumn{2}{c}{Target A} & \multicolumn{2}{c}{Target B} \\",
+        r"\cmidrule(lr){2-3}\cmidrule(lr){4-5}",
+        r"Model & Top 3 & Top 5 & Top 3 & Top 5 \\",
+        r"\midrule",
+    ]
+    for model in dict.fromkeys(r["model"]):
+        cells = []
+        for target in ("A", "B"):
+            for k in (3, 5):
+                v = r.loc[(r["model"] == model) & (r["target"] == target) & (r["k"] == k)].iloc[0]
+                cells.append(
+                    f"{v.difference:+.3f} [{v.difference_lo:+.3f}, {v.difference_hi:+.3f}]"
+                )
+        lines.append(tex(NAMES[model]) + " & " + " & ".join(cells) + r" \\")
+    lines += [r"\bottomrule", r"\end{tabular}"]
+    write("ranking.tex", lines)
+
+
 def main() -> None:
     test_tables()
     valtest_table()
     label_table()
     robustness_tables()
     exploratory_tables()
+    round2_tables()
     print(f"wrote {sorted(p.name for p in OUT.glob('*.tex'))} to {OUT}")
 
 

@@ -6,7 +6,11 @@ runner and (b) with a year-shift check on train years only (fit on days up to ``
 ``score_year``). The test years are never scored here: the runner is called without ``frozen``.
 Writes ``reports/tables/exploratory_validation.csv``.
 
+``--round 2`` runs the second round (D-065): the rolling self-baseline feature sets, and adds the
+turbine-ranking metric on validation scores; it writes ``exploratory_self_baseline.csv``.
+
     python scripts/run_exploratory.py
+    python scripts/run_exploratory.py --round 2
 """
 
 from __future__ import annotations
@@ -21,6 +25,7 @@ import pandas as pd
 
 from wt_predmaint.config import load_protocol
 from wt_predmaint.evaluation.metrics import pr_auc
+from wt_predmaint.evaluation.ranking import daily_precision_at_k, ranking_summary
 from wt_predmaint.evaluation.runner import run_baselines
 from wt_predmaint.features.relative import build_feature_set
 from wt_predmaint.models.base import Baseline, attach_labels, labelled
@@ -75,19 +80,44 @@ def year_shift(factory: Callable[[], Baseline], table: pd.DataFrame, cfg: dict[s
     }
 
 
+def ranking_columns(
+    scores: dict, model_name: str, table: pd.DataFrame, cfg: dict[str, Any]
+) -> dict[str, float]:
+    """Precision at the top k turbines per day against chance, on validation (D-065)."""
+    rk = cfg["exploratory_round2"]["ranking"]
+    frame = scores[("all", model_name, "val")]
+    labels = labelled(table, "val")[["StationId", "Day", "label"]]
+    joined = labels.merge(frame, on=["StationId", "Day"], how="inner")
+    ks = [int(k) for k in rk["top_k"]]
+    daily = daily_precision_at_k(joined, ks, int(rk["min_turbines"]), int(cfg["seed"]))
+    summary = ranking_summary(daily, ks, int(rk["resamples"]), int(cfg["seed"]))
+    out: dict[str, float] = {}
+    for r in summary.itertuples(index=False):
+        out[f"rank_precision_{r.k}"] = r.mean_precision
+        out[f"rank_chance_{r.k}"] = r.mean_chance
+        out[f"rank_diff_{r.k}"] = r.difference
+        out[f"rank_diff_{r.k}_lo"] = r.difference_lo
+        out[f"rank_diff_{r.k}_hi"] = r.difference_hi
+    return out
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--interim", type=Path, default=ROOT / "data" / "interim")
+    parser.add_argument("--round", type=int, choices=[1, 2], default=1)
     args = parser.parse_args()
     cfg = load_protocol()
     ex = cfg["exploratory"]
+    r2 = cfg["exploratory_round2"]
+    feature_sets = ex["feature_sets"] if args.round == 1 else r2["feature_sets"]
+    out_name = "exploratory_validation.csv" if args.round == 1 else "exploratory_self_baseline.csv"
     features = pd.read_parquet(args.interim / "features" / "daily_features.parquet")
 
     rows: list[dict[str, Any]] = []
     for target in ("a", "b"):
         labels = pd.read_parquet(args.interim / "labels" / f"{target}_labels.parquet")
         episodes = pd.read_parquet(args.interim / "labels" / f"{target}_episodes.parquet")
-        for feature_set in ex["feature_sets"]:
+        for feature_set in feature_sets:
             table = attach_labels(build_feature_set(features, cfg, feature_set), labels, cfg)
             for name, setting, factory in model_grid(cfg, target):
                 model = factory()
@@ -96,6 +126,9 @@ def main() -> None:
                     splits=("val",), frozen=False, resamples=int(ex["resamples"]),
                 )  # fmt: skip
                 row = result.table.loc[result.table["model"] == model.name].iloc[0].to_dict()
+                extra = {}
+                if args.round == 2:
+                    extra = ranking_columns(result.scores, model.name, table, cfg)
                 rows.append(
                     {
                         "target": target.upper(),
@@ -117,6 +150,7 @@ def main() -> None:
                             )
                         },  # fmt: skip
                         **year_shift(factory, table, cfg),
+                        **extra,
                     }
                 )
                 print(
@@ -126,8 +160,8 @@ def main() -> None:
                 )
     out = ROOT / "reports" / "tables"
     out.mkdir(parents=True, exist_ok=True)
-    pd.DataFrame(rows).to_csv(out / "exploratory_validation.csv", index=False)
-    print(f"wrote {out / 'exploratory_validation.csv'} ({len(rows)} configurations)")
+    pd.DataFrame(rows).to_csv(out / out_name, index=False)
+    print(f"wrote {out / out_name} ({len(rows)} configurations)")
 
 
 if __name__ == "__main__":
