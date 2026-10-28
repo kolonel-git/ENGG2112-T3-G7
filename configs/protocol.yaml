@@ -218,6 +218,17 @@ exploratory_round2:
     min_turbines: 10                  # days with fewer labelled turbines are skipped
     resamples: 1000                   # bootstrap over calendar months
 
+# Third exploratory round (D-066): rank the features and prune the least useful. Selection
+# uses labelled train rows only; validation years are scored, the test years never.
+exploratory_round3:
+  feature_sets: [raw, self_fleet]
+  methods: [gain_cv, year_stable_auc, gain_cv_decorr]
+  keep: [10, 25, 50, 100]             # columns kept after ranking, every value is run
+  decorrelate_above: 0.9              # gain_cv_decorr: skip a column this correlated (abs Spearman) with a kept one
+  rank_sample_rows: 20000             # rows per fit used for the correlation matrix
+  models: [lgbm_frozen, b4_logistic]
+  drop_groups: [pressure, drivetrain_temperature, power_electronics, wind_rpm, alarms, fault_history, day_state]
+
 seed: 42                              # D-010
 
 # D-054: descriptive validation sensitivity, not a replacement for the official budget.
