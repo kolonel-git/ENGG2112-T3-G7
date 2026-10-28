@@ -144,3 +144,31 @@ def test_attach_nbm_joins_once_and_is_a_no_op_without_the_file(tmp_path) -> None
     nbm.to_parquet(tmp_path / "features" / "nbm_residuals.parquet")
     joined = attach_nbm(table, tmp_path)
     assert len(joined) == len(table) and joined["nbm_indicator"].eq(1.0).all()
+
+
+def _tuning_module():
+    import importlib.util
+    from pathlib import Path
+
+    path = Path(__file__).resolve().parents[1] / "scripts" / "tune_lgbm.py"
+    spec = importlib.util.spec_from_file_location("tune_lgbm", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def test_grid_is_the_whole_search_and_ties_go_to_the_simpler_setting() -> None:
+    tune = _tuning_module()
+    cfg = load_protocol()
+    grid = tune.candidates(cfg)
+    assert len(grid) == 6 and len({tuple(sorted(g.items())) for g in grid}) == 6
+    rows = [
+        {"pr_auc": 0.50, "num_leaves": 15, "n_estimators": 300},
+        {"pr_auc": 0.50, "num_leaves": 7, "n_estimators": 300},
+        {"pr_auc": 0.50, "num_leaves": 7, "n_estimators": 100},
+        {"pr_auc": 0.49, "num_leaves": 3, "n_estimators": 10},
+    ]
+    best = tune.select_row(rows, cfg)
+    assert (best["num_leaves"], best["n_estimators"]) == (7, 100)
+    with pytest.raises(ValueError, match="finite"):
+        tune.select_row([{"pr_auc": float("nan"), "num_leaves": 7, "n_estimators": 100}], cfg)

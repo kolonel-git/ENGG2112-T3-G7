@@ -151,12 +151,12 @@ nbm:
   minimum_turbine_rows: 100           # healthy rows needed for a turbine's own residual spread
   minimum_std: 0.000001
 
-# Class-weighted LightGBM (D-056). `selected` holds provisional defaults until scripts/tune_lgbm.py
-# has chosen them on validation (then frozen, with a D-entry); the grid is the whole search.
+# Class-weighted LightGBM (D-056). `selected` is frozen by D-060 after scripts/tune_lgbm.py chose
+# it on validation; the grid is the whole search and is not widened.
 lgbm:
   selected:
-    a: {num_leaves: 15, n_estimators: 200, learning_rate: 0.05, min_child_samples: 200}
-    b: {num_leaves: 15, n_estimators: 200, learning_rate: 0.05, min_child_samples: 200}
+    a: {num_leaves: 7, n_estimators: 300, learning_rate: 0.05, min_child_samples: 200}
+    b: {num_leaves: 31, n_estimators: 300, learning_rate: 0.05, min_child_samples: 200}
   grid:
     num_leaves: [7, 15, 31]
     n_estimators: [100, 300]
