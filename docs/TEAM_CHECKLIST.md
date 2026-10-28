@@ -53,8 +53,10 @@ nobody signs off for someone else. Sign-offs go under "Sign-offs" at the end, in
       CC-BY-4.0 data licence and citation, and limits of the open dataset (no measured power, no
       maintenance records, alarm descriptions for only 12 codes).
 - [ ] Tue: set up the report outline, abstract and introduction draft. The claim to defend is what the
-      data show: baselines sit close to the random floor at the project's budget, R1 is best on
-      validation PR-AUC, the NBM indicator is weak and drifts between train and validation years.
+      data show: on the test years no model is distinguishable from the random-score floor, R1's
+      validation lead did not hold, the validation threshold does not carry to a fixed false-alarm
+      rate, and the NBM indicator is weak and drifts between train and validation years
+      (`reports/TEST_RESULTS.md`, D-061).
 - [ ] Wed to Fri: merge each section into the draft as it arrives.
 - [ ] Fri night (G4): a complete draft that everyone has read.
 - [ ] Sat: final proofread, citations (only sources actually checked), limitations section, submit (G5).
