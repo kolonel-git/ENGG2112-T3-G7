@@ -82,7 +82,7 @@ Three objectives from the project brief, plus explanation:
 | Normal-behaviour model and indicator (O1, R2) | Done; frozen (D-055, D-057, D-058) |
 | LightGBM (L1) | Done; settings frozen on validation (D-060) |
 | Single test-year run | Done once (D-061); not repeated |
-| Exploratory runs: fleet-relative features, low-capacity models | Done on validation years only (D-064); leads for future work, not tested on the test years |
+| Exploratory runs: fleet-relative features, low-capacity models | Done on validation years only (D-064, D-065); leads for future work, not tested on the test years |
 | SHAP and robustness | Done on validation years (D-062) |
 | Final report | In progress: `reports/report/main.tex` (items still to confirm are marked in red) |
 | Ethics review | In progress (Cyrus) |
@@ -124,6 +124,7 @@ Full tables with all models, 95% intervals, episode recall and false alarms are 
   falls to about 0.2 when residuals are made relative to the fleet; only slightly higher before
   episodes than far from them.
 - **Exploratory follow-up (validation years only, D-064):** fleet-relative features raised some validation scores (for example logistic regression for target A from 0.447 to 0.483, LightGBM for target B from 0.456 to 0.516), but every interval still contains the random-score value and the train-year year-shift check shows no consistent gain. A lead for future work, not a result; not scored on the test years.
+- **Second exploratory round (validation years only, D-065):** each turbine's own trailing 90-day median as the baseline gave no interval beyond the random-score margin either. A turbine-ranking view (precision among the top 3 turbines each day against chance) was above chance for the power-curve baseline B3 on both targets (about +0.07 to +0.08, intervals above zero); with 92 intervals examined, this is a lead to confirm on new data, not a result.
 - **Robustness (validation):** removing any sensor group changes PR-AUC by at most 0.023; pooled
   PR-AUC with a turbine left out of training is at or below the pooled prevalence.
 - **Explanation:** SHAP ranks ambient and weather-linked inputs, pressure sensors and days since the
@@ -201,6 +202,7 @@ about 15 GB of yearly zips). Then run, in order:
 | `python scripts/run_shap.py` | SHAP importance and its stability across turbines (validation years only) |
 | `python scripts/run_robustness.py` | sensor-group dropout and leave-one-turbine-out (validation years only) |
 | `python scripts/run_exploratory.py` | the 42 exploratory configurations on validation years and the train-year year-shift check: `reports/tables/exploratory_validation.csv` (D-064) |
+| `python scripts/run_exploratory.py --round 2` and `python scripts/run_ranking.py` | the self-baseline configurations and the turbine-ranking metric on validation years: `reports/tables/exploratory_self_baseline.csv`, `ranking_validation.csv` (D-065) |
 | `python scripts/make_report_figures.py` | all report figures in `reports/figures/01_data` to `07_explain_robustness` and the index `reports/figures/README.md` |
 | `python scripts/write_report_tables.py` | the LaTeX tables in `reports/report/tables/` from the result tables |
 | `python scripts/plot_risk_timeline.py --station <id> --column <col>` | `reports/figures/timeline_*.png`: one turbine's line with bands showing why days are blank |

@@ -69,6 +69,12 @@ speeds), so a warning system would need no new equipment.
    the margin of error, and it was not checked on the later years. These are leads for a future study,
    not results.
 
+9. **Looking at it as a planner would.** Each day we asked whether the turbines the models flag as
+   riskiest are really the ones about to fault. One simple model, which compares each turbine's rotor
+   speed with what its wind speed should give, did better than chance on the earlier data for both
+   definitions of fault. Many comparisons were made, so this may be luck; it is worth checking on
+   fresh data before anyone relies on it.
+
 ## What it means for decisions
 
 - **Do not use these models to decide which turbine to inspect or when.** They are not shown to be
