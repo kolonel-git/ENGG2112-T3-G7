@@ -156,11 +156,44 @@ def robustness_tables() -> None:
     write("loto.tex", lines)
 
 
+def exploratory_tables() -> None:
+    """Validation PR-AUC and train-year year-shift PR-AUC of the exploratory grid (D-064)."""
+    d = pd.read_csv(TABLES / "exploratory_validation.csv")
+    sets = ["raw", "fleet", "fleet_season"]
+    head = [r"Raw", r"Fleet", r"Fleet+season"]
+    d["label"] = d["model"] + " (" + d["setting"] + ")"
+    for column, name in (
+        ("pr_auc", "expl_val.tex"),
+        ("year_shift_pr_auc", "expl_shift.tex"),
+    ):
+        lines = [
+            r"\begin{tabular}{@{}lcccccc@{}}",
+            r"\toprule",
+            r" & \multicolumn{3}{c}{Target A} & \multicolumn{3}{c}{Target B} \\",
+            r"\cmidrule(lr){2-4}\cmidrule(lr){5-7}",
+            "Model (setting) & " + " & ".join(head * 2) + r" \\",
+            r"\midrule",
+        ]
+        for label in dict.fromkeys(d["label"]):
+            cells = []
+            for target in ("A", "B"):
+                for fs in sets:
+                    v = d.loc[
+                        (d["label"] == label) & (d["target"] == target) & (d["feature_set"] == fs),
+                        column,
+                    ]
+                    cells.append(f"{v.iloc[0]:.3f}")
+            lines.append(tex(label) + " & " + " & ".join(cells) + r" \\")
+        lines += [r"\bottomrule", r"\end{tabular}"]
+        write(name, lines)
+
+
 def main() -> None:
     test_tables()
     valtest_table()
     label_table()
     robustness_tables()
+    exploratory_tables()
     print(f"wrote {sorted(p.name for p in OUT.glob('*.tex'))} to {OUT}")
 
 

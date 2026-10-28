@@ -189,6 +189,24 @@ explain:
   stability_sample_rows: 1000         # rows explained per leave-one-turbine-out fold
   top_n: 20
 
+# Exploratory validation-only runs (D-064): drift-robust features and low-capacity models. Not part
+# of the frozen results; the test years are never scored here.
+exploratory:
+  min_turbines: 5                     # turbines needed on a day for a fleet median
+  feature_sets: [raw, fleet, fleet_season]
+  shallow_trees:                      # LightGBM with very small trees, all settings are run
+    num_leaves: 3
+    max_depth: 2
+    learning_rate: 0.05
+    min_child_samples: 500
+    n_estimators: [50, 150]
+  sparse_logistic:                    # L1-penalised logistic regression, all values are run
+    c_grid: [0.003, 0.01, 0.03]
+  year_shift:                         # train years only: fit on years up to fit_up_to, score score_year
+    fit_up_to: 2018
+    score_year: 2020
+  resamples: 200                      # bootstrap resamples (exploratory; the frozen runs use 1,000)
+
 seed: 42                              # D-010
 
 # D-054: descriptive validation sensitivity, not a replacement for the official budget.

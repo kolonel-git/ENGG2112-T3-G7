@@ -47,12 +47,19 @@ def lgbm_params(cfg: dict[str, Any], target: str) -> dict[str, Any]:
 class LightGBMBaseline:
     """Class-weighted gradient-boosted trees with train-only column selection."""
 
-    def __init__(self, target: str, use_nbm: bool = False) -> None:
+    def __init__(
+        self,
+        target: str,
+        use_nbm: bool = False,
+        overrides: dict[str, Any] | None = None,
+        name: str | None = None,
+    ) -> None:
         if target not in {"a", "b"}:
             raise ValueError("target must be 'a' or 'b'")
         self.target = target
         self.use_nbm = use_nbm
-        self.name = "L1_lgbm_nbm" if use_nbm else "L1_lgbm"
+        self.overrides = dict(overrides or {})  # exploratory runs only (D-064)
+        self.name = name or ("L1_lgbm_nbm" if use_nbm else "L1_lgbm")
 
     def fit(self, train: pd.DataFrame, cfg: dict[str, Any]) -> LightGBMBaseline:
         require_train_only(train)
@@ -69,7 +76,7 @@ class LightGBMBaseline:
         if not len(keep):
             raise ValueError("no LightGBM feature columns remain after train-only selection")
         self.columns_ = list(keep)
-        self.params_ = lgbm_params(cfg, self.target)
+        self.params_ = {**lgbm_params(cfg, self.target), **self.overrides}
         self.fallback_ = float(cfg["lgbm"]["nonfinite_score_fallback"])
         self.scale_pos_weight_ = float((y == 0).sum() / (y == 1).sum())
         self.model_ = lgb.LGBMClassifier(
