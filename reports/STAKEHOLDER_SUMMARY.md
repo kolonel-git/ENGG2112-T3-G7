@@ -75,6 +75,13 @@ speeds), so a warning system would need no new equipment.
    definitions of fault. Many comparisons were made, so this may be luck; it is worth checking on
    fresh data before anyone relies on it.
 
+10. **Using fewer inputs.** We ranked the roughly 300 inputs by how much they helped on the earlier
+   years and tried keeping only the best 10 to 100. Keeping 50 or more worked about as well as keeping
+   everything, so the model can be simpler, but no choice of inputs made the predictions clearly better
+   than guessing. The inputs that look most consistent from year to year for one fault definition are
+   outdoor and nacelle temperatures, which follow the seasons, so they may be telling us about the
+   weather rather than about wear.
+
 ## What it means for decisions
 
 - **Do not use these models to decide which turbine to inspect or when.** They are not shown to be
