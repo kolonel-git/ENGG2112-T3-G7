@@ -41,6 +41,8 @@ and target B is orange wherever both appear.
 | F27 | False-alert days versus missed episodes | Evaluation | [04_evaluation/F27_alert_burden_vs_missed_episodes.png](04_evaluation/F27_alert_burden_vs_missed_episodes.png) |
 | F32 | NBM: fit quality and validation-year shift per sensor | O1 degradation indicator | [06_nbm/F32_nbm_validation_shift.png](06_nbm/F32_nbm_validation_shift.png) |
 | F33 | NBM indicator against time to the next episode | O1 degradation indicator | [06_nbm/F33_nbm_indicator_vs_lead.png](06_nbm/F33_nbm_indicator_vs_lead.png) |
+| F34 | SHAP: what the frozen LightGBM relies on | Explainability | [07_explain_robustness/F34_shap_top_features.png](07_explain_robustness/F34_shap_top_features.png) |
+| F35 | Robustness: sensor-group dropout and leave-one-turbine-out | Robustness | [07_explain_robustness/F35_robustness_dropout_loto.png](07_explain_robustness/F35_robustness_dropout_loto.png) |
 
 ## F01: Data coverage by turbine and month
 
@@ -338,3 +340,21 @@ and target B is orange wherever both appear.
 - **Report section:** O1 degradation indicator
 - **Built from:** reports/tables/nbm_lead_variants.csv (models/nbm.py, scripts/build_nbm.py)
 - **Read with:** Validation years (2021 to 2022) only; models are fitted on healthy train days (2016 to 2020). Indicator is the largest absolute 7-day smoothed standardised residual over sensors; in-episode days are excluded; turbine-day counts are in the CSV. The two panels use different scales because the fleet-relative residual has a smaller spread.
+
+## F34: SHAP: what the frozen LightGBM relies on
+
+![SHAP: what the frozen LightGBM relies on](07_explain_robustness/F34_shap_top_features.png)
+
+- **Takeaway:** The model leans on ambient and weather-linked inputs (DeltaTmp, ambient temperature, tower humidity and frequency), on pressure sensors (inverter, offline, hub pressure) and on days since the last fault day; component temperatures such as MainBTmp and HydOilTm rank lower. The ranking is stable across leave-one-turbine-out refits.
+- **Report section:** Explainability
+- **Built from:** reports/tables/shap_importance_a.csv, shap_importance_b.csv, shap_stability.csv (explain/shap_lgbm.py, scripts/run_shap.py)
+- **Read with:** Validation years (2021 to 2022) only; frozen L1_lgbm (D-060). Test years are not used. Mean absolute SHAP on 4,000 validation rows. Colour shows the direction of the effect (rank correlation of the feature value with its SHAP value). This describes the model, not causes of faults, and the model scores at the random-score level (D-060).
+
+## F35: Robustness: sensor-group dropout and leave-one-turbine-out
+
+![Robustness: sensor-group dropout and leave-one-turbine-out](07_explain_robustness/F35_robustness_dropout_loto.png)
+
+- **Takeaway:** Removing a sensor group barely moves PR-AUC (within 0.03), while recall at the fixed threshold moves only because scores shift and false alarms change; leaving a turbine out of training leaves pooled PR-AUC at or below the pooled prevalence, and per-turbine PR-AUC follows the turbine's own prevalence.
+- **Report section:** Robustness
+- **Built from:** reports/tables/robustness_dropout.csv, robustness_loto.csv, robustness_loto_summary.csv (evaluation/robustness.py, scripts/run_robustness.py)
+- **Read with:** Validation years (2021 to 2022) only; frozen L1_lgbm (D-060). Test years are not used. Dropout sets a group's features to missing at scoring time at the intact model's threshold, so a change in recall comes with a change in false alarms (see the CSV). In the right panel the diagonal is a score no better than the turbine's prevalence; every turbine has at least 113 positive validation rows.

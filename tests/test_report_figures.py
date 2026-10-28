@@ -4,6 +4,7 @@ from wt_predmaint.reporting import (  # noqa: F401  (registers figures)
     figures_data,
     figures_eval,
     figures_nbm,
+    figures_robust,
 )
 from wt_predmaint.reporting.context import Ctx
 from wt_predmaint.reporting.style import REGISTRY, apply_style, save
@@ -30,6 +31,7 @@ def test_every_figure_folder_is_one_of_the_report_sections() -> None:
         "04_evaluation",
         "05_baselines",
         "06_nbm",
+        "07_explain_robustness",
     }
 
 

@@ -17,6 +17,7 @@ from wt_predmaint.reporting import (  # noqa: F401  (registers the figures)
     figures_data,
     figures_eval,
     figures_nbm,
+    figures_robust,
 )
 from wt_predmaint.reporting.context import Ctx
 from wt_predmaint.reporting.style import REGISTRY, FigureSpec, apply_style, save

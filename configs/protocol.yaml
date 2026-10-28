@@ -35,6 +35,19 @@ splits:
 
 robustness:
   leave_one_turbine_out: false  # main runs use the time split; O3 scripts run leave-one-turbine-out (D-006)
+  # Sensor groups for the dropout test (D-062): at scoring time every feature built from a sensor in
+  # the group (daily mean or maximum, 7-day window mean or std) is set to missing; the fitted model
+  # is not changed. `state` adds the wind, rpm and operating-state summary columns to the group.
+  sensor_groups:
+    pressure:
+      tokens: [HubPresA, HubPresB, HubPresC, HydPress, BrakPres, GearPres, InlPrAft, InlPrBef, OfflPres, InvPress, BrAccPrs, BoostAct, BoostAva]
+    drivetrain_temperature:
+      tokens: [GeOilTmp, GenBeGTm, GenBeRTm, MainBTmp, HSGenTmp, HSRotTmp, IMSGenTm, IMSRotTm, TraOilTF, TraRooTF, Gen1U1Tm, Gen1V1Tm, Gen1W1Tm, GenAvgTm, HydOilTm]
+    power_electronics:
+      tokens: [ConvWTmp, ReacUTmp, ReacVTmp, ReacWTmp, GFilB1Tm, GFilB2Tm, GFilB3Tm, InvUpTmp, TrafoTMa, BrkTmpGn]
+    wind_rpm:
+      tokens: [PrWindSp, SeWindSp, AcWindSp, GenRpm, MainSRpm]
+      state: true
 
 labels:
   # In-scope alarm codes and tiers (D-001, D-002). Superseded by D-003: alarm codes are now
@@ -169,6 +182,12 @@ lgbm:
   selection_tie_break: simplest        # fewest leaves, then fewest trees
   nonfinite_score_fallback: 0.5
   importance_top_n: 20
+
+# SHAP and its stability across leave-one-turbine-out folds (D-062); validation rows only.
+explain:
+  shap_sample_rows: 4000              # labelled validation rows explained for the full model
+  stability_sample_rows: 1000         # rows explained per leave-one-turbine-out fold
+  top_n: 20
 
 seed: 42                              # D-010
 

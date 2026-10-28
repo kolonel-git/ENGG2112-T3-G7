@@ -93,6 +93,10 @@ class LightGBMBaseline:
         x = rows[self.columns_].apply(pd.to_numeric, errors="coerce").astype("float32")
         return x.replace([np.inf, -np.inf], np.nan)
 
+    def feature_matrix(self, rows: pd.DataFrame) -> pd.DataFrame:
+        """The fitted columns of ``rows`` as the model sees them (float32, non-finite missing)."""
+        return self._matrix(rows)
+
     def score(self, rows: pd.DataFrame) -> pd.Series:
         """Positive-class probability per row; one finite value each, indexed like ``rows``."""
         if not hasattr(self, "model_"):
