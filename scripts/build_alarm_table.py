@@ -28,8 +28,6 @@ from wt_predmaint.data.alarms import (
 )
 
 
-
-
 def main() -> None:
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawTextHelpFormatter)
     p.add_argument("--raw", type=Path, default=ROOT / "data" / "raw")

@@ -8,14 +8,13 @@ Output: data/interim/scada/<table>_<year>.parquet (git-ignored).
 from __future__ import annotations
 
 import argparse
-import sys
 from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
 
 from wt_predmaint.config import load_protocol
 from wt_predmaint.data.scada import TABLES, read_scada_year
 
-
+ROOT = Path(__file__).resolve().parents[1]
 
 
 def convert(args: tuple[Path, Path, str, int]) -> str:

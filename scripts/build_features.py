@@ -28,8 +28,6 @@ from wt_predmaint.features.daily import (
 )
 
 
-
-
 def main() -> None:
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawTextHelpFormatter)
     p.add_argument("--interim", type=Path, default=ROOT / "data" / "interim")

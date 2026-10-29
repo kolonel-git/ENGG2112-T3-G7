@@ -3,7 +3,7 @@
 Four people, four packages. Written 2026-10-22. It turns the baseline list in
 [modelling_plan.md](modelling_plan.md) section 7.3 (with D-011) into work orders. Read
 [FEATURES_AND_LABELS.md](FEATURES_AND_LABELS.md) and decisions D-019 to D-022 in
-[DECISIONS.md](DECISIONS.md) first. The rules in [CLAUDE.md](../CLAUDE.md) apply to everything here.
+[DECISIONS.md](project/DECISIONS.md) first. The rules in [CLAUDE.md](../CLAUDE.md) apply to everything here.
 
 Nothing below is a result. Numbers appear only once someone has computed them with the scripts.
 
@@ -80,7 +80,7 @@ the choice in a decision entry.
 
 ### 2.4 Decision IDs (avoid merge conflicts)
 
-Several people will add entries to `docs/DECISIONS.md` at once. To keep IDs unique, each person uses
+Several people will add entries to `docs/project/DECISIONS.md` at once. To keep IDs unique, each person uses
 their own block:
 
 | Person | IDs |
@@ -217,7 +217,7 @@ In `tests/test_<module>.py`, on synthetic data (no real data in tests):
    documented, and so on).
 
 #### Merge conflicts
-`models/registry.py`, `configs/protocol.yaml` and `docs/DECISIONS.md` are edited by everyone. Conflicts
+`models/registry.py`, `configs/protocol.yaml` and `docs/project/DECISIONS.md` are edited by everyone. Conflicts
 there are expected and trivial: `git merge origin/main` before opening the PR and keep both sides. Do not
 reorder or reformat other people's lines.
 

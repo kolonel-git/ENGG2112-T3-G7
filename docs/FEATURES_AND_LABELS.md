@@ -158,5 +158,5 @@ Kept in the table for filtering and checking, excluded by `feature_columns`:
   ratios.
 - Features are not model-ready: no scaling or imputation has been applied.
 
-See D-019 and D-021 in [DECISIONS.md](DECISIONS.md) for the reasoning and
+See D-019 and D-021 in [DECISIONS.md](project/DECISIONS.md) for the reasoning and
 [DATA_TRAPS.md](DATA_TRAPS.md) for the data problems behind these choices.

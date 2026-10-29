@@ -3,12 +3,9 @@
 from __future__ import annotations
 
 import copy
-<<<<<<< HEAD
-=======
 import subprocess
 import sys
 from pathlib import Path
->>>>>>> 232aa6bb757fb5af3eb831e1b32c6b0d11515a8d
 
 import numpy as np
 import pandas as pd
@@ -175,8 +172,6 @@ def test_inputs_are_unchanged_and_invalid_contracts_are_rejected() -> None:
         healthy_days(pd.concat([labels, labels.iloc[[0]]]), features, cfg, "a")
     with pytest.raises(ValueError, match="quality flags"):
         healthy_days(labels, features.drop(columns="outage_month"), cfg, "a")
-<<<<<<< HEAD
-=======
 
 
 def test_qualifying_stop_run_crosses_training_year_boundary() -> None:
@@ -245,4 +240,3 @@ def test_report_marks_unavailable_years_and_never_keeps_validation(tmp_path: Pat
     assert report.loc[2023, "healthy_days"] == report.loc[2023, "healthy_intervals"] == 0
     assert pd.isna(report.loc[2016, "healthy_intervals"])
     assert not report.loc[2016, "clean_scada_file_available"]
->>>>>>> 232aa6bb757fb5af3eb831e1b32c6b0d11515a8d

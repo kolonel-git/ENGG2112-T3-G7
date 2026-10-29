@@ -6,6 +6,7 @@ Both return one row per episode with day-resolution Start and End dates (turbine
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from typing import Any
 
 import pandas as pd
@@ -100,10 +101,20 @@ def stop_runs(scada: pd.DataFrame, p: dict[str, Any]) -> tuple[pd.DataFrame, pd.
     return out, observed.reset_index(drop=True)
 
 
-def stop_episodes_b(scada: pd.DataFrame, cfg: dict[str, Any]) -> tuple[pd.DataFrame, pd.DataFrame]:
-    """Target B. Returns (episodes with day-resolution Start/End, observed days)."""
+def stop_episodes_b(
+    scada: pd.DataFrame,
+    cfg: dict[str, Any],
+    runs_filter: Callable[[pd.DataFrame], pd.DataFrame] | None = None,
+) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """Target B. Returns (episodes with day-resolution Start/End, observed days).
+
+    ``runs_filter`` (label sensitivity, D-068) may remove stop runs before they are merged; the
+    observed days are unaffected.
+    """
     p = cfg["labels"]["targets"]["scada_stops"]
     runs, observed = stop_runs(scada, p)
+    if runs_filter is not None:
+        runs = runs_filter(runs).reset_index(drop=True)
     episodes = merge_into_episodes(runs, p["episode_gap_days"])
     episodes["Start"] = episodes["Start"].dt.floor("D")
     episodes["End"] = (episodes["End"] - INTERVAL).dt.floor("D")  # End is an interval end

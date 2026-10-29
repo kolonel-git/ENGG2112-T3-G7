@@ -43,6 +43,8 @@ select = ["E", "F", "I", "UP", "B"]
 [tool.ruff.lint.per-file-ignores]
 # figure descriptions are long prose strings that feed the generated report index
 "src/wt_predmaint/reporting/figures_*.py" = ["E501"]
+# scripts add src/ to sys.path so they also run directly from an IDE without installing the package
+"scripts/**/*.py" = ["E402"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

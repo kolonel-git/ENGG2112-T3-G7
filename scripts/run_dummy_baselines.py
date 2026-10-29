@@ -27,8 +27,6 @@ from wt_predmaint.evaluation.metrics import (
 from wt_predmaint.evaluation.splits import labelled_split, split_years
 
 
-
-
 def main() -> None:
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawTextHelpFormatter)
     p.add_argument("--interim", type=Path, default=ROOT / "data" / "interim")
