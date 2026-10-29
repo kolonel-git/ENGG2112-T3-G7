@@ -229,6 +229,20 @@ exploratory_round3:
   models: [lgbm_frozen, b4_logistic]
   drop_groups: [pressure, drivetrain_temperature, power_electronics, wind_rpm, alarms, fault_history, day_state]
 
+# Label sensitivity round (D-068): rebuild the labels with other horizons, severities and a
+# fault-only version of target B, and rerun the frozen models on the validation years. Labels
+# are built in memory; the frozen label files are not touched. The test years are never scored.
+label_sensitivity:
+  horizons: [7, 14, 30]               # positive window in days; the exclusion zone ends at 2 x the window
+  a_fault_hours: [4, 8, 12]           # target A: TimeErr hours that make a fault day (reference: 4)
+  b_stop_intervals: [18, 36, 72]      # target B: consecutive 10-min stop intervals that make a stop (reference: 18)
+  b_weather_stops: [keep, drop]       # drop: remove stop runs that start with a weather alarm active (tier below)
+  weather_tiers: [2]                  # alarm tier 2 = low wind, high wind and icing codes in `alarm_codes`
+  weather_margin_intervals: 1         # an alarm counts if it is active from this many 10-min intervals before the stop
+  models: [B1_recent_fault, B2_alarm_count, R1_zscore, B3_power_curve, B4_logistic, R2_nbm_indicator, L1_lgbm]
+  resamples: 500                      # turbine bootstrap resamples (exploratory; the frozen runs use 1,000)
+  ranking_top_k: 3                    # daily top-k turbines for the ranking metric (D-065)
+
 seed: 42                              # D-010
 
 # D-054: descriptive validation sensitivity, not a replacement for the official budget.
