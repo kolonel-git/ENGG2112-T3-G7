@@ -1,0 +1,32 @@
+# Requires Python 3.10 or newer.
+# Run from the repository root using the same Python interpreter as your IDE:
+#   python -m pip install -r docs/general/requirements.txt
+#
+# Install this project in editable mode, including its development dependencies.
+# pyproject.toml is the authoritative dependency list; pip installs these packages
+# and their dependencies automatically. Editable installation also makes
+# wt_predmaint importable from scripts, tests, and notebooks.
+-e .[dev]
+#
+# Runtime dependencies declared in pyproject.toml:
+# pandas>=2.0          - data tables and time-series processing
+# numpy>=1.24          - numerical arrays and calculations
+# scikit-learn>=1.3    - machine-learning tools and evaluation metrics
+# lightgbm>=4.0        - gradient-boosted tree models
+# shap>=0.44           - model explanations
+# matplotlib>=3.7      - plotting
+# pyarrow>=14.0        - Parquet reading and writing
+# pyyaml>=6.0          - reading configs/protocol.yaml (imported as yaml)
+#
+# Development, notebook, and Excel dependencies:
+# openpyxl>=3.1        - Excel inspection and tests
+# jupyter>=1.0         - notebooks
+# pytest>=7.4          - test runner
+# ruff>=0.4            - linting and formatting
+# pre-commit>=3.5      - Git checks
+# nbstripout>=0.7      - removing notebook outputs
+#
+# Build dependency: setuptools>=68 (installed automatically by pip when needed).
+# Python standard-library modules such as pathlib, csv, sqlite3, json, and urllib
+# come with Python and do not need separate installation.
+# These are minimum versions, not an exact-version lockfile.

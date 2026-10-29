@@ -3,7 +3,7 @@
 Group 7, ENGG2112. Predicting wind turbine degradation from Hill of Towie SCADA: explainable predictive maintenance.
 Last updated 2026-10-27. Owners follow the project brief: **Parvez** data acquisition and cleaning; **Revael** features and labelling;
 **Kanav** modelling and tuning; **Farhan** evaluation harness and cost analysis; **Cyrus** ethics review and report integration.
-Decisions behind this roadmap are in `docs/DECISIONS.md`; the technical plan is in `docs/modelling_plan.md`.
+Decisions behind this roadmap are in `docs/project/DECISIONS.md`; the technical plan is in `docs/project/modelling_plan.md`.
 
 ## 1. Where we are
 
@@ -102,7 +102,7 @@ Submission is assumed to be **Sunday 2026-11-01** (five days from 2026-10-27, st
 ## 6. Working agreement
 
 - One branch per task named `owner/short-topic`, small PRs, one reviewer, no direct pushes to `main` (see `CONTRIBUTING.md`).
-- Every decision that changes the plan goes in `docs/DECISIONS.md` the same day with an ID; configs change only together with their decision entry.
+- Every decision that changes the plan goes in `docs/project/DECISIONS.md` the same day with an ID; configs change only together with their decision entry.
 - Never commit data. Never invent results or references.
 
 ## 7. Known limitations to state in the report

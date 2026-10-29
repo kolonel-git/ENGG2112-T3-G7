@@ -10,7 +10,12 @@ configs/protocol.yaml, and prints event counts per code and year.
 from __future__ import annotations
 
 import argparse
+import sys
 from pathlib import Path
+
+# Support running this file directly from an IDE without installing the package.
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / 'src'))
 
 from wt_predmaint.config import load_protocol
 from wt_predmaint.data.alarms import (
@@ -21,8 +26,6 @@ from wt_predmaint.data.alarms import (
     load_alarm_log,
     other_alarm_events,
 )
-
-ROOT = Path(__file__).resolve().parents[1]
 
 
 def main() -> None:

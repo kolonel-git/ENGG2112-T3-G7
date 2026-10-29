@@ -2,7 +2,7 @@
 
 For readers who know nothing about the project. Numbers come from the saved result tables
 (`reports/TEST_RESULTS.md` and `reports/tables/`); the technical detail is in the report
-(`reports/report/main.tex`) and the decision log (`docs/DECISIONS.md`).
+(`reports/report/main.tex`) and the decision log (`docs/project/DECISIONS.md`).
 
 ## The short version
 

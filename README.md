@@ -87,7 +87,7 @@ Three objectives from the project brief, plus explanation:
 | Final report | In progress: `reports/report/main.tex` (items still to confirm are marked in red) |
 | Ethics review | In progress (Cyrus) |
 
-Dates, owners and review gates are in [`docs/roadmap.md`](docs/roadmap.md); the open items per
+Dates, owners and review gates are in [`docs/project/roadmap.md`](docs/project/roadmap.md); the open items per
 person are in [`docs/TEAM_CHECKLIST.md`](docs/TEAM_CHECKLIST.md).
 
 ### What the labels look like (`reports/tables/label_summary.csv`)
@@ -158,7 +158,7 @@ operational episodes, not confirmed component failures.
 - It is a decision aid for planning inspections at most, not an automatic shutdown trigger, and on
   our evidence not yet a useful one.
 
-The full list, with the evidence, is in [`docs/DATA_TRAPS.md`](docs/DATA_TRAPS.md).
+The full list, with the evidence, is in [`docs/project/DATA_TRAPS.md`](docs/project/DATA_TRAPS.md).
 
 ## Dataset
 
@@ -167,7 +167,7 @@ The full list, with the evidence, is in [`docs/DATA_TRAPS.md`](docs/DATA_TRAPS.m
 - Provisionally pinned to **v2.1.0**: DOI [10.5281/zenodo.22662930](https://doi.org/10.5281/zenodo.22662930)
   (concept DOI for all versions: 10.5281/zenodo.14870021). The brief cited 10.5281/zenodo.14870023,
   which is **v1.0.0** and ends before our 2025 to 2026 data; version to be confirmed
-  (`docs/DECISIONS.md` D-004).
+  (`docs/project/DECISIONS.md` D-004).
 - Tables used: `tblSCTurTemp`, `tblSCTurbine`, `tblSCTurPress`, `tblAlarmLog`, `tblDailySummary`.
 - TODO: add the exact citation text from the Zenodo record page.
 
@@ -224,12 +224,12 @@ Check the code with `pytest` and `ruff check .`.
 - `configs/protocol.yaml`: the single source of experiment settings (windows, splits, thresholds,
   model settings, seed)
 - `scripts/`: command-line entry points for the steps above
-- `docs/`: [`roadmap.md`](docs/roadmap.md) (schedule, owners, gates), [`DECISIONS.md`](docs/DECISIONS.md)
+- `docs/`: [`roadmap.md`](docs/project/roadmap.md) (schedule, owners, gates), [`DECISIONS.md`](docs/project/DECISIONS.md)
   (every decision, with an ID), [`TEAM_CHECKLIST.md`](docs/TEAM_CHECKLIST.md),
-  [`DATA_TRAPS.md`](docs/DATA_TRAPS.md),
+  [`DATA_TRAPS.md`](docs/project/DATA_TRAPS.md),
   [`FEATURES_AND_LABELS.md`](docs/FEATURES_AND_LABELS.md) (every label and feature column),
   [`BASELINE_SPLIT.md`](docs/BASELINE_SPLIT.md) (who builds which baseline, and what each must deliver),
-  [`modelling_plan.md`](docs/modelling_plan.md) (the original plan; the roadmap and decision log
+  [`modelling_plan.md`](docs/project/modelling_plan.md) (the original plan; the roadmap and decision log
   supersede it), `reference/` (alarm code and data descriptions)
 - `notebooks/`: exploration only, named `NN_owner_topic.ipynb`; outputs are never committed
 - `reports/`: [`report/main.tex`](reports/report/main.tex) (final report),
@@ -248,7 +248,7 @@ Check the code with `pytest` and `ruff check .`.
 | Farhan | Evaluation harness and cost analysis |
 | Cyrus | Ethics review and report |
 
-Working rules: every decision is logged in `docs/DECISIONS.md` the same day; `configs/protocol.yaml`
+Working rules: every decision is logged in `docs/project/DECISIONS.md` the same day; `configs/protocol.yaml`
 changes only together with its decision entry; no results or references are invented; all randomness
 is seeded from the config; the test years are scored once.
 

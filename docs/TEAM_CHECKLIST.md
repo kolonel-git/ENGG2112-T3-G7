@@ -1,7 +1,7 @@
 # Team checklist for the final sprint
 
 Last updated 2026-10-27. Submission is assumed to be Sunday 2026-11-01 (not yet confirmed with the
-coordinator). Plan, gates and cut order: `docs/roadmap.md`. Tick a box only for your own items;
+coordinator). Plan, gates and cut order: `docs/project/roadmap.md`. Tick a box only for your own items;
 nobody signs off for someone else. Sign-offs go under "Sign-offs" at the end, in a pull request.
 
 ## Everyone
@@ -23,7 +23,7 @@ nobody signs off for someone else. Sign-offs go under "Sign-offs" at the end, in
 - [ ] Tue: choose the repository licence (the README carries a TODO) and record it.
 - [ ] Tue: try to fetch `Hill_of_Towie_AeroUp_install_dates.csv` and the data dictionary from Zenodo.
       If the AeroUp dates are not in the repo by Wednesday, the upgrade analysis is cut and the report says so.
-- [ ] Wed to Thu: write the data and cleaning section of the report (use `docs/DATA_TRAPS.md`).
+- [ ] Wed to Thu: write the data and cleaning section of the report (use `docs/project/DATA_TRAPS.md`).
 - [ ] Decide, with Kanav, whether the four `suspect_wind` turbine-years are excluded in any model (open decision from D-015).
 
 ## Revael: features and labels
@@ -74,7 +74,7 @@ nobody signs off for someone else. Sign-offs go under "Sign-offs" at the end, in
       drivetrain temperature, power electronics, wind and rpm), one table with positive counts (G4).
 - [ ] Fri: write the models, O1, O2, SHAP and robustness sections.
 - [ ] Sat: `ruff check .` and `pytest`, regenerate figures and tables from scripts, freeze the repo.
-- [ ] Standing: keep `docs/DECISIONS.md` and `docs/roadmap.md` current; change `protocol.yaml` only with its entry.
+- [ ] Standing: keep `docs/project/DECISIONS.md` and `docs/project/roadmap.md` current; change `protocol.yaml` only with its entry.
 
 ## Cut order if a day slips
 

@@ -10,7 +10,12 @@ reports/tables/feature_summary.csv (coverage of the labelled rows and missing-va
 from __future__ import annotations
 
 import argparse
+import sys
 from pathlib import Path
+
+# Support running this file directly from an IDE without installing the package.
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / 'src'))
 
 import pandas as pd
 
@@ -21,8 +26,6 @@ from wt_predmaint.features.daily import (
     daily_aggregates,
     feature_columns,
 )
-
-ROOT = Path(__file__).resolve().parents[1]
 
 
 def main() -> None:
