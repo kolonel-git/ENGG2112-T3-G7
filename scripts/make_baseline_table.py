@@ -22,6 +22,8 @@ def main():
     cfg = load_protocol()
     interim = ROOT / "data/interim"
     out = ROOT / "reports/tables"
+    (interim / "scores").mkdir(parents=True, exist_ok=True)
+    out.mkdir(parents=True, exist_ok=True)
     features = attach_nbm(pd.read_parquet(interim / "features/daily_features.parquet"), interim)
     results = []
     parameters = []

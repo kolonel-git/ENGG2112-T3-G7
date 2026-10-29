@@ -43,7 +43,11 @@ def lead_table(
     days = frame[[*KEYS, "nbm_indicator"]].dropna()
     days = days.merge(labels[[*KEYS, "status"]], on=KEYS, how="inner")
     days = days.loc[days["status"].ne("in_episode")].sort_values("Day")
-    starts = episodes[["StationId", "Start"]].sort_values("Start")
+    starts = episodes[["StationId", "Start"]].copy()
+    # Parquet inputs can encode StationId with different integer widths.  merge_asof
+    # requires the grouping key to have exactly the same dtype on both sides.
+    starts["StationId"] = starts["StationId"].astype(days["StationId"].dtype)
+    starts = starts.sort_values("Start")
     nxt = pd.merge_asof(
         days, starts, left_on="Day", right_on="Start", by="StationId", direction="forward",
         allow_exact_matches=False,
