@@ -29,4 +29,3 @@ def test_published_tables(tmp_path, corruption):
     table.to_csv(tmp_path / name, index=False)
     with pytest.raises((AssertionError, ValueError)):
         check_tables(tmp_path)
-
