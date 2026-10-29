@@ -9,6 +9,7 @@ from wt_predmaint.config import load_protocol
 from wt_predmaint.evaluation.runner import run_baselines
 from wt_predmaint.models.alarm import alarm_variant
 from wt_predmaint.models.base import attach_labels
+from wt_predmaint.models.nbm import attach_nbm
 from wt_predmaint.models.registry import build
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -21,7 +22,7 @@ def main():
     cfg = load_protocol()
     interim = ROOT / "data/interim"
     out = ROOT / "reports/tables"
-    features = pd.read_parquet(interim / "features/daily_features.parquet")
+    features = attach_nbm(pd.read_parquet(interim / "features/daily_features.parquet"), interim)
     results = []
     parameters = []
     seasonal = []

@@ -71,7 +71,7 @@ Tuning scripts report choices; they do not silently rewrite the protocol. B4 sel
 - Healthy-row dependency: `src/wt_predmaint/models/healthy.py` and `scripts/report_healthy_rows.py` from Parvez commit 889a90c.
 - Runner integration: `src/wt_predmaint/evaluation/runner.py` and `models/registry.py`.
 - Synthetic verification: `tests/test_farhan_models.py`, plus imported H0/P0/B4 tests.
-- Decisions and settings: D-051–D-053 in `docs/DECISIONS.md` and `configs/protocol.yaml`.
+- Decisions and settings: D-051–D-053 in `docs/project/DECISIONS.md` and `configs/protocol.yaml`.
 
 154 tests passed; ruff passed. Scikit-learn emits a non-failing deprecation warning for the imported B4 penalty argument. Existing causal features were reused without changing feature construction. Raw data and test scores are not committed. High prevalence, autocorrelated days, overlapping episode horizons, and related A/B labels limit interpretation; validation-selected performance is not an unbiased held-out estimate.
 

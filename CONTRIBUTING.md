@@ -9,4 +9,4 @@
 7. Open a PR with the template filled in and request one reviewer.
 8. Reviewer approves or comments within ~2 days; author merges after approval.
 9. Never commit data, credentials or notebook outputs.
-10. Log non-obvious choices in `docs/DECISIONS.md`; log dataset surprises in `docs/DATA_TRAPS.md`.
+10. Log non-obvious choices in `docs/project/DECISIONS.md`; log dataset surprises in `docs/project/DATA_TRAPS.md`.

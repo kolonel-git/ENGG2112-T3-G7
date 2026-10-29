@@ -1,4 +1,4 @@
-"""Check saved results against the harness without fitting or scoring a model (D-055)."""
+"""Check saved results against the harness without fitting or scoring a model (D-069)."""
 
 from __future__ import annotations
 

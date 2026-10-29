@@ -11,7 +11,12 @@ and reports/tables/label_summary.csv (rows, positives and episodes per target an
 from __future__ import annotations
 
 import argparse
+import sys
 from pathlib import Path
+
+# Support running this file directly from an IDE without installing the package.
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / 'src'))
 
 import pandas as pd
 
@@ -19,7 +24,6 @@ from wt_predmaint.config import load_protocol
 from wt_predmaint.labels.episodes import fault_episodes_a, stop_episodes_b
 from wt_predmaint.labels.horizon import build_horizon_labels, summarise_labels
 
-ROOT = Path(__file__).resolve().parents[1]
 SCADA_COLUMNS = ["StationId", "TimeStamp", "wtc_GenRpm_mean", "wtc_PrWindSp_mean", "outage_month"]
 
 

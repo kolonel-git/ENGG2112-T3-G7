@@ -1,6 +1,6 @@
 # Modelling plan
 
-**Status 2026-10-21: planning closed.** The current plan is this summary, `docs/roadmap.md` (schedule, owners, gates) and `docs/DECISIONS.md` (D-001 to D-014).
+**Status 2026-10-21: planning closed.** The current plan is this summary, `docs/project/roadmap.md` (schedule, owners, gates) and `docs/project/DECISIONS.md` (D-001 to D-014).
 Sections below are kept as the working history. Where they conflict with this summary, this summary and the decision log win; superseded sections are marked.
 
 ## Current plan (v2)
@@ -203,7 +203,7 @@ Predict health-bearing temperatures from operating conditions on healthy data; t
 - One function: (y_true, score, turbine, time) to PR-AUC, recall at budget, median lead time, turbine bootstrap intervals. Splitters: chronological and LOTO.
 - Tests on synthetic labels with known answers, plus a leakage test (future rows must not change features at t).
 
-## 11. Suggested order of work (superseded by `docs/roadmap.md`)
+## 11. Suggested order of work (superseded by `docs/project/roadmap.md`)
 
 1. Parvez: put the raw `tblAlarmLog` files (all years, including 2020 onward) in `data/raw`; run `python scripts/build_alarm_table.py` (builds `data/interim/alarm_events.parquet` and prints counts per tier, code and year); confirm sentinel (`200`, `-50`, `-100`) handling; locate active power.
 2. Team: tiering is accepted (D-002). Next decisions: label design (section 0 point 3), `episode_gap_days`, masking, and the other TODOs in `protocol.yaml`.
@@ -211,7 +211,7 @@ Predict health-bearing temperatures from operating conditions on healthy data; t
 4. Farhan: metrics and splitters on synthetic data.
 5. Baselines, then LightGBM, then robustness and SHAP.
 
-## 12. Open decisions (history; current list is in `docs/DECISIONS.md`)
+## 12. Open decisions (history; current list is in `docs/project/DECISIONS.md`)
 
 - Tiering and whether weather-driven codes stay in scope; whether Tier 3 is only features.
 - Keep dropped-code events as a masking table (2.2 step 3).

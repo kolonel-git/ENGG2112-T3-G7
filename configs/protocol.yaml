@@ -1,5 +1,5 @@
 # Single source of truth for every experiment. Do not hard-code these values elsewhere.
-# Undecided values stay TODO. Every decision is logged in docs/DECISIONS.md (IDs in comments).
+# Undecided values stay TODO. Every decision is logged in docs/project/DECISIONS.md (IDs in comments).
 
 dataset:
   name: Hill of Towie
@@ -35,6 +35,19 @@ splits:
 
 robustness:
   leave_one_turbine_out: false  # main runs use the time split; O3 scripts run leave-one-turbine-out (D-006)
+  # Sensor groups for the dropout test (D-062): at scoring time every feature built from a sensor in
+  # the group (daily mean or maximum, 7-day window mean or std) is set to missing; the fitted model
+  # is not changed. `state` adds the wind, rpm and operating-state summary columns to the group.
+  sensor_groups:
+    pressure:
+      tokens: [HubPresA, HubPresB, HubPresC, HydPress, BrakPres, GearPres, InlPrAft, InlPrBef, OfflPres, InvPress, BrAccPrs, BoostAct, BoostAva]
+    drivetrain_temperature:
+      tokens: [GeOilTmp, GenBeGTm, GenBeRTm, MainBTmp, HSGenTmp, HSRotTmp, IMSGenTm, IMSRotTm, TraOilTF, TraRooTF, Gen1U1Tm, Gen1V1Tm, Gen1W1Tm, GenAvgTm, HydOilTm]
+    power_electronics:
+      tokens: [ConvWTmp, ReacUTmp, ReacVTmp, ReacWTmp, GFilB1Tm, GFilB2Tm, GFilB3Tm, InvUpTmp, TrafoTMa, BrkTmpGn]
+    wind_rpm:
+      tokens: [PrWindSp, SeWindSp, AcWindSp, GenRpm, MainSRpm]
+      state: true
 
 labels:
   # In-scope alarm codes and tiers (D-001, D-002). Superseded by D-003: alarm codes are now
@@ -137,6 +150,98 @@ power_curve:
   wind_max_ms: 25.0
   min_bin_intervals: 30
   tolerance_std_multiple: 2.0
+
+# Normal-behaviour models for O1 (D-057). Provisional choices, not tuned on validation or test.
+nbm:
+  inputs: [op_wtc_PrWindSp_mean, op_wtc_GenRpm_mean, op_wtc_MainSRpm_mean, op_wtc_AmbieTmp_mean, op_wtc_NacelTmp_mean]
+  targets: [op_wtc_GeOilTmp_mean, op_wtc_GenBeGTm_mean, op_wtc_GenBeRTm_mean, op_wtc_MainBTmp_mean, op_wtc_Gen1U1Tm_mean, op_wtc_Gen1V1Tm_mean, op_wtc_Gen1W1Tm_mean, op_wtc_TraOilTF_mean, op_wtc_HydOilTm_mean, op_wtc_IMSGenTm_mean]
+  ridge_alpha: 1.0
+  smoothing_days: 7                   # trailing window for the smoothed residual
+  fleet_relative: true                # subtract the day's fleet median residual; chosen on validation (D-055)
+  fleet_min_turbines: 5               # turbines needed on a day for a fleet median
+  indicator_missing_score: 0.0        # R2 score for a day with no indicator (D-058)
+  minimum_fit_rows: 200               # healthy rows needed to fit one target
+  minimum_turbine_rows: 100           # healthy rows needed for a turbine's own residual spread
+  minimum_std: 0.000001
+
+# Class-weighted LightGBM (D-056). `selected` is frozen by D-060 after scripts/tune_lgbm.py chose
+# it on validation; the grid is the whole search and is not widened.
+lgbm:
+  selected:
+    a: {num_leaves: 7, n_estimators: 300, learning_rate: 0.05, min_child_samples: 200}
+    b: {num_leaves: 31, n_estimators: 300, learning_rate: 0.05, min_child_samples: 200}
+  grid:
+    num_leaves: [7, 15, 31]
+    n_estimators: [100, 300]
+    learning_rate: [0.05]
+    min_child_samples: [200]
+  subsample: 0.8
+  colsample_bytree: 0.5
+  reg_lambda: 1.0
+  selection_metric: pr_auc
+  selection_tie_break: simplest        # fewest leaves, then fewest trees
+  nonfinite_score_fallback: 0.5
+  importance_top_n: 20
+
+# SHAP and its stability across leave-one-turbine-out folds (D-062); validation rows only.
+explain:
+  shap_sample_rows: 4000              # labelled validation rows explained for the full model
+  stability_sample_rows: 1000         # rows explained per leave-one-turbine-out fold
+  top_n: 20
+
+# Exploratory validation-only runs (D-064): drift-robust features and low-capacity models. Not part
+# of the frozen results; the test years are never scored here.
+exploratory:
+  min_turbines: 5                     # turbines needed on a day for a fleet median
+  feature_sets: [raw, fleet, fleet_season]
+  shallow_trees:                      # LightGBM with very small trees, all settings are run
+    num_leaves: 3
+    max_depth: 2
+    learning_rate: 0.05
+    min_child_samples: 500
+    n_estimators: [50, 150]
+  sparse_logistic:                    # L1-penalised logistic regression, all values are run
+    c_grid: [0.003, 0.01, 0.03]
+  year_shift:                         # train years only: fit on years up to fit_up_to, score score_year
+    fit_up_to: 2018
+    score_year: 2020
+  resamples: 200                      # bootstrap resamples (exploratory; the frozen runs use 1,000)
+
+# Second exploratory round (D-065): rolling self-baseline features and a turbine-ranking metric.
+# Validation years only; the test years are never scored here.
+exploratory_round2:
+  feature_sets: [self, self_fleet]
+  window_days: 90                     # trailing window of a turbine's own feature values
+  min_days: 30                        # observed days needed in the window
+  ranking:
+    top_k: [3, 5]                     # turbines flagged each day out of those with a label that day
+    min_turbines: 10                  # days with fewer labelled turbines are skipped
+    resamples: 1000                   # bootstrap over calendar months
+
+# Third exploratory round (D-066): rank the features and prune the least useful. Selection
+# uses labelled train rows only; validation years are scored, the test years never.
+exploratory_round3:
+  feature_sets: [raw, self_fleet]
+  methods: [gain_cv, year_stable_auc, gain_cv_decorr]
+  keep: [10, 25, 50, 100]             # columns kept after ranking, every value is run
+  decorrelate_above: 0.9              # gain_cv_decorr: skip a column this correlated (abs Spearman) with a kept one
+  rank_sample_rows: 20000             # rows per fit used for the correlation matrix
+  models: [lgbm_frozen, b4_logistic]
+  drop_groups: [pressure, drivetrain_temperature, power_electronics, wind_rpm, alarms, fault_history, day_state]
+
+# Label sensitivity round (D-068): rebuild the labels with other horizons, severities and a
+# fault-only version of target B, and rerun the frozen models on the validation years. Labels
+# are built in memory; the frozen label files are not touched. The test years are never scored.
+label_sensitivity:
+  horizons: [7, 14, 30]               # positive window in days; the exclusion zone ends at 2 x the window
+  a_fault_hours: [4, 8, 12]           # target A: TimeErr hours that make a fault day (reference: 4)
+  b_stop_intervals: [18, 36, 72]      # target B: consecutive 10-min stop intervals that make a stop (reference: 18)
+  b_weather_stops: [keep, drop]       # drop: remove stop runs that start with a weather alarm active (tier below)
+  weather_tiers: [2]                  # alarm tier 2 = low wind, high wind and icing codes in `alarm_codes`
+  weather_margin_intervals: 1         # an alarm counts if it is active from this many 10-min intervals before the stop
+  models: [B1_recent_fault, B2_alarm_count, R1_zscore, B3_power_curve, B4_logistic, R2_nbm_indicator, L1_lgbm]
+  resamples: 500                      # turbine bootstrap resamples (exploratory; the frozen runs use 1,000)
+  ranking_top_k: 3                    # daily top-k turbines for the ranking metric (D-065)
 
 seed: 42                              # D-010
 

@@ -9,4 +9,4 @@
 - [ ] `pytest` and `ruff check .` pass
 - [ ] No data, secrets or notebook outputs committed
 - [ ] Reads settings from `configs/protocol.yaml` (no hard-coded values)
-- [ ] `docs/DECISIONS.md` / `docs/DATA_TRAPS.md` updated if relevant
+- [ ] `docs/project/DECISIONS.md` / `docs/project/DATA_TRAPS.md` updated if relevant

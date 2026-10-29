@@ -17,6 +17,9 @@ Every model present in the input validation table is included automatically, inc
 | A | all | R1_zscore | 318 | 87 / 209 | 0.584 | 0.780 |
 | A | all | B3_power_curve | 318 | 164 / 209 | 0.215 | 0.780 |
 | A | all | B4_logistic | 318 | 160 / 209 | 0.234 | 0.780 |
+| A | all | R2_nbm_indicator | 318 | 129 / 209 | 0.383 | 0.780 |
+| A | all | L1_lgbm | 318 | 175 / 209 | 0.163 | 0.780 |
+| A | all | L1_lgbm_nbm | 318 | 177 / 209 | 0.153 | 0.780 |
 | A | excl_2304515 | B0a_constant | 0 | 195 / 195 | 0.000 | 0.774 |
 | A | excl_2304515 | B0b_random | 309 | 44 / 195 | 0.774 | 0.774 |
 | A | excl_2304515 | B1_recent_fault | 306 | 155 / 195 | 0.205 | 0.774 |
@@ -26,6 +29,9 @@ Every model present in the input validation table is included automatically, inc
 | A | excl_2304515 | R1_zscore | 309 | 82 / 195 | 0.579 | 0.774 |
 | A | excl_2304515 | B3_power_curve | 309 | 158 / 195 | 0.190 | 0.774 |
 | A | excl_2304515 | B4_logistic | 309 | 157 / 195 | 0.195 | 0.774 |
+| A | excl_2304515 | R2_nbm_indicator | 309 | 118 / 195 | 0.395 | 0.774 |
+| A | excl_2304515 | L1_lgbm | 309 | 167 / 195 | 0.144 | 0.774 |
+| A | excl_2304515 | L1_lgbm_nbm | 309 | 163 / 195 | 0.164 | 0.774 |
 | B | all | B0a_constant | 0 | 192 / 192 | 0.000 | 0.760 |
 | B | all | B0b_random | 290 | 46 / 192 | 0.760 | 0.760 |
 | B | all | B1_recent_fault | 287 | 150 / 192 | 0.219 | 0.760 |
@@ -35,6 +41,9 @@ Every model present in the input validation table is included automatically, inc
 | B | all | R1_zscore | 290 | 66 / 192 | 0.656 | 0.760 |
 | B | all | B3_power_curve | 289 | 133 / 192 | 0.307 | 0.760 |
 | B | all | B4_logistic | 290 | 146 / 192 | 0.240 | 0.760 |
+| B | all | R2_nbm_indicator | 290 | 104 / 192 | 0.458 | 0.760 |
+| B | all | L1_lgbm | 290 | 150 / 192 | 0.219 | 0.760 |
+| B | all | L1_lgbm_nbm | 290 | 152 / 192 | 0.208 | 0.760 |
 | B | excl_2304515 | B0a_constant | 0 | 177 / 177 | 0.000 | 0.746 |
 | B | excl_2304515 | B0b_random | 281 | 45 / 177 | 0.746 | 0.746 |
 | B | excl_2304515 | B1_recent_fault | 277 | 147 / 177 | 0.169 | 0.746 |
@@ -44,6 +53,9 @@ Every model present in the input validation table is included automatically, inc
 | B | excl_2304515 | R1_zscore | 281 | 61 / 177 | 0.655 | 0.746 |
 | B | excl_2304515 | B3_power_curve | 280 | 128 / 177 | 0.277 | 0.746 |
 | B | excl_2304515 | B4_logistic | 281 | 136 / 177 | 0.232 | 0.746 |
+| B | excl_2304515 | R2_nbm_indicator | 281 | 93 / 177 | 0.475 | 0.746 |
+| B | excl_2304515 | L1_lgbm | 281 | 137 / 177 | 0.226 | 0.746 |
+| B | excl_2304515 | L1_lgbm_nbm | 281 | 132 / 177 | 0.254 | 0.746 |
 
 ## R1 versus the random floor across budgets
 

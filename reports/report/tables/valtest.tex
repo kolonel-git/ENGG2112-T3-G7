@@ -1,0 +1,19 @@
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+ & \multicolumn{2}{c}{Target A} & \multicolumn{2}{c}{Target B} \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}
+Model & Validation & Test & Validation & Test \\
+\midrule
+Random score & 0.465 & 0.450 & 0.483 & 0.506 \\
+B1 recent fault & 0.559 & 0.441 & 0.550 & 0.490 \\
+B1 fault count & 0.533 & 0.451 & 0.530 & 0.501 \\
+B1 fault recency & 0.528 & 0.444 & 0.531 & 0.493 \\
+B2 alarm count & 0.517 & 0.453 & 0.511 & 0.487 \\
+R1 z-score & 0.577 & 0.448 & 0.588 & 0.499 \\
+B3 power curve & 0.455 & 0.451 & 0.499 & 0.517 \\
+B4 logistic & 0.447 & 0.462 & 0.451 & 0.563 \\
+R2 NBM indicator & 0.496 & 0.440 & 0.533 & 0.503 \\
+L1 LightGBM & 0.460 & 0.492 & 0.456 & 0.556 \\
+L1 LightGBM + NBM & 0.445 & 0.493 & 0.454 & 0.547 \\
+\bottomrule
+\end{tabular}

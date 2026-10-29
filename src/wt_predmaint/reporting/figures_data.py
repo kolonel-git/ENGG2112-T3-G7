@@ -354,7 +354,7 @@ def target_agreement(ctx: Ctx) -> Figure:
     "Targets and labels",
     "A day is positive if a fault episode starts within 30 days; days 31 to 60 are dropped so the "
     "label is not ambiguous; features use only the previous 7 days.",
-    "configs/protocol.yaml (labels block); docs/DECISIONS.md D-005, D-019",
+    "configs/protocol.yaml (labels block); docs/project/DECISIONS.md D-005, D-019",
     "Schematic. Day 0 is the end of the prediction day; all lengths come from the protocol.",
 )
 def label_geometry(ctx: Ctx) -> Figure:

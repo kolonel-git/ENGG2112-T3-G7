@@ -1,0 +1,11 @@
+{
+  "scope": "Published table consistency only; scores unavailable. Metrics and intervals are not reproduced. No model fitting, scoring or test recalibration.",
+  "sha256": {
+    "reports\\tables\\baselines_a.csv": "8373165779cb2253c8bbdf6455e03c177564a07a84ab5fb8b225502947dea4b9",
+    "reports\\tables\\baselines_b.csv": "c1c6b1605ab6bf1c95a41e10913877b92f49482b7a64d7db118f2014eb4854c9",
+    "reports\\tables\\test_results.csv": "71ef73f20067040d97f981aef1089aa9c7be4f7401d0736022f373e676f396b6",
+    "reports\\tables\\t0_validation.csv": "b19327bbb7117a6ade19d969d4c7b99ca61c49bf8cf97c49a3f0bd39ea96bda1",
+    "reports\\tables\\alert_budget_validation.csv": "e6aae6a614d7c18253e5ef9a75fab2e8702e95667ca8b36c2fef6b934749002b",
+    "configs\\protocol.yaml": "81b706ed92b7e0d2af57e6e0c2c00aa6f9f11ff2d40cb1aace670ba325259100"
+  }
+}
