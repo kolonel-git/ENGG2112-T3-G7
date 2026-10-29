@@ -239,6 +239,39 @@ def round2_tables() -> None:
     write("ranking.tex", lines)
 
 
+def label_sensitivity_table() -> None:
+    """Per model: variants above the random floor and median lift, by target (D-068)."""
+    d = pd.read_csv(TABLES / "label_sensitivity.csv")
+    d = d.loc[~d["model"].isin(["B0a_constant", "B0b_random"])].copy()
+    d["lift"] = d["pr_auc"] / d["random_floor_pr_auc"]
+    d["above"] = d["excludes_floor"] & (d["excess_over_floor"] > 0)
+    d["rank_above"] = d["rank_diff_lo"] > 0
+    lines = [
+        r"\begin{tabular}{@{}lrrrrrrrr@{}}",
+        r"\toprule",
+        r" & \multicolumn{4}{c}{Target A (9 variants)}"
+        r" & \multicolumn{4}{c}{Target B (18 variants)} \\",
+        r"\cmidrule(lr){2-5}\cmidrule(lr){6-9}",
+        "Model & PR-AUC above floor & Median lift & Ranking above chance & Ranking below chance"
+        " & PR-AUC above floor & Median lift & Ranking above chance & Ranking below chance"
+        r" \\",
+        r"\midrule",
+    ]
+    for model in dict.fromkeys(d["model"]):
+        cells = []
+        for target in ("A", "B"):
+            g = d.loc[(d["model"] == model) & (d["target"] == target)]
+            cells += [
+                str(int(g["above"].sum())),
+                f"{g['lift'].median():.2f}",
+                str(int(g["rank_above"].sum())),
+                str(int((g["rank_diff_hi"] < 0).sum())),
+            ]
+        lines.append(tex(NAMES[model]) + " & " + " & ".join(cells) + r" \\")
+    lines += [r"\bottomrule", r"\end{tabular}"]
+    write("label_sensitivity.tex", lines)
+
+
 def main() -> None:
     test_tables()
     valtest_table()
@@ -246,6 +279,7 @@ def main() -> None:
     robustness_tables()
     exploratory_tables()
     round2_tables()
+    label_sensitivity_table()
     print(f"wrote {sorted(p.name for p in OUT.glob('*.tex'))} to {OUT}")
 
 

@@ -82,6 +82,13 @@ speeds), so a warning system would need no new equipment.
    outdoor and nacelle temperatures, which follow the seasons, so they may be telling us about the
    weather rather than about wear.
 
+11. **Asking an easier or more specific question.** We redefined what counts as a fault in 27 ways
+   (a shorter warning period, only longer outages, and leaving out stops caused by weather) and
+   checked each against guessing. The learned models did not improve. A few simple rules did a
+   little better than guessing, notably the one comparing rotor speed with wind speed, which ranked
+   the riskier turbines above chance for most definitions. That is a lead to check on fresh data, not
+   proof, and the real fix is confirmed failure and maintenance records.
+
 ## What it means for decisions
 
 - **Do not use these models to decide which turbine to inspect or when.** They are not shown to be

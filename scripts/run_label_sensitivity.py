@@ -23,6 +23,7 @@ from wt_predmaint.evaluation.ranking import daily_precision_at_k, ranking_summar
 from wt_predmaint.evaluation.runner import run_baselines
 from wt_predmaint.labels.variants import build_variant, variant_cfg
 from wt_predmaint.models.base import attach_labels, labelled
+from wt_predmaint.models.nbm import attach_nbm
 from wt_predmaint.models.registry import build
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -94,7 +95,9 @@ def main() -> None:
         ignore_index=True,
     )
     alarms = pd.read_parquet(args.interim / "alarm_events.parquet")
-    features = pd.read_parquet(args.interim / "features" / "daily_features.parquet")
+    features = attach_nbm(
+        pd.read_parquet(args.interim / "features" / "daily_features.parquet"), args.interim
+    )
 
     rows: list[dict[str, Any]] = []
     for target in ("a", "b"):
