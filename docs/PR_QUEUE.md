@@ -52,3 +52,11 @@ team agrees.
 - #2: https://github.com/kolonel-git/ENGG2112-T3-G7/compare/main...farhan-evaluation-cost-review?expand=1
 - #3: https://github.com/kolonel-git/ENGG2112-T3-G7/compare/main...revael/features-labels-report?expand=1
 - #4: https://github.com/kolonel-git/ENGG2112-T3-G7/compare/main...revael/simple-alarm-forecast?expand=1
+
+## Farhan update, 2026-10-29
+
+Main `6535030` includes #19 and #17. PR #18 now merges that main, preserves
+Kanav's D-055 and records Farhan's review as D-069. Evaluation/cost and F27
+include the frozen models and test export. Published-table checks pass; original
+score reproduction remains pending Kanav's git-ignored artefacts. See
+`docs/EVALUATION_REVIEW.md`. The older queue states above are historical.

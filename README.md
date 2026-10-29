@@ -143,6 +143,9 @@ floors, and every results table shows them (decision D-020). The 95% intervals r
 and do not include the uncertainty of choosing the model or the threshold. The episodes are inferred
 operational episodes, not confirmed component failures.
 
+See [Farhan's evaluation and cost section](reports/EVALUATION_AND_COST.md) and
+[review status](docs/EVALUATION_REVIEW.md) for the saved-table checks and audit limits.
+
 ## Known limits
 
 - One wind farm only; results may not transfer to other sites or turbine types.

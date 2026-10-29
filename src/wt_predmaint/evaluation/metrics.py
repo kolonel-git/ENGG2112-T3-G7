@@ -32,8 +32,12 @@ def _check(frame: pd.DataFrame) -> None:
         raise ValueError("Cannot evaluate an empty scored frame: no labelled turbine-days")
     if frame["label"].isna().any() or not frame["label"].isin([0, 1]).all():
         raise ValueError("scored frame must contain only labels 0 and 1 (drop unlabelled rows)")
-    if frame["score"].isna().any():
-        raise ValueError("scores must not be NaN")
+    if not np.isfinite(frame["score"].to_numpy(dtype=float)).all():
+        raise ValueError("scores must be finite")
+    if frame[["StationId", "Day"]].isna().any().any():
+        raise ValueError("turbine-day keys must not be missing")
+    if frame.duplicated(["StationId", "Day"]).any():
+        raise ValueError("scored frame must have unique turbine-day keys")
 
 
 def pr_auc(y: np.ndarray, score: np.ndarray) -> float:
@@ -59,6 +63,14 @@ def threshold_for_budget(
     score = np.asarray(score, dtype=float)
     if not len(label):
         raise ValueError("Cannot choose a threshold without labelled validation data")
+    if label.ndim != 1 or score.shape != label.shape:
+        raise ValueError("labels and scores must be aligned one-dimensional arrays")
+    if not np.isin(label, [0, 1]).all() or not np.isfinite(score).all():
+        raise ValueError("threshold selection requires binary labels and finite scores")
+    if not np.isfinite(budget) or budget < 0:
+        raise ValueError("budget must be finite and nonnegative")
+    if not np.isfinite(days_per_month) or days_per_month <= 0:
+        raise ValueError("days_per_month must be finite and positive")
     allowed = int(np.floor(budget * turbine_months(len(label), days_per_month)))
     negatives = np.sort(score[label == 0])[::-1]
     if allowed >= len(negatives):

@@ -38,13 +38,13 @@ nobody signs off for someone else. Sign-offs go under "Sign-offs" at the end, in
 
 ## Farhan: evaluation and cost
 
-- [ ] Tue/Wed: 30-minute review of the harness (`evaluation/metrics.py`, `splits.py`, `runner.py`,
+- [x] Tue/Wed: 30-minute review of the harness (`evaluation/metrics.py`, `splits.py`, `runner.py`,
       D-020, D-024): threshold chosen on validation only, event-level recall and lead time, turbine
       bootstrap, random-score floor next to every recall. Add your sign-off line.
 - [ ] Wed evening: once Kanav freezes the LightGBM settings, extend the alert-burden tables and
       figure F27 (`scripts/analyse_alert_budgets.py`, D-054) to the LightGBM models; R2 is already in.
 - [ ] Thu: check the single test-year results table against the harness (positive counts, intervals, floor).
-- [ ] Wed to Fri: write the evaluation and cost section. Keep the official budget at 1 false alarm per
+- [x] Wed to Fri: write the evaluation and cost section. Keep the official budget at 1 false alarm per
       turbine-month (D-009) and show the random floor beside recall.
 
 ## Cyrus: ethics and report integration
@@ -92,4 +92,7 @@ the table), and robustness except sensor-group dropout. Already cut: autoencoder
 
 ## Sign-offs
 
-(none recorded yet)
+- Farhan, 2026-10-29 (with Codex): harness review and evaluation/cost section complete;
+  48 published runner rows pass table-consistency checks. F27 includes frozen R2/L1.
+  Full reproduction from original R2/L1 validation and all test scores remains pending
+  transfer from Kanav; see `docs/EVALUATION_REVIEW.md` (D-069).

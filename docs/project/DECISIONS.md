@@ -614,3 +614,18 @@ These are development selections, not authorization to score held-out test years
 - Result, does a more specific label help? The median lift (PR-AUC over its floor, all models) rises with severity, from 1.05 (4 hours) to 1.06 (8) to 1.18 (12) for target A and from 1.12 (18 intervals) to 1.18 (36) to 1.25 (72) for B; it is higher for B when weather stops are dropped (1.26 against 1.11). The horizon has no clear effect for A (1.10, 1.12, 1.09 for 7, 14 and 30 days) and a small one for B (1.20, 1.17, 1.11). The highest lifts sit in the rarest variants, where the intervals are widest (B3 on 72-interval stops with a 7-day window: 0.137 against 0.029, interval [0.033, 0.300]).
 - Result, ranking (daily top 3 against chance): 44 of 189 intervals are above chance and 9 below; the random score was above chance in 0 of 27 and below in 5. B3 power curve is above chance in 4 of 9 variants for A and 16 of 18 for B (median differences +0.033 and +0.053), B1 recent fault in 11 of 18 for B, L1 LightGBM in 2 and 6, and the R1 z-score is below chance in 1 variant for A and 8 for B (median -0.011 and -0.014).
 - Reading: the labels are not the main bottleneck for the learned models. Narrower labels leave LightGBM and the logistic model at the floor, and the only things that stand out are two simple rules: B3 (on the ranking view, above chance in 16 of 18 target B definitions and 4 of 9 for A) and B1, which says that a turbine that recently faulted tends to fault again, so it measures persistence of the same fault process more than early warning. R1 has the highest validation PR-AUC at the reference labels but ranks turbines worse than chance, and it did not hold on the test years (D-061), so validation PR-AUC above the floor is not enough. The 27 variants overlap heavily (same days, nested labels), so the 37 and 44 counts overstate independent evidence; with 189 intervals some would clear the floor by chance, and nothing was selected. Nothing frozen changed and the test years were not scored. If the team wants to act on B3, the next step is a fresh, pre-registered check on data not used here, not a new look at the test years.
+
+### D-069: Evaluation review and saved-result audit (Farhan)
+- Date: 2026-10-29
+- Owner: Farhan (with Codex)
+- Status: harness reviewed; published-table consistency checked; score reproduction pending
+- Decision: preserve D-020/D-024 definitions, D-060 frozen settings and D-061 single test run.
+  Merge current main into the evaluation branch; retain input validation and saved-score auditor.
+  Renumber this branch's former D-055 to D-069; Kanav's D-055 is unchanged.
+- Outputs: evaluation/cost section, dynamic F27 model coverage, and a table-only audit of
+  the frozen runner exports, thresholds, counts, intervals and matching random floors.
+- Limit: local saved scores predate R2/LightGBM and contain no test scores. Table consistency
+  cannot reproduce metrics or bootstrap intervals from predictions; full score audit remains
+  pending receipt of the original frozen artefacts. Do not refit, rescore or retune test.
+- No protocol, model, threshold, budget or test result is changed. Costs remain alert-day
+  and missed-episode proxies, not visits, prevented failures or currency savings.

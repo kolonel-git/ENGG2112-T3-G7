@@ -547,12 +547,18 @@ for _i, (_model, _label, _) in enumerate(MODELS[:-1]):
 )
 def alert_burden(ctx: Ctx) -> Figure:
     table = ctx.table("alert_budget_validation")
+    known = {model: (label, colour) for model, label, colour in MODELS}
+    # Include every supplied model, including future R2/LightGBM registrations.
+    models = [m for m in table.model.unique() if m != "B0a_constant"]
     variants = list(table.variant.unique())
     fig, axes = plt.subplots(len(variants), 2, figsize=(11, 4 * len(variants)), squeeze=False)
     for row, variant in enumerate(variants):
         for ax, target in zip(axes[row], ("A", "B"), strict=True):
             selected = table.loc[table.variant.eq(variant) & table.target.eq(target)]
-            for model, label, colour in MODELS:
+            for i, model in enumerate(models):
+                label, colour = known.get(
+                    model, (NAMES.get(model, model), plt.get_cmap("tab20")(i % 20))
+                )
                 points = selected.loc[selected.model.eq(model)].sort_values("budget")
                 ax.plot(points.false_alert_days, points.missed_episodes, marker="o", ms=3,
                         color=colour, label=label, ls="--" if model == "B0b_random" else "-")
@@ -560,7 +566,9 @@ def alert_burden(ctx: Ctx) -> Figure:
                     ctx.cfg["evaluation"]["false_alarm_budget_per_turbine_month"])]
                 ax.scatter(official.false_alert_days, official.missed_episodes,
                            color=colour, marker="D", s=35, zorder=5)
-            scope = "full fleet" if variant == "all" else "excluding turbine 2304515"
+            scope = "full fleet" if variant == "all" else "excluding " + variant.removeprefix(
+                "excl_"
+            ).replace("_", ", ")
             ax.set_title(f"Target {target}: {scope}")
             ax.set_xlabel("false-alert days on labelled validation rows")
             ax.set_ylabel("missed evaluable episodes")

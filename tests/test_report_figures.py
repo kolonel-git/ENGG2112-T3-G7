@@ -1,5 +1,8 @@
 from pathlib import Path
 
+import matplotlib.pyplot as plt
+import pandas as pd
+
 from wt_predmaint.reporting import (  # noqa: F401  (registers figures)
     figures_data,
     figures_eval,
@@ -47,3 +50,16 @@ def test_label_geometry_figure_uses_the_protocol_windows(tmp_path: Path) -> None
     out = tmp_path / spec.relpath
     save(fig, out)
     assert out.exists() and out.stat().st_size > 1000
+
+
+def test_f27_includes_new_models_from_the_budget_table(tmp_path: Path) -> None:
+    table = pd.DataFrame([
+        dict(variant="all", target=t, model=m, budget=b, false_alert_days=10 * b,
+             missed_episodes=20 - b)
+        for t in ["A", "B"] for m in ["B0b_random", "M1_lightgbm"] for b in [0.1, 1.0]
+    ])
+    table.to_csv(tmp_path / "alert_budget_validation.csv", index=False)
+    fig = figures_eval.alert_burden(Ctx(tables=tmp_path))
+    assert "M1_lightgbm" in [t.get_text() for t in fig.legends[0].texts]
+    assert all(len(ax.lines) == 2 for ax in fig.axes)
+    plt.close(fig)

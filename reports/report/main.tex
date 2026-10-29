@@ -292,7 +292,7 @@
 	\end{figure}
 
 	\subsection{Evaluation Environment}\label{sec:evalenv}
-	Models are fitted on 2016 to 2018 and 2020, settings and thresholds are chosen on 2021 to 2022, and the test years (2023 to April 2026) are scored once, for the frozen configurations (Table~\ref{tab:split}). The threshold gives one false alarm per turbine-month on the validation years and is carried unchanged to the test years. An episode counts as detected if an alert falls 1 to 30 days before its start. Intervals come from 1{,}000 resamples of whole turbines with the threshold held fixed; they do not include the uncertainty of choosing the model or the threshold, and they treat days of one turbine as dependent but turbines as independent. The project is written in Python (pandas, scikit-learn, LightGBM, SHAP); all randomness is seeded from the configuration file. \tbc{Hardware and run times.}
+	Models are fitted on 2016 to 2018 and 2020, settings and thresholds are chosen on 2021 to 2022, and the test years (2023 to April 2026) are scored once, for the frozen configurations (Table~\ref{tab:split}). The threshold allows at most one false-alert day per turbine-month of labelled exposure on the validation years (ties can leave budget unused) and is carried unchanged to the test years. An episode counts as detected if an alert falls 1 to 30 days before its start. Intervals come from 1{,}000 resamples of whole turbines with the threshold held fixed; they do not include the uncertainty of choosing the model or the threshold, and they treat days of one turbine as dependent but turbines as independent. The project is written in Python (pandas, scikit-learn, LightGBM, SHAP); all randomness is seeded from the configuration file. \tbc{Hardware and run times.}
 
 	\begin{table}[htbp]
 	\centering
@@ -511,6 +511,16 @@
 	\end{itemize}
 
 	\subsection{Evaluation}
+    The evaluation review (D-069) checks consistency of the 48 published runner rows,
+    frozen threshold carryover and random floors. Independent reproduction of current
+    metrics and intervals remains pending transfer of the original saved scores;
+    no model was refitted or rescored for that review.
+
+    False-alert days and missed inferred episodes are workload proxies, not inspection
+    visits or prevented failures. Consecutive alerts are not consolidated, and unlabelled
+    days do not enter this burden estimate. The dataset supplies no verified visit cost,
+    failure cost or intervention benefit, so no currency saving or economic optimum is claimed.
+
 	\begin{itemize}
 		\item \textbf{Validation did not predict test.} The model ranking changed between validation and test, the best validation model (R1) fell to the random level, and the alert threshold chosen on validation did not hold the false-alarm rate on test (0.25 to 2.5 per turbine-month against a budget of one). We scored the test years once and report both; this also means we could not tune after seeing test.
 		\item \textbf{Short validation, long test.} Two validation years are a thin basis for choosing settings, and the test years span more than three years of further drift.
@@ -543,7 +553,7 @@
 	\begin{enumerate}
 		\item \textbf{Do not deploy these models for operations.} None beats the random score on the test years; keep existing protection and inspection routines.
 		\item \textbf{If a model is used later, use it as decision support, not control,} to rank turbines for human review, with turbine protection as the final safeguard.
-		\item \textbf{Set the threshold from costs, on recent data.} Choose $\tau$ to minimise $C_{\text{FP}}N_{\text{FP}} + C_{\text{FN}}N_{\text{FN}}$ (unnecessary inspection vs.\ unplanned stop). Our validation threshold did not carry to later years, so it should be re-chosen on recent data and monitored. \tbc{State the false-alarm and miss costs; none were available to us.}
+		\item \textbf{Set the threshold from costs, on recent data.} Choose $\tau$ to minimise $C_{\text{FP}}N_{\text{FP}} + C_{\text{FN}}N_{\text{FN}}$ (unnecessary inspection vs.\ unplanned stop). Our validation threshold did not carry to later years, so it should be re-chosen on recent data and monitored. Such costs were unavailable, so this is a future decision framework rather than an estimated optimum.
 		\item \textbf{Retrain and recheck after upgrades and across years.} The data period includes the AeroUp and TuneUp upgrades \cite{hot_dataset_v1}; we could not test their effect, and sensor drift across years was visible, so models should be recalibrated and monitored for drift. \tbc{Check the upgrade names and dates against the dataset.}
 		\item \textbf{Track the false-warning rate as a key performance indicator,} since frequent false warnings recreate the alarm overload of \cite{qiu2012}.
 		\item \textbf{Obtain better labels first:} confirmed failure and maintenance records, active power and the documented error time, which would replace the inferred episodes.

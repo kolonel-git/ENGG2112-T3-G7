@@ -112,3 +112,10 @@ Submission is assumed to be **Sunday 2026-11-01** (five days from 2026-10-27, st
 - Positive windows cover 42 to 49% of days, so a random score reaches recall 0.79 to 0.84 at the 1-false-alarm budget and no baseline beats that floor. Report PR-AUC against the random floor and episode-level results, not recall at the budget alone (D-020).
 - The NBM indicator drifts between train and validation years (standardised mean -0.92 to +0.61) and is a weak early-warning signal (D-057).
 - 2019 temperature and pressure tables are missing; 2022-08, 2022-09 and 2025-09 are outage months.
+
+## Farhan review update, 2026-10-29 (D-069)
+
+Harness review and evaluation/cost text are complete. Published test-table consistency
+checks are recorded in `docs/EVALUATION_REVIEW.md`; numerical reproduction from original
+R2/LightGBM validation scores and all frozen test scores is pending their transfer.
+The local score cache predates these models. Preserve D-061; do not rerun test.
