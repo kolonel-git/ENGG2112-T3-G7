@@ -43,6 +43,10 @@ and target B is orange wherever both appear.
 | F33 | NBM indicator against time to the next episode | O1 degradation indicator | [06_nbm/F33_nbm_indicator_vs_lead.png](06_nbm/F33_nbm_indicator_vs_lead.png) |
 | F34 | SHAP: what the frozen LightGBM relies on | Explainability | [07_explain_robustness/F34_shap_top_features.png](07_explain_robustness/F34_shap_top_features.png) |
 | F35 | Robustness: sensor-group dropout and leave-one-turbine-out | Robustness | [07_explain_robustness/F35_robustness_dropout_loto.png](07_explain_robustness/F35_robustness_dropout_loto.png) |
+| F36 | From validation to test: no ranking carried over | Results | [08_exploratory/F36_validation_to_test_shift.png](08_exploratory/F36_validation_to_test_shift.png) |
+| F37 | Pruning the features: fewer columns, same score | Exploratory rounds | [08_exploratory/F37_feature_pruning.png](08_exploratory/F37_feature_pruning.png) |
+| F38 | Other label definitions: only simple rules move | Exploratory rounds | [08_exploratory/F38_label_sensitivity.png](08_exploratory/F38_label_sensitivity.png) |
+| F39 | Ranking the turbines each day: the power-curve baseline leads | Exploratory rounds | [08_exploratory/F39_turbine_ranking.png](08_exploratory/F39_turbine_ranking.png) |
 
 ## F01: Data coverage by turbine and month
 
@@ -358,3 +362,39 @@ and target B is orange wherever both appear.
 - **Report section:** Robustness
 - **Built from:** reports/tables/robustness_dropout.csv, robustness_loto.csv, robustness_loto_summary.csv (evaluation/robustness.py, scripts/run_robustness.py)
 - **Read with:** Validation years (2021 to 2022) only; frozen L1_lgbm (D-060). Test years are not used. Dropout sets a group's features to missing at scoring time at the intact model's threshold, so a change in recall comes with a change in false alarms (see the CSV). In the right panel the diagonal is a score no better than the turbine's prevalence; every turbine has at least 113 positive validation rows.
+
+## F36: From validation to test: no ranking carried over
+
+![From validation to test: no ranking carried over](08_exploratory/F36_validation_to_test_shift.png)
+
+- **Takeaway:** Models that led on the validation years fall back to the random-score value on the test years (R1 most clearly), while the learned models gain a little on test; no test interval excludes the random-score value.
+- **Report section:** Results
+- **Built from:** reports/tables/baselines_a.csv, baselines_b.csv (scripts/run_baselines.py, frozen run D-061)
+- **Read with:** Hollow marker: validation PR-AUC. Filled marker with line: test PR-AUC with its 95% turbine bootstrap interval. Dashed lines: random-score PR-AUC on validation (grey) and test (black). The test years were scored once (D-061).
+
+## F37: Pruning the features: fewer columns, same score
+
+![Pruning the features: fewer columns, same score](08_exploratory/F37_feature_pruning.png)
+
+- **Takeaway:** Keeping 50 or 100 columns costs nothing measurable and keeping 10 or 25 does not help; the check on training years gets worse for most pruned versions.
+- **Report section:** Exploratory rounds
+- **Built from:** reports/tables/exploratory_selection.csv (scripts/run_exploratory.py --round 3, D-066)
+- **Read with:** Validation years (2021 to 2022) only; exploratory; the test years are not used. Each point is one pruned configuration minus the same model with all columns (two models, two feature sets, three ranking methods); blue is target A and orange target B. Right panel: the same difference on the training-year shift check (fit to 2018, score 2020).
+
+## F38: Other label definitions: only simple rules move
+
+![Other label definitions: only simple rules move](08_exploratory/F38_label_sensitivity.png)
+
+- **Takeaway:** As labels get narrower and rarer, the ratio to the random-score floor rises for most models, but the intervals widen too: almost none of the learned models' (LightGBM, B4) ratios clear their floor, while the simple rules (the power-curve baseline B3, the recent-fault rule B1) do in many variants.
+- **Report section:** Exploratory rounds
+- **Built from:** reports/tables/label_sensitivity.csv (scripts/run_label_sensitivity.py, D-068)
+- **Read with:** Validation years (2021 to 2022) only; exploratory; the test years are not used. Each variant is a different label definition, ordered from the broadest (left) to the rarest (right). The value is PR-AUC divided by that variant's own random-score floor, so 1 means no better than a random score, and a ratio becomes large when the floor is small, so read it with the markers. A filled marker means the 95% interval lies above the floor.
+
+## F39: Ranking the turbines each day: the power-curve baseline leads
+
+![Ranking the turbines each day: the power-curve baseline leads](08_exploratory/F39_turbine_ranking.png)
+
+- **Takeaway:** Among the main models, the power-curve baseline B3 puts positive turbines in the daily top three more often than chance for both targets; the z-score R1 does worse than chance.
+- **Report section:** Exploratory rounds
+- **Built from:** reports/tables/ranking_validation.csv (scripts/run_ranking.py, evaluation/ranking.py, D-065)
+- **Read with:** Validation years (2021 to 2022) only; exploratory; the test years are not used. Precision among the three highest-scored turbines each day minus the share of positive turbines that day, with a 95% interval from resampling calendar months. Zero means no better than chance; 92 intervals were examined across the project, so this is a lead to confirm.

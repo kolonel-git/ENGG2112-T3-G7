@@ -26,3 +26,6 @@ Thumbs.db
 desktop.ini
 .vscode/
 .idea/
+
+# Standalone report export (scripts/export_report.py)
+reports/report/export/

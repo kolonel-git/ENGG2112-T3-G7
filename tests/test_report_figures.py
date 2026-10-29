@@ -3,6 +3,7 @@ from pathlib import Path
 from wt_predmaint.reporting import (  # noqa: F401  (registers figures)
     figures_data,
     figures_eval,
+    figures_explore,
     figures_nbm,
     figures_robust,
 )
@@ -32,6 +33,7 @@ def test_every_figure_folder_is_one_of_the_report_sections() -> None:
         "05_baselines",
         "06_nbm",
         "07_explain_robustness",
+        "08_exploratory",
     }
 
 

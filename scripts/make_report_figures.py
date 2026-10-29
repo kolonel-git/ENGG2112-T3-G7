@@ -16,6 +16,7 @@ from pathlib import Path
 from wt_predmaint.reporting import (  # noqa: F401  (registers the figures)
     figures_data,
     figures_eval,
+    figures_explore,
     figures_nbm,
     figures_robust,
 )
