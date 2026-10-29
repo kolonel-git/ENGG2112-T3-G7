@@ -143,7 +143,7 @@ healthy operation.
 Alarm windows count the 12 documented codes by code, tier and total. A day without a recorded alarm
 contributes zero, including a day without SCADA coverage, so the separate coverage flags must be
 consulted when interpreting zero. There is also a recording shift: codes 20 and 25 fall sharply from
-2022 onward, and code 1005 shows substantial chatter in 2022 (`docs/DATA_TRAPS.md`). Alarm-count
+2022 onward, and code 1005 shows substantial chatter in 2022 (`docs/project/DATA_TRAPS.md`). Alarm-count
 changes across that boundary cannot be interpreted as changes in failure risk alone. Trends,
 cross-sensor ratios and normal-behaviour residuals are not part of this 366-column table.
 
@@ -198,4 +198,4 @@ python -m ruff check src/wt_predmaint/labels src/wt_predmaint/features
 ```
 
 The detailed column reference remains in `docs/FEATURES_AND_LABELS.md`; decisions and caveats remain
-authoritative in `docs/DECISIONS.md` and `docs/DATA_TRAPS.md`.
+authoritative in `docs/project/DECISIONS.md` and `docs/project/DATA_TRAPS.md`.
