@@ -16,8 +16,8 @@ Decisions behind this roadmap are in `docs/project/DECISIONS.md`; the technical 
 | O2 target decision | Done (D-003): fault-time episodes from `tblDailySummary` plus SCADA-derived stops; alarm codes become features |
 | Split, windows, metrics decided | Done (D-005 to D-010) |
 | Cleaning layer (`data/clean.py`, `data/daily.py`, `scripts/build_clean_data.py`) | Done on branch `kanav/cleaning-layer` (D-015 to D-017); 10.14M rows 2016 to 2026-04, flags for outage months and suspect wind |
-| Labels for targets A and B (`labels/episodes.py`, `labels/horizon.py`, `scripts/build_labels.py`) | Done on branch `kanav/labels` (D-019); brute-force verified, 13 tests |
-| Daily features and look-ahead test (`features/daily.py`, `features/leakage.py`, `scripts/build_features.py`) | Done on branch `kanav/eval-harness` (D-021); 70,816 turbine-days, 366 columns, no look-ahead found |
+| Labels for targets A and B (`labels/episodes.py`, `labels/horizon.py`, `scripts/build_labels.py`) | Done on branch `kanav/labels` (D-019); brute-force verified, 13 tests; reviewed and signed off by Revael on 2026-10-27 |
+| Daily features and look-ahead test (`features/daily.py`, `features/leakage.py`, `scripts/build_features.py`) | Done on branch `kanav/eval-harness` (D-021); reviewed and signed off by Revael on 2026-10-27; 70,816 turbine-days, 366 columns, no look-ahead found |
 | Baseline interface and runner (`models/base.py`, `evaluation/runner.py`, `scripts/run_baselines.py`) | Done on branch `kanav/model-runner` (D-023, D-024); floors run through it, no real baseline registered yet |
 | Report figures (`reporting/`, `scripts/make_report_figures.py`) | 30 figures in `reports/figures/01_data` to `05_baselines`, with an index (D-025); extend with every new step |
 | Baselines B1 to B4, R1, healthy rows (H0) and preprocessing (P0), table T0 (`models/`, `features/prepare.py`, `scripts/make_baseline_table.py`) | Done on validation years (D-030 to D-053); test years not scored. R1 has the best validation PR-AUC (A 0.577, B 0.588 against random 0.465 and 0.483); no baseline reaches random-score recall at the false-alarm budget |
@@ -50,8 +50,8 @@ Decisions behind this roadmap are in `docs/project/DECISIONS.md`; the technical 
 
 ### Done (Wk0 to Wk3 core)
 - **Wk0 setup, Wk1 explore:** repo, CI, raw data, `DATA_TRAPS.md`, alarm and SCADA parquet.
-- **Wk2 cleaning, labels, harness (built by Kanav, teammate reviews still open):** `data/clean.py`, `labels/`, `evaluation/` (D-015 to D-020).
-- **Wk3 features, baselines, O1 core:** daily features (D-021); baselines B1 to B4 and R1 with table T0 on validation years (D-030 to D-053); ridge NBM and indicator (D-057, provisional).
+- **Wk2 cleaning, labels, harness (built by Kanav):** `data/clean.py`, `labels/`, `evaluation/` (D-015 to D-020). Revael's label review is complete and recorded in `reports/REVAEL_FEATURES_AND_LABELS.md`; other teammate reviews remain tracked in `docs/TEAM_CHECKLIST.md`.
+- **Wk3 features, baselines, O1 core:** daily features (D-021), reviewed and signed off by Revael in `reports/REVAEL_FEATURES_AND_LABELS.md`; baselines B1 to B4 and R1 with table T0 on validation years (D-030 to D-053); ridge NBM and indicator (D-057, provisional).
 
 ### Final sprint: 5 days to submission (replaces Wk4 to Wk6)
 

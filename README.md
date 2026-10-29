@@ -234,7 +234,8 @@ Check the code with `pytest` and `ruff check .`.
 - `notebooks/`: exploration only, named `NN_owner_topic.ipynb`; outputs are never committed
 - `reports/`: [`report/main.tex`](reports/report/main.tex) (final report),
   [`TEST_RESULTS.md`](reports/TEST_RESULTS.md), [`STAKEHOLDER_SUMMARY.md`](reports/STAKEHOLDER_SUMMARY.md),
-  `figures/` and `tables/` (generated outputs)
+  [`REVAEL_FEATURES_AND_LABELS.md`](reports/REVAEL_FEATURES_AND_LABELS.md) (reviewed labels/features
+  section and traceability map), plus `figures/` and `tables/` (generated outputs)
 - `data/{raw,interim,processed}`: git-ignored, never committed
 - `tests/`: unit tests on synthetic data
 
