@@ -614,3 +614,55 @@ These are development selections, not authorization to score held-out test years
 - Result, does a more specific label help? The median lift (PR-AUC over its floor, all models) rises with severity, from 1.05 (4 hours) to 1.06 (8) to 1.18 (12) for target A and from 1.12 (18 intervals) to 1.18 (36) to 1.25 (72) for B; it is higher for B when weather stops are dropped (1.26 against 1.11). The horizon has no clear effect for A (1.10, 1.12, 1.09 for 7, 14 and 30 days) and a small one for B (1.20, 1.17, 1.11). The highest lifts sit in the rarest variants, where the intervals are widest (B3 on 72-interval stops with a 7-day window: 0.137 against 0.029, interval [0.033, 0.300]).
 - Result, ranking (daily top 3 against chance): 44 of 189 intervals are above chance and 9 below; the random score was above chance in 0 of 27 and below in 5. B3 power curve is above chance in 4 of 9 variants for A and 16 of 18 for B (median differences +0.033 and +0.053), B1 recent fault in 11 of 18 for B, L1 LightGBM in 2 and 6, and the R1 z-score is below chance in 1 variant for A and 8 for B (median -0.011 and -0.014).
 - Reading: the labels are not the main bottleneck for the learned models. Narrower labels leave LightGBM and the logistic model at the floor, and the only things that stand out are two simple rules: B3 (on the ranking view, above chance in 16 of 18 target B definitions and 4 of 9 for A) and B1, which says that a turbine that recently faulted tends to fault again, so it measures persistence of the same fault process more than early warning. R1 has the highest validation PR-AUC at the reference labels but ranks turbines worse than chance, and it did not hold on the test years (D-061), so validation PR-AUC above the floor is not enough. The 27 variants overlap heavily (same days, nested labels), so the 37 and 44 counts overstate independent evidence; with 189 intervals some would clear the floor by chance, and nothing was selected. Nothing frozen changed and the test years were not scored. If the team wants to act on B3, the next step is a fresh, pre-registered check on data not used here, not a new look at the test years.
+### D-069: Experimental Target C: any new turbine alarm within six hours
+- Date: 2026-10-30
+- Owner: Farhan (requested local experiment)
+- Status: implemented locally; synthetic verification only; no real-data results
+- Decision: predict at each available 10-minute interval end whether any raw turbine
+  alarm starts in `(t, t + 6 hours]`. All turbine alarm codes count; site station 91
+  is excluded. Exact `TimeOn` timestamps define outcomes. Current sensors and trailing
+  1-hour, 24-hour and 7-day summaries use only observations available at prediction time.
+- Observation rules: require verified log-coverage intervals to establish negative
+  outcomes. Training and validation require complete future coverage for both classes.
+  Mask historical alarm counts when their lookback is not fully covered. Never derive
+  complete coverage merely from first/last alarm timestamps.
+- Evaluation: existing configured year splits, with cross-split outcome windows purged;
+  train-only imputation/scaling and class-weighted logistic regression. Threshold 0.5 is
+  provisional. Report point-level PR-AUC, precision, recall, balanced accuracy and a
+  confusion matrix. Overlapping forecast windows are dependent. No test scoring.
+- Scope: standalone scripts and notebook documented in `docs/TARGET_C.md`; the official
+  A/B protocol and frozen results remain unchanged. The six-hour horizon and lookbacks
+  are fixed experimental defaults, not validation-selected parameters. Any alarm does
+  not necessarily mean equipment failure. Assess usefulness only after real-data runs.
+
+### D-070: First local Target C performance run
+- Date: 2026-10-30
+- Owner: Farhan (requested local run)
+- Status: exploratory validation; coverage assumption explicitly provisional
+- Sources: existing cleaned SCADA from the earlier local checkout, read without modifying
+  it; 84 original monthly raw alarm exports from 2016 through 2022, containing 5,209,244
+  distinct turbine records. All 21 turbines occur in every monthly export. No test-year
+  raw alarm files are loaded.
+- Coverage: assume supplied monthly exports are complete for represented turbines; file
+  presence is not independent certification. Exclude seven fleet-silent dates in May 2021
+  and all outcome windows overlapping them. Historical alarm inputs are masked when their
+  windows overlap uncovered dates. Keep the audit inventory and assumption JSON locally.
+- Computation: first evaluate at hourly prediction anchors, preserving all 10-minute SCADA
+  observations in causal rolling summaries. Build 126 turbine/source-year partitions for
+  train years 2016, 2017, 2018, 2020 and validation years 2021, 2022. Use a reproducible
+  uniform sample of 100,000 eligible training anchors (configured seed); score every
+  eligible validation anchor. This is a sampled fit, not a full-training-data fit.
+- Comparators: always yes, always no, and alarm occurrence in the preceding hour. Report
+  average precision, ROC-AUC, precision, recall, accuracy, balanced accuracy and confusion
+  matrix at the model's fixed 0.5 threshold, plus year/turbine breakdowns. No threshold
+  tuning or test scoring. This is a different cadence from the default ten-minute builder.
+- Result: 729,996 eligible train anchors, sampled to 100,000; all 352,552 eligible
+  validation anchors scored, with positive prevalence 0.7455. Logistic average precision
+  0.8519 versus recent-one-hour alarm count 0.8099 and constant score 0.7455. At threshold
+  0.5: precision 0.8398, recall 0.6159, accuracy 0.6260, balanced accuracy 0.6358. Always-yes
+  accuracy is 0.7455. Only 0.3682 of predicted-negative windows are actually negative.
+  The model has ranking signal but weak negative predictions; these results do not
+  establish a useful deployed binary classifier or predict mechanical failures.
+- Artifacts: `reports/target_c/PERFORMANCE.md`, validation metrics, station breakdown,
+  prediction exports and chart. The model converged without a convergence warning;
+  model fitting took 92 seconds. The frozen A/B experiments and test scores were not rerun.

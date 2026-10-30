@@ -29,3 +29,8 @@ desktop.ini
 
 # Standalone report export (scripts/export_report.py)
 reports/report/export/
+
+# Local fitted Target C model and complete row-level prediction export
+reports/target_c/model.joblib
+reports/target_c/validation_predictions.parquet
+reports/target_c/validation_predictions.csv

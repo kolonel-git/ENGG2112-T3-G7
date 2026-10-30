@@ -256,3 +256,10 @@ is seeded from the config; the test years are scored once.
 ## Licence
 
 TODO: no licence chosen yet. The team must decide before any public release.
+
+## Experimental Target C
+
+For **yes/no prediction of any new turbine alarm within the next six hours**, see
+[the Target C guide](docs/TARGET_C.md) and
+[the Target C notebook](notebooks/01_target_c_alarm_forecast.ipynb).
+This uses 10-minute prediction points with past-only sensor and alarm features.
