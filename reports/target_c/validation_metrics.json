@@ -1,0 +1,165 @@
+{
+  "status": "PROVISIONAL: supplied monthly alarm exports assumed complete",
+  "train_eligible_rows": 729996,
+  "train_sample_rows": 100000,
+  "train_sample_positive_rate": 0.75574,
+  "feature_count": 730,
+  "seed": 42,
+  "threshold": 0.5,
+  "test_years_scored": false,
+  "prediction_minutes": 60,
+  "forecast_horizon_hours": 6,
+  "train_years": [
+    2016,
+    2017,
+    2018,
+    2020
+  ],
+  "validation_years": [
+    2021,
+    2022
+  ],
+  "logistic": {
+    "rows": 352552,
+    "positive_rate": 0.7455410833011867,
+    "average_precision": 0.8518789709512427,
+    "roc_auc": 0.6763860538446733,
+    "accuracy": 0.6260267988835689,
+    "balanced_accuracy": 0.6358074575045154,
+    "precision": 0.8397806678529002,
+    "recall": 0.615890915454912,
+    "f1": 0.7106180957794951,
+    "predicted_yes_rate": 0.5467760784224739,
+    "confusion_matrix_actual_no_yes_predicted_no_yes": [
+      [
+        58825,
+        30885
+      ],
+      [
+        100960,
+        161882
+      ]
+    ]
+  },
+  "recent_alarm_1h_baseline": {
+    "rows": 352552,
+    "positive_rate": 0.7455410833011867,
+    "average_precision": 0.8099105082712359,
+    "roc_auc": 0.5986773526508269,
+    "accuracy": 0.47491717533867345,
+    "balanced_accuracy": 0.5817580060335504,
+    "precision": 0.8417026440046075,
+    "recall": 0.3641959808554188,
+    "f1": 0.5084087728476171,
+    "predicted_yes_rate": 0.32258787356191426,
+    "confusion_matrix_actual_no_yes_predicted_no_yes": [
+      [
+        71707,
+        18003
+      ],
+      [
+        167116,
+        95726
+      ]
+    ]
+  },
+  "always_yes": {
+    "rows": 352552,
+    "positive_rate": 0.7455410833011867,
+    "average_precision": 0.7455410833011867,
+    "roc_auc": 0.5,
+    "accuracy": 0.7455410833011867,
+    "balanced_accuracy": 0.5,
+    "precision": 0.7455410833011867,
+    "recall": 1.0,
+    "f1": 0.8542234730920354,
+    "predicted_yes_rate": 1.0,
+    "confusion_matrix_actual_no_yes_predicted_no_yes": [
+      [
+        0,
+        89710
+      ],
+      [
+        0,
+        262842
+      ]
+    ]
+  },
+  "always_no": {
+    "rows": 352552,
+    "positive_rate": 0.7455410833011867,
+    "average_precision": 0.7455410833011867,
+    "roc_auc": 0.5,
+    "accuracy": 0.2544589166988132,
+    "balanced_accuracy": 0.5,
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": 0.0,
+    "predicted_yes_rate": 0.0,
+    "confusion_matrix_actual_no_yes_predicted_no_yes": [
+      [
+        89710,
+        0
+      ],
+      [
+        262842,
+        0
+      ]
+    ]
+  },
+  "notes": [
+    "Overlapping six-hour windows; point-level metrics are dependent.",
+    "Class-weighted model scores are not calibrated probabilities.",
+    "Training sampled for memory; all eligible validation points scored.",
+    "Missing recent-alarm history is zero only for the simple baseline."
+  ],
+  "logistic_by_year": [
+    {
+      "year": 2021,
+      "rows": 177979,
+      "positive_rate": 0.749521010905781,
+      "average_precision": 0.8598452617382262,
+      "roc_auc": 0.6893633188985515,
+      "accuracy": 0.6326027227931386,
+      "balanced_accuracy": 0.647153942396694,
+      "precision": 0.8510374729018272,
+      "recall": 0.6179956371487043,
+      "f1": 0.7160321189565247,
+      "predicted_yes_rate": 0.5442776956831986,
+      "confusion_matrix_actual_no_yes_predicted_no_yes": [
+        [
+          30150,
+          14430
+        ],
+        [
+          50959,
+          82440
+        ]
+      ]
+    },
+    {
+      "year": 2022,
+      "rows": 174573,
+      "positive_rate": 0.7414835054676268,
+      "average_precision": 0.8431473850896914,
+      "roc_auc": 0.6630580553942025,
+      "accuracy": 0.6193225756560293,
+      "balanced_accuracy": 0.624554265307793,
+      "precision": 0.8284096478513405,
+      "recall": 0.6137218698577752,
+      "f1": 0.705085648353599,
+      "predicted_yes_rate": 0.5493232057649236,
+      "confusion_matrix_actual_no_yes_predicted_no_yes": [
+        [
+          28675,
+          16455
+        ],
+        [
+          50001,
+          79442
+        ]
+      ]
+    }
+  ],
+  "csv_preview_rows": 1000
+}
