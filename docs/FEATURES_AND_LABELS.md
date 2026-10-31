@@ -18,6 +18,13 @@ files built on 2026-10-22; if the code changes, rebuild and update this page. Se
 read from the column names (the data dictionary in `data/raw/metadata/` is the authority), so treat
 the plain-language meanings as inferred.
 
+**Review sign-off — Revael, 2026-10-27:** Reviewed D-019 and D-021 against the protocol,
+`labels/`, `features/`, the boundary/leakage tests and figures F05–F14. The 30-day positive,
+31–60-day exclusion and trailing 7-day feature windows match the implementation; the feature
+truncation test found no look-ahead. All 27 targeted label, feature, leakage and report-figure tests
+passed, and every number in [the report section](../reports/REVAEL_FEATURES_AND_LABELS.md) is mapped
+to its generating script or table.
+
 One example is one turbine on one day (21 turbines, 2016 to 2026-04, 2019 unused). The row for
 (`StationId`, `Day`) holds what is known at the end of `Day`; the label asks about the following days.
 
@@ -172,4 +179,8 @@ Kept in the table for filtering and checking, excluded by `feature_columns`:
 - Features are not model-ready: no scaling or imputation has been applied.
 
 See D-019 and D-021 in [DECISIONS.md](project/DECISIONS.md) for the reasoning and
+<<<<<<< HEAD
 [DATA_TRAPS.md](project/DATA_TRAPS.md) for the data problems behind these choices.
+=======
+[DATA_TRAPS.md](DATA_TRAPS.md) for the data problems behind these choices.
+>>>>>>> 6535030bf74e74d22a551c1b0c69d947a56fa522

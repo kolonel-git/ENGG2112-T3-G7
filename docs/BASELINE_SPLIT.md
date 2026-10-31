@@ -80,7 +80,7 @@ the choice in a decision entry.
 
 ### 2.4 Decision IDs (avoid merge conflicts)
 
-Several people will add entries to `docs/DECISIONS.md` at once. To keep IDs unique, each person uses
+Several people will add entries to `docs/project/DECISIONS.md` at once. To keep IDs unique, each person uses
 their own block:
 
 | Person | IDs |
@@ -217,7 +217,7 @@ In `tests/test_<module>.py`, on synthetic data (no real data in tests):
    documented, and so on).
 
 #### Merge conflicts
-`models/registry.py`, `configs/protocol.yaml` and `docs/DECISIONS.md` are edited by everyone. Conflicts
+`models/registry.py`, `configs/protocol.yaml` and `docs/project/DECISIONS.md` are edited by everyone. Conflicts
 there are expected and trivial: `git merge origin/main` before opening the PR and keep both sides. Do not
 reorder or reformat other people's lines.
 

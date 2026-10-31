@@ -46,3 +46,5 @@ desktop.ini
 
 # Temporary Excel lock files.
 ~$*.xls*
+# Standalone report export (scripts/export_report.py)
+reports/report/export/

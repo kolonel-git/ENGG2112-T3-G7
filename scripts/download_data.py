@@ -20,7 +20,7 @@ import urllib.error
 import urllib.request
 from pathlib import Path
 
-# TODO: team to confirm dataset version (docs/project/DECISIONS.md); keep in sync with protocol.yaml.
+# TODO: team to confirm dataset version (docs/project/DECISIONS.md); keep in sync with the protocol.
 DEFAULT_RECORD = 22662930  # Hill of Towie v2.1.0 (concept DOI 10.5281/zenodo.14870021)
 API = "https://zenodo.org/api/records/{record}"
 RAW_DIR = Path(__file__).resolve().parents[1] / "data" / "raw"

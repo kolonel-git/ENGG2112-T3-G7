@@ -109,13 +109,23 @@ def run_baselines(
         episodes = episodes.loc[~episodes["StationId"].isin(excluded)]
     ev = cfg["evaluation"]
     train = labelled(table, "train")
+    if any(getattr(b, "requires_healthy_rows", False) for b in baselines):
+        from wt_predmaint.models.healthy import healthy_days
+
+        mask = healthy_days(
+            table[["StationId", "Day", "label", "status", "split"]], table, cfg, target
+        )
+        healthy_train = mask.reindex(train.index).fillna(False)
     val_all = scoring_rows(table, "val")
     sample = val_all.sample(min(CONTRACT_SAMPLE, len(val_all)), random_state=int(cfg["seed"]))
 
     rows: list[dict[str, Any]] = []
     scores: dict[tuple[str, str, str], pd.DataFrame] = {}
     for baseline in with_floors(baselines, target):
-        fitted = baseline.fit(train.copy(), cfg)
+        fitting = train.copy()
+        if getattr(baseline, "requires_healthy_rows", False):
+            fitting["healthy_fit"] = healthy_train
+        fitted = baseline.fit(fitting, cfg)
         if check_contract:
             problems = check_score_contract(fitted, sample)
             if problems:

@@ -10,7 +10,9 @@ from __future__ import annotations
 from collections.abc import Callable
 from pathlib import Path
 
+from wt_predmaint.models.alarm import AlarmCountRule
 from wt_predmaint.models.base import Baseline
+<<<<<<< HEAD
 from wt_predmaint.models.power_curve import PowerCurveProxy
 
 REGISTRY: dict[str, Callable[[str], Baseline]] = {
@@ -18,6 +20,26 @@ REGISTRY: dict[str, Callable[[str], Baseline]] = {
     # "B2_alarm_count": lambda target: AlarmCountRule(target),      # Farhan
     "B3_power_curve": lambda target: PowerCurveProxy(target),
     # "B4_logistic": lambda target: LogisticBaseline(target),       # Revael
+=======
+from wt_predmaint.models.lgbm import LightGBMBaseline
+from wt_predmaint.models.logistic import LogisticBaseline
+from wt_predmaint.models.nbm_indicator import NbmIndicatorBaseline
+from wt_predmaint.models.power_curve import PowerCurveProxy
+from wt_predmaint.models.rules import RecentFaultRule
+from wt_predmaint.models.zscore import ZScoreReference
+
+REGISTRY: dict[str, Callable[[str], Baseline]] = {
+    "B1_recent_fault": lambda target: RecentFaultRule(target),
+    "B1_fault_count": lambda target: RecentFaultRule(target, "count"),
+    "B1_fault_recency": lambda target: RecentFaultRule(target, "recency"),
+    "B2_alarm_count": lambda target: AlarmCountRule(target),
+    "R1_zscore": lambda target: ZScoreReference(target),
+    "B3_power_curve": lambda target: PowerCurveProxy(target),  # Parvez
+    "B4_logistic": lambda target: LogisticBaseline(target),  # Revael
+    "R2_nbm_indicator": lambda target: NbmIndicatorBaseline(target),
+    "L1_lgbm": lambda target: LightGBMBaseline(target),
+    "L1_lgbm_nbm": lambda target: LightGBMBaseline(target, use_nbm=True),
+>>>>>>> 6535030bf74e74d22a551c1b0c69d947a56fa522
 }
 
 
@@ -29,6 +51,10 @@ def build(names: list[str] | None, target: str, *, interim: Path | None = None) 
         raise KeyError(f"unknown baselines {missing}; registered: {sorted(REGISTRY)}")
     baselines = [REGISTRY[n](target) for n in chosen]
     for baseline in baselines:
+<<<<<<< HEAD
+=======
+        # B3 reads clean 10-minute tables from this folder (deviates from BASELINE_SPLIT C14, D-031)
+>>>>>>> 6535030bf74e74d22a551c1b0c69d947a56fa522
         if isinstance(baseline, PowerCurveProxy) and interim is not None:
             baseline.interim = interim
     return baselines

@@ -26,6 +26,7 @@ import pandas as pd
 from wt_predmaint.config import load_protocol
 from wt_predmaint.evaluation.runner import run_baselines
 from wt_predmaint.models.base import attach_labels
+from wt_predmaint.models.nbm import attach_nbm
 from wt_predmaint.models.registry import REGISTRY, build
 
 SHOW = [
@@ -46,6 +47,7 @@ def main() -> None:
 
     cfg = load_protocol()
     features = pd.read_parquet(args.interim / "features" / "daily_features.parquet")
+    features = attach_nbm(features, args.interim)  # NBM columns (D-057, D-055)
     splits = ("val", "test") if args.frozen else ("val",)
     if args.frozen:
         print("WARNING: scoring the test years. Use only for a frozen configuration.")
@@ -61,8 +63,13 @@ def main() -> None:
         table = attach_labels(features, labels, cfg)
         result = run_baselines(
             build(args.baselines, target, interim=args.interim), table, episodes, cfg, target,
+<<<<<<< HEAD
             splits=splits,
             frozen=args.frozen, exclude_stations=args.exclude, resamples=args.resamples,
+=======
+            splits=splits, frozen=args.frozen, exclude_stations=args.exclude,
+            resamples=args.resamples,
+>>>>>>> 6535030bf74e74d22a551c1b0c69d947a56fa522
         )  # fmt: skip
         variant = result.table["variant"].iloc[0]
         suffix = "" if variant == "all" else f"_{variant}"

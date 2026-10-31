@@ -1,0 +1,15 @@
+\begin{tabular}{@{}lcccccc@{}}
+\toprule
+ & \multicolumn{3}{c}{Target A} & \multicolumn{3}{c}{Target B} \\
+\cmidrule(lr){2-4}\cmidrule(lr){5-7}
+Model (setting) & Raw & Fleet & Fleet+season & Raw & Fleet & Fleet+season \\
+\midrule
+L1 LightGBM (frozen) (D-060) & 0.466 & 0.432 & 0.465 & 0.529 & 0.516 & 0.482 \\
+B4 logistic (frozen) (D-041) & 0.455 & 0.456 & 0.484 & 0.529 & 0.543 & 0.543 \\
+Shallow trees (50 trees, depth 2) & 0.425 & 0.392 & 0.454 & 0.509 & 0.522 & 0.530 \\
+Shallow trees (150 trees, depth 2) & 0.442 & 0.431 & 0.456 & 0.519 & 0.525 & 0.542 \\
+Sparse logistic (L1) (C=0.003) & 0.416 & 0.402 & 0.447 & 0.498 & 0.445 & 0.520 \\
+Sparse logistic (L1) (C=0.01) & 0.448 & 0.446 & 0.467 & 0.516 & 0.471 & 0.497 \\
+Sparse logistic (L1) (C=0.03) & 0.455 & 0.446 & 0.478 & 0.522 & 0.536 & 0.522 \\
+\bottomrule
+\end{tabular}

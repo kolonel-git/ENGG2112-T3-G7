@@ -10,8 +10,8 @@ and a short table to reports/tables/cleaning_report.csv.
 from __future__ import annotations
 
 import argparse
-import sys
 import json
+import sys
 from pathlib import Path
 
 # Support running this file directly from an IDE without installing the package.
@@ -24,8 +24,6 @@ from wt_predmaint.config import load_protocol
 from wt_predmaint.data.clean import clean_year, read_scada_parquet
 from wt_predmaint.data.daily import load_daily_summary
 from wt_predmaint.data.scada import TABLES
-
-
 
 
 def main() -> None:

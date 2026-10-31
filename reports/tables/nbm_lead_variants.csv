@@ -1,0 +1,21 @@
+target,time_to_next_episode,turbine_days,mean_indicator,median_indicator,variant
+a,1-7 days,1026,2.1327384,1.6059625,own_turbine
+a,8-14 days,952,1.9305514,1.4853041,own_turbine
+a,15-30 days,1717,2.4605832,1.5199454,own_turbine
+a,31-60 days,2411,1.9454664,1.4885156,own_turbine
+a,more than 60 days or none,4579,1.8229679,1.4197785,own_turbine
+b,1-7 days,1193,2.2188792,1.6192557,own_turbine
+b,8-14 days,1085,1.8522736,1.519263,own_turbine
+b,15-30 days,1723,2.6856642,1.5414629,own_turbine
+b,31-60 days,2109,2.1239479,1.487197,own_turbine
+b,more than 60 days or none,4093,1.5863309,1.3867089,own_turbine
+a,1-7 days,1021,1.0478327,0.8604338,fleet_relative
+a,8-14 days,941,1.0595374,0.87284935,fleet_relative
+a,15-30 days,1700,1.1492559,0.8614354,fleet_relative
+a,31-60 days,2387,1.0314788,0.8554919,fleet_relative
+a,more than 60 days or none,4539,1.0065485,0.88092834,fleet_relative
+b,1-7 days,1193,1.0963422,0.9354023,fleet_relative
+b,8-14 days,1073,1.0578825,0.9195503,fleet_relative
+b,15-30 days,1711,1.1019864,0.91281,fleet_relative
+b,31-60 days,2090,1.0276549,0.86543024,fleet_relative
+b,more than 60 days or none,4054,0.98777723,0.82219267,fleet_relative

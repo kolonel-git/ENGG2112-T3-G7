@@ -1,0 +1,5 @@
+target,variant,split,scope,n_rows,missing_count,missing_recency
+A,excl_2304515,val,all_feature_days,14281,287,287
+A,excl_2304515,val,labelled_days,9408,0,0
+B,excl_2304515,val,all_feature_days,14281,287,287
+B,excl_2304515,val,labelled_days,8561,64,64

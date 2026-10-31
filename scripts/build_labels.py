@@ -24,7 +24,6 @@ from wt_predmaint.config import load_protocol
 from wt_predmaint.labels.episodes import fault_episodes_a, stop_episodes_b
 from wt_predmaint.labels.horizon import build_horizon_labels, summarise_labels
 
-
 SCADA_COLUMNS = ["StationId", "TimeStamp", "wtc_GenRpm_mean", "wtc_PrWindSp_mean", "outage_month"]
 
 
