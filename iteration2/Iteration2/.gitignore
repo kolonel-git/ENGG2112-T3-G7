@@ -1,0 +1,10 @@
+# Excel workbooks and templates under the raw and interim data folders.
+# Recursive patterns include nested folders and Excel temporary lock files.
+/[Dd]ata/[Rr][Aa][Ww]/**/*.[xX][lL][sS]
+/[Dd]ata/[Rr][Aa][Ww]/**/*.[xX][lL][sS][xXmMbB]
+/[Dd]ata/[Rr][Aa][Ww]/**/*.[xX][lL][tT]
+/[Dd]ata/[Rr][Aa][Ww]/**/*.[xX][lL][tT][xXmM]
+/[Dd]ata/[Ii][Nn][Tt][Ee][Rr][Ii][Mm]/**/*.[xX][lL][sS]
+/[Dd]ata/[Ii][Nn][Tt][Ee][Rr][Ii][Mm]/**/*.[xX][lL][sS][xXmMbB]
+/[Dd]ata/[Ii][Nn][Tt][Ee][Rr][Ii][Mm]/**/*.[xX][lL][tT]
+/[Dd]ata/[Ii][Nn][Tt][Ee][Rr][Ii][Mm]/**/*.[xX][lL][tT][xXmM]

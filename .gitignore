@@ -26,3 +26,23 @@ Thumbs.db
 desktop.ini
 .vscode/
 .idea/
+
+# Dataset copies can also live inside nested project folders.
+# Keep source code and dataset documentation, not generated data files.
+**/[Dd]ata/[Rr]aw/*
+**/[Dd]ata/[Ii]nterim/*
+**/[Dd]ata/[Pp]rocessed/*
+!**/[Dd]ata/[Rr]aw/.gitkeep
+!**/[Dd]ata/[Ii]nterim/.gitkeep
+!**/[Dd]ata/[Pp]rocessed/.gitkeep
+**/[Dd]ata_[Pp]arquets*/*
+!**/[Dd]ata_[Pp]arquets*/README.md
+
+# Fitted models and generated prediction tables.
+*.joblib
+*.pkl
+*.pickle
+**/reports/**/*.parquet
+
+# Temporary Excel lock files.
+~$*.xls*
