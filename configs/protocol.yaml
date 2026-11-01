@@ -248,3 +248,28 @@ seed: 42                              # D-010
 # D-054: descriptive validation sensitivity, not a replacement for the official budget.
 budget_analysis:
   budgets: [0.05, 0.1, 0.25, 0.5, 0.75, 1.0, 1.5, 2.0]
+
+# Target C (fleet): alarm-specific short-horizon forecasts on all 21 turbines (D-071).
+# Pre-registered before any run; settings below are fixed, not tuned. Uses `splits` above.
+# The Target C scripts read the self-contained copy in configs/target_c_fleet.yaml.
+target_c_fleet:
+  groups:                               # an alarm start of any listed code makes the window positive
+    pitch_lubrication: [3130]
+    cable_untwist: [10105]
+    icing: [8230, 8234, 8235, 8236]
+    wind_too_high: [8000]
+  horizons_hours: [1, 6, 24]
+  primary_horizon_hours: 6
+  anchor_minutes: 60                    # predictions at every full hour (SCADA interval end)
+  min_anchor_intervals: 3               # of the 6 intervals in the last hour, else the anchor has no features
+  feature_windows_hours: [1, 24]        # trailing means; 24-h also gets a standard deviation
+  sensor_suffixes: [_mean]              # 10-min mean columns of tblSCTurbine, tblSCTurTemp, tblSCTurPress
+  extra_columns: [wtc_PrWindSp_stddev, wtc_GenRpm_stddev]
+  history_cap_hours: 720                # hours-since-last-alarm features are capped here
+  episode_merge_hours: same_as_horizon  # alarm starts closer than the horizon form one episode
+  budgets_per_turbine_month: [1, 30]    # false alert-hours; 1 is primary (brief), 30 is about one a day
+  hours_per_month: 730.5                # 30.4375 days x 24
+  logistic_c: 0.01                      # D-041 value, not re-tuned
+  logistic_max_rows: 200000             # seeded sample of labelled train rows (memory on the data machine)
+  lgbm: {num_leaves: 31, n_estimators: 300, learning_rate: 0.05, min_child_samples: 200,
+         subsample: 0.8, subsample_freq: 1, colsample_bytree: 0.5, reg_lambda: 1.0}  # D-060 values

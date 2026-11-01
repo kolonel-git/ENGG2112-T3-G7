@@ -1,0 +1,23 @@
+cleaning:
+  mask_sentinels: {tblSCTurTemp: [200.0, -50.0], tblSCTurPress: [-100.0, 200.0], tblSCTurbine: []}
+splits: {train_years: [2016, 2017, 2018, 2020], val_years: [2021, 2022], test_years: [2023, 2024, 2025, 2026]}
+seed: 42
+data_end: "2026-05-01 00:00:00"
+target_c_fleet:
+  groups: {pitch_lubrication: [3130], cable_untwist: [10105], icing: [8230, 8234, 8235, 8236], wind_too_high: [8000]}
+  horizons_hours: [1, 6, 24]
+  primary_horizon_hours: 6
+  anchor_minutes: 60
+  min_anchor_intervals: 3
+  feature_windows_hours: [1, 24]
+  sensor_suffixes: [_mean]
+  extra_columns: [wtc_PrWindSp_stddev, wtc_GenRpm_stddev]
+  history_cap_hours: 720
+  episode_merge_hours: same_as_horizon
+  budgets_per_turbine_month: [1, 30]
+  hours_per_month: 730.5
+  logistic_c: 0.01
+  logistic_max_rows: 200000
+  lgbm: {num_leaves: 31, n_estimators: 300, learning_rate: 0.05, min_child_samples: 200, subsample: 0.8, subsample_freq: 1, colsample_bytree: 0.5, reg_lambda: 1.0}
+evaluation: {bootstrap_resamples: 1000, ci_level: 0.95}
+alarm_feature_codes: [3130, 10105, 1005, 8000, 8210, 8230, 8234, 8235, 8236, 20, 25, 102]
