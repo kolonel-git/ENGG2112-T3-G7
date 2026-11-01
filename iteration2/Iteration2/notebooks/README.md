@@ -1,5 +1,7 @@
 # Machine-learning pipeline: run order
 
+For **any alarm code, two hours of history, and next 10/20/30-minute yes/no forecasts**, use [07_any_alarm_binary](07_any_alarm_binary/README.md). Its notebooks cover data inspection, visualisation, training, saved-result review and inference. This experiment is independent of the older alarm-group notebooks.
+
 Run notebook cells top to bottom. Preparation is sequential; plotting and training notebooks are independent consumers of the prepared data.
 
 | Order | Folder | Purpose |

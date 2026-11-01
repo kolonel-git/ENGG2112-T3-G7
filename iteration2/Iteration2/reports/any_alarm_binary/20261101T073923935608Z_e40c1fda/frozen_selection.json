@@ -1,0 +1,17 @@
+{
+  "10": {
+    "model": "xgboost",
+    "threshold": 0.608931303024292,
+    "selection": "highest validation average precision; F1 tie-break"
+  },
+  "20": {
+    "model": "xgboost",
+    "threshold": 0.5766443610191345,
+    "selection": "highest validation average precision; F1 tie-break"
+  },
+  "30": {
+    "model": "xgboost",
+    "threshold": 0.5620654225349426,
+    "selection": "highest validation average precision; F1 tie-break"
+  }
+}

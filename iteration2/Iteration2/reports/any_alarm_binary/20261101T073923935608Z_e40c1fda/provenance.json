@@ -1,0 +1,14 @@
+{
+  "python": "3.12.14 (main, Aug 25 2026, 14:01:42) [MSC v.1944 64 bit (AMD64)]",
+  "packages": {
+    "numpy": "2.3.5",
+    "pandas": "3.0.1",
+    "pyarrow": "25.0.1",
+    "scikit-learn": "1.9.0",
+    "xgboost": "3.4.1",
+    "matplotlib": "3.9.2"
+  },
+  "repository_head": "62b76737c51869bd4ef4d9ee6d7c30f6c5d38621",
+  "dataset_commit": "a529d3b809573ff313b9274bb10d661e787a0fd3",
+  "verification": "Imported dataset objects verified with SHA-256; all 7 timing/eligibility/inference tests pass; review and inference notebook cells executed."
+}
