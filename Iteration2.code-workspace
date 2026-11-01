@@ -1,0 +1,15 @@
+{
+  "folders": [
+    {
+      "name": "Exploratory study",
+      "path": "exploratory_study/Iteration2"
+    }
+  ],
+  "settings": {
+    "python.defaultInterpreterPath": "${workspaceFolder}/.venv/Scripts/python.exe",
+    "files.exclude": {
+      "**/__pycache__": true,
+      "**/.ipynb_checkpoints": true
+    }
+  }
+}

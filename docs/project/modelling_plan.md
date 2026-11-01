@@ -220,3 +220,43 @@ Predict health-bearing temperatures from operating conditions on healthy data; t
 - Sentinel (200.0) handling; `PowerRef_endvalue < 2300` as curtailment.
 - Re-adding `InvUpTmp` and `TrafoTMa` from raw.
 - Alert cooldown, sampling cadence, source of active power.
+
+## 13. Implementation status: H0 and B3 (2026-10-22)
+
+This update records implemented behaviour; earlier sections retain planning history.
+
+H0 (`models/healthy.py`, D-030) selects normal training examples using labels and
+quality flags. It must not be used as an inference-time risk feature: its selection
+uses future-event information available only for historical training examples.
+It is intended for normal-behaviour models, not for removing all positives from
+supervised classifier training.
+
+B3 (`models/power_curve.py`, D-031) now implements the planned power-curve proxy
+without measured active power. It fits one fleet-level median generator-RPM curve
+against primary wind on target-specific H0 intervals: 0.5 m/s bins, 4–25 m/s,
+minimum 30 intervals/bin, tolerance twice training-residual population standard
+deviation. These settings are provisional and not manufacturer-verified limits.
+Daily exceedance shares become a trailing seven-calendar-day mean (minimum four
+observed days). Outage/suspect/nonfinite intervals are excluded. Stop runs are
+excluded from fit, but remain possible underperformance at scoring time.
+Missing evidence has an explicit availability flag and a finite zero fallback;
+zero alone is not evidence of healthy operation. Scores are not calibrated probabilities.
+
+Initial all-turbine validation (2021–2022): A AP 0.4546, episode recall 0.2153;
+B AP 0.4999, episode recall 0.3021. Random episode recall is 0.7799/0.7604 at
+approximately the same false-alert budget. These results do not establish useful
+predictive skill. Full metrics and confidence intervals are in
+`reports/tables/b3_validation_{a,b}.csv`; see [B3 documentation](../POWER_CURVE.md).
+The 30-day detection window offers random alerts many chances to hit an episode;
+alert clustering is a hypothesis to inspect, not a confirmed explanation for B3.
+
+Current implementation counts false-alert days, with no alert cooldown. PR curves
+use row-level recall; the results table uses episode recall. Training years remain
+2016/2017/2018/2020, validation 2021/2022; configured test years are 2023–2026,
+subject to actual available data. The recorded B3 run was validation only.
+
+The integrated notebook calls shared modules, with interchangeable registered
+models. It supports cached preparation, H0 diagnostics, model fitting, validation,
+optional frozen test evaluation and plots. It does not yet plot training risk
+scores: absent score lines outside evaluated splits must not be read as missing
+sensor data. `STATION` selects a plot, not a single-turbine training experiment.

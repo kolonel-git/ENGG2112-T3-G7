@@ -1,22 +1,26 @@
 """Run B3 and reference floors on validation for A and B; never test by default."""
 
+# ruff: noqa: E402 -- support direct IDE execution with src-layout imports
+
 from __future__ import annotations
 
 import argparse
+import sys
 from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "src"))
 
 import matplotlib
 
 matplotlib.use("Agg")
-import matplotlib.pyplot as plt  # noqa: E402
-import pandas as pd  # noqa: E402
+import matplotlib.pyplot as plt
+import pandas as pd
 
-from wt_predmaint.config import load_protocol  # noqa: E402
-from wt_predmaint.evaluation.runner import run_baselines  # noqa: E402
-from wt_predmaint.models.base import attach_labels  # noqa: E402
-from wt_predmaint.models.power_curve import PowerCurveProxy  # noqa: E402
-
-ROOT = Path(__file__).resolve().parents[1]
+from wt_predmaint.config import load_protocol
+from wt_predmaint.evaluation.runner import run_baselines
+from wt_predmaint.models.base import attach_labels
+from wt_predmaint.models.power_curve import PowerCurveProxy
 
 
 def main() -> None:

@@ -1,0 +1,28 @@
+{
+  "alarm_codes": [
+    "8230",
+    "8234",
+    "8235",
+    "8236"
+  ],
+  "target_name": "icing",
+  "turbines": [
+    "2304511"
+  ],
+  "horizon": "7 days 00:00:00",
+  "lookback": "0 days 01:00:00",
+  "train_end": "2023-01-01 00:00:00",
+  "validation_end": "2024-01-01 00:00:00",
+  "seed": 42,
+  "input_folders": [
+    "c:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\Iteration2\\Data_Parquets_10min\\2016\\Station_2304511",
+    "c:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\Iteration2\\Data_Parquets_10min\\2017\\Station_2304511",
+    "c:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\Iteration2\\Data_Parquets_10min\\2018\\Station_2304511",
+    "c:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\Iteration2\\Data_Parquets_10min\\2020\\Station_2304511",
+    "c:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\Iteration2\\Data_Parquets_10min\\2021\\Station_2304511",
+    "c:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\Iteration2\\Data_Parquets_10min\\2022\\Station_2304511",
+    "c:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\Iteration2\\Data_Parquets_10min\\2023\\Station_2304511",
+    "c:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\Iteration2\\Data_Parquets_10min\\2024\\Station_2304511",
+    "c:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\Iteration2\\Data_Parquets_10min\\2025\\Station_2304511"
+  ]
+}

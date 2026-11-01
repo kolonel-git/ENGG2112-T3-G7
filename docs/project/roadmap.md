@@ -112,3 +112,30 @@ Submission is assumed to be **Sunday 2026-11-01** (five days from 2026-10-27, st
 - Positive windows cover 42 to 49% of days, so a random score reaches recall 0.79 to 0.84 at the 1-false-alarm budget and no baseline beats that floor. Report PR-AUC against the random floor and episode-level results, not recall at the budget alone (D-020).
 - The NBM indicator drifts between train and validation years (standardised mean -0.92 to +0.61) and is a weak early-warning signal (D-057).
 - 2019 temperature and pressure tables are missing; 2022-08, 2022-09 and 2025-09 are outage months.
+
+## 8. Progress update: H0, B3 and notebook (2026-10-22)
+
+- H0 complete (D-030): target-specific healthy-day and ten-minute training masks,
+  recovery/quality/stop exclusions and per-turbine/year count reporting. It is a
+  selection helper with no fit or prediction step.
+- B3 complete as an initial baseline (D-031): pooled healthy wind/generator-RPM
+  curve, causal daily shortfall features, registry integration, validation runner,
+  curve plots and A/B results. See [usage and outputs](../POWER_CURVE.md).
+- Integrated notebook: `notebooks/02_healthy_row_diagnostics_and_baseline_evaluation.ipynb`.
+  Model selection uses `MODEL_IDS`; `STATION` changes the displayed turbine only.
+  Training and aggregate validation use all available turbines.
+- Evidence: existing A/B validation tables show B3 episode recall 0.2153/0.3021
+  versus random 0.7799/0.7604 at approximately one false-alert day/turbine-month.
+  Implementation is complete; useful early-warning performance is not demonstrated.
+- Last implementation checks: 107 tests passed; changed Python files passed Ruff;
+  real B3 future-truncation checks passed two sampled turbine-days. These checks
+  were run during implementation, not repeated for this documentation update.
+- Next: inspect B3 evidence availability and alert clustering on validation,
+  implement the planned preprocessing/logistic components, and compare learned
+  models with both reference floors. Do not mark the full G2/G3 gates complete
+  from B3 implementation alone or tune using test results.
+- Notebook controls: preparation is optional; frozen test evaluation is optional.
+  The timeline currently plots validation and enabled test scores only. Training
+  scores are not returned by the runner, so full-calendar background bands do
+  not imply risk scores exist for every year. A training-period risk plot remains
+  unimplemented in this notebook.

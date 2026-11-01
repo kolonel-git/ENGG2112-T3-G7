@@ -1,0 +1,1019 @@
+{
+  "alarm_codes": [
+    "8200",
+    "8201",
+    "8202",
+    "8203",
+    "8204",
+    "8205",
+    "8206",
+    "8207",
+    "8208",
+    "8209",
+    "8210",
+    "8211",
+    "8212",
+    "8213",
+    "8214",
+    "8215",
+    "8216",
+    "8217",
+    "8218",
+    "8219",
+    "8220",
+    "8221",
+    "8222",
+    "8223",
+    "8224",
+    "8225",
+    "8226",
+    "8227",
+    "8228",
+    "8229",
+    "8230",
+    "8231",
+    "8232",
+    "8233",
+    "8234",
+    "8235",
+    "8236",
+    "8237",
+    "8238",
+    "8239",
+    "8240",
+    "8241",
+    "8242",
+    "8243",
+    "8244",
+    "8245",
+    "8246",
+    "8247",
+    "8248",
+    "8249",
+    "8250",
+    "8251",
+    "8252",
+    "8253",
+    "8254",
+    "8255",
+    "8256",
+    "8257",
+    "8258",
+    "8259",
+    "8260",
+    "8261",
+    "8262",
+    "8263",
+    "8264",
+    "8265",
+    "8266",
+    "8267",
+    "8268",
+    "8269",
+    "8270",
+    "8271",
+    "8272",
+    "8273",
+    "8274",
+    "8275",
+    "8276",
+    "8277",
+    "8278",
+    "8279",
+    "8280",
+    "8281",
+    "8282",
+    "8283",
+    "8284",
+    "8285",
+    "8286",
+    "8287",
+    "8288",
+    "8289",
+    "8290",
+    "8291",
+    "8292",
+    "8293",
+    "8294",
+    "8295",
+    "8296",
+    "8297",
+    "8298",
+    "8299"
+  ],
+  "sensors": [
+    "wtc_A1ExtTmp_mean",
+    "wtc_A21IntTm_mean",
+    "wtc_A3LefTmp_mean",
+    "wtc_A3RigTmp_mean",
+    "wtc_A9IntTmp_mean",
+    "wtc_AmbieTmp_mean",
+    "wtc_BrkTmpGn_mean",
+    "wtc_ConvWTmp_mean",
+    "wtc_DeltaTmp_mean",
+    "wtc_GFilB1Tm_mean",
+    "wtc_GFilB2Tm_mean",
+    "wtc_GFilB3Tm_mean",
+    "wtc_GeOilTmp_mean",
+    "wtc_GearPres_mean",
+    "wtc_Gen1U1Tm_mean",
+    "wtc_Gen1V1Tm_mean",
+    "wtc_Gen1W1Tm_mean",
+    "wtc_GenBeGTm_mean",
+    "wtc_GenBeRTm_mean",
+    "wtc_GenRpm_mean",
+    "wtc_GenRpm_stddev",
+    "wtc_HSGenTmp_mean",
+    "wtc_HSRotTmp_mean",
+    "wtc_HubPresA_mean",
+    "wtc_HubPresB_mean",
+    "wtc_HubPresC_mean",
+    "wtc_HydOilTm_mean",
+    "wtc_HydPress_mean",
+    "wtc_IMSGenTm_mean",
+    "wtc_IMSRotTm_mean",
+    "wtc_InvUpTmp_mean",
+    "wtc_MainBTmp_mean",
+    "wtc_MainSRpm_mean",
+    "wtc_NacelTmp_mean",
+    "wtc_PowerRef_endvalue",
+    "wtc_PrWindSp_mean",
+    "wtc_PrWindSp_stddev",
+    "wtc_ReacUTmp_mean",
+    "wtc_ReacVTmp_mean",
+    "wtc_ReacWTmp_mean",
+    "wtc_TraOilTF_mean",
+    "wtc_TraRooTF_mean",
+    "wtc_TrafoTMa_mean"
+  ],
+  "development_years": [
+    2016,
+    2017,
+    2018,
+    2019,
+    2020,
+    2021,
+    2022,
+    2023
+  ],
+  "reserved_years": [
+    2024,
+    2025
+  ],
+  "turbine_selection": null,
+  "seed": 42,
+  "max_train_negatives": 250000,
+  "threshold_policy": "max_f1",
+  "false_warning_budget": 1.0,
+  "max_warning_fraction": 0.05,
+  "horizon": "0 days 06:00:00",
+  "lookback": "0 days 01:00:00",
+  "folds": [
+    {
+      "name": "evaluate_2021",
+      "train_begin": "2016-01-01",
+      "calibration_begin": "2020-01-01",
+      "evaluation_begin": "2021-01-01",
+      "end": "2022-01-01"
+    },
+    {
+      "name": "evaluate_2022",
+      "train_begin": "2016-01-01",
+      "calibration_begin": "2021-01-01",
+      "evaluation_begin": "2022-01-01",
+      "end": "2023-01-01"
+    },
+    {
+      "name": "evaluate_2023",
+      "train_begin": "2016-01-01",
+      "calibration_begin": "2022-01-01",
+      "evaluation_begin": "2023-01-01",
+      "end": "2024-01-01"
+    }
+  ],
+  "candidates": [
+    {
+      "name": "constant_prevalence",
+      "kind": "constant"
+    },
+    {
+      "name": "random_weight",
+      "kind": "random"
+    },
+    {
+      "name": "logreg_C01",
+      "kind": "logistic",
+      "parameters": {
+        "C": 0.1
+      }
+    },
+    {
+      "name": "logreg_C1",
+      "kind": "logistic",
+      "parameters": {
+        "C": 1.0
+      }
+    },
+    {
+      "name": "lightgbm_leaves15",
+      "kind": "lightgbm",
+      "parameters": {
+        "n_estimators": 200,
+        "learning_rate": 0.05,
+        "num_leaves": 15,
+        "max_depth": 6
+      }
+    },
+    {
+      "name": "lightgbm_leaves31",
+      "kind": "lightgbm",
+      "parameters": {
+        "n_estimators": 200,
+        "learning_rate": 0.05,
+        "num_leaves": 31,
+        "max_depth": 6
+      }
+    },
+    {
+      "name": "forest_depth8",
+      "kind": "forest",
+      "parameters": {
+        "n_estimators": 100,
+        "max_depth": 8,
+        "min_samples_leaf": 10
+      }
+    },
+    {
+      "name": "forest_depth12",
+      "kind": "forest",
+      "parameters": {
+        "n_estimators": 100,
+        "max_depth": 12,
+        "min_samples_leaf": 10
+      }
+    }
+  ],
+  "source_signatures": [
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2016\\Station_2304510\\data.parquet",
+      "size": 11923077,
+      "mtime_ns": 1793480785350655600
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2016\\Station_2304511\\data.parquet",
+      "size": 12081243,
+      "mtime_ns": 1793480786718120400
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2016\\Station_2304512\\data.parquet",
+      "size": 11840028,
+      "mtime_ns": 1793480788304696000
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2016\\Station_2304513\\data.parquet",
+      "size": 11861869,
+      "mtime_ns": 1793480789876666800
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2016\\Station_2304514\\data.parquet",
+      "size": 12000519,
+      "mtime_ns": 1793480791156800800
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2016\\Station_2304515\\data.parquet",
+      "size": 11865445,
+      "mtime_ns": 1793480792649548000
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2016\\Station_2304516\\data.parquet",
+      "size": 12171720,
+      "mtime_ns": 1793480793828800000
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2016\\Station_2304517\\data.parquet",
+      "size": 11834078,
+      "mtime_ns": 1793480795038010900
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2016\\Station_2304518\\data.parquet",
+      "size": 11485952,
+      "mtime_ns": 1793480796053461200
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2016\\Station_2304519\\data.parquet",
+      "size": 11799260,
+      "mtime_ns": 1793480797480906300
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2016\\Station_2304520\\data.parquet",
+      "size": 11570185,
+      "mtime_ns": 1793480798546942100
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2016\\Station_2304521\\data.parquet",
+      "size": 11825866,
+      "mtime_ns": 1793480799760557600
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2016\\Station_2304522\\data.parquet",
+      "size": 11849733,
+      "mtime_ns": 1793480800841300700
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2016\\Station_2304523\\data.parquet",
+      "size": 11916574,
+      "mtime_ns": 1793480801993274300
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2016\\Station_2304524\\data.parquet",
+      "size": 11714432,
+      "mtime_ns": 1793480803132280300
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2016\\Station_2304525\\data.parquet",
+      "size": 11839994,
+      "mtime_ns": 1793480804563050400
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2016\\Station_2304526\\data.parquet",
+      "size": 11882710,
+      "mtime_ns": 1793480805877498700
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2016\\Station_2304527\\data.parquet",
+      "size": 13156766,
+      "mtime_ns": 1793480809041155400
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2016\\Station_2304528\\data.parquet",
+      "size": 11979923,
+      "mtime_ns": 1793480810284942600
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2016\\Station_2304529\\data.parquet",
+      "size": 11864808,
+      "mtime_ns": 1793480811546937500
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2016\\Station_2304530\\data.parquet",
+      "size": 11939378,
+      "mtime_ns": 1793480812753118200
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2017\\Station_2304510\\data.parquet",
+      "size": 11498611,
+      "mtime_ns": 1793480813721744200
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2017\\Station_2304511\\data.parquet",
+      "size": 11880632,
+      "mtime_ns": 1793480609873053400
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2017\\Station_2304512\\data.parquet",
+      "size": 11764658,
+      "mtime_ns": 1793480610456036800
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2017\\Station_2304513\\data.parquet",
+      "size": 11661940,
+      "mtime_ns": 1793480611042472700
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2017\\Station_2304514\\data.parquet",
+      "size": 11718624,
+      "mtime_ns": 1793480611633659400
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2017\\Station_2304515\\data.parquet",
+      "size": 11475428,
+      "mtime_ns": 1793480612198252300
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2017\\Station_2304516\\data.parquet",
+      "size": 11932928,
+      "mtime_ns": 1793480612800727600
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2017\\Station_2304517\\data.parquet",
+      "size": 11696941,
+      "mtime_ns": 1793480613394336700
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2017\\Station_2304518\\data.parquet",
+      "size": 11584058,
+      "mtime_ns": 1793480613949935400
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2017\\Station_2304519\\data.parquet",
+      "size": 11556242,
+      "mtime_ns": 1793480614519027300
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2017\\Station_2304520\\data.parquet",
+      "size": 11365540,
+      "mtime_ns": 1793480615116301600
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2017\\Station_2304521\\data.parquet",
+      "size": 11791889,
+      "mtime_ns": 1793480615680262500
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2017\\Station_2304522\\data.parquet",
+      "size": 11426769,
+      "mtime_ns": 1793480616260249700
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2017\\Station_2304523\\data.parquet",
+      "size": 11569309,
+      "mtime_ns": 1793480616827686400
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2017\\Station_2304524\\data.parquet",
+      "size": 11605497,
+      "mtime_ns": 1793480617420801700
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2017\\Station_2304525\\data.parquet",
+      "size": 11539050,
+      "mtime_ns": 1793480618006585700
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2017\\Station_2304526\\data.parquet",
+      "size": 11668666,
+      "mtime_ns": 1793480618592499500
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2017\\Station_2304527\\data.parquet",
+      "size": 12200027,
+      "mtime_ns": 1793480619200199600
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2017\\Station_2304528\\data.parquet",
+      "size": 11880268,
+      "mtime_ns": 1793480619804876100
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2017\\Station_2304529\\data.parquet",
+      "size": 12055962,
+      "mtime_ns": 1793480620379193100
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2017\\Station_2304530\\data.parquet",
+      "size": 11777088,
+      "mtime_ns": 1793480620981804400
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2017\\Station_91\\data.parquet",
+      "size": 465398,
+      "mtime_ns": 1793480621301047300
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2018\\Station_2304510\\data.parquet",
+      "size": 12027976,
+      "mtime_ns": 1793480621882928900
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2018\\Station_2304511\\data.parquet",
+      "size": 12334094,
+      "mtime_ns": 1793480622484217900
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2018\\Station_2304512\\data.parquet",
+      "size": 12246896,
+      "mtime_ns": 1793480623097400300
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2018\\Station_2304513\\data.parquet",
+      "size": 12246536,
+      "mtime_ns": 1793480623694735400
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2018\\Station_2304514\\data.parquet",
+      "size": 12266154,
+      "mtime_ns": 1793480624300871600
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2018\\Station_2304515\\data.parquet",
+      "size": 12126497,
+      "mtime_ns": 1793480624908441100
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2018\\Station_2304516\\data.parquet",
+      "size": 12330248,
+      "mtime_ns": 1793480625507081500
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2018\\Station_2304517\\data.parquet",
+      "size": 12106777,
+      "mtime_ns": 1793480626112688000
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2018\\Station_2304518\\data.parquet",
+      "size": 11905820,
+      "mtime_ns": 1793480626687573000
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2018\\Station_2304519\\data.parquet",
+      "size": 12226811,
+      "mtime_ns": 1793480627304496900
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2018\\Station_2304520\\data.parquet",
+      "size": 11769816,
+      "mtime_ns": 1793480627907149600
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2018\\Station_2304521\\data.parquet",
+      "size": 12061960,
+      "mtime_ns": 1793480628535969000
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2018\\Station_2304522\\data.parquet",
+      "size": 12150494,
+      "mtime_ns": 1793480629132348100
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2018\\Station_2304523\\data.parquet",
+      "size": 11855776,
+      "mtime_ns": 1793480629708313500
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2018\\Station_2304524\\data.parquet",
+      "size": 12170369,
+      "mtime_ns": 1793480630328914100
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2018\\Station_2304525\\data.parquet",
+      "size": 12028555,
+      "mtime_ns": 1793480630932262300
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2018\\Station_2304526\\data.parquet",
+      "size": 12242514,
+      "mtime_ns": 1793480631525959400
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2018\\Station_2304527\\data.parquet",
+      "size": 12789304,
+      "mtime_ns": 1793480632131088900
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2018\\Station_2304528\\data.parquet",
+      "size": 12416939,
+      "mtime_ns": 1793480632725800300
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2018\\Station_2304529\\data.parquet",
+      "size": 12224348,
+      "mtime_ns": 1793480633318316400
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2018\\Station_2304530\\data.parquet",
+      "size": 12212736,
+      "mtime_ns": 1793480633942972900
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2018\\Station_91\\data.parquet",
+      "size": 464795,
+      "mtime_ns": 1793480634325970200
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2020\\Station_2304510\\data.parquet",
+      "size": 12123977,
+      "mtime_ns": 1793480634909439400
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2020\\Station_2304511\\data.parquet",
+      "size": 12169289,
+      "mtime_ns": 1793480635492693400
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2020\\Station_2304512\\data.parquet",
+      "size": 12124696,
+      "mtime_ns": 1793480636077198000
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2020\\Station_2304513\\data.parquet",
+      "size": 12057405,
+      "mtime_ns": 1793480636683951200
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2020\\Station_2304514\\data.parquet",
+      "size": 12035872,
+      "mtime_ns": 1793480637282573800
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2020\\Station_2304515\\data.parquet",
+      "size": 11707880,
+      "mtime_ns": 1793480637875105600
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2020\\Station_2304516\\data.parquet",
+      "size": 12223383,
+      "mtime_ns": 1793480638480058500
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2020\\Station_2304517\\data.parquet",
+      "size": 12003522,
+      "mtime_ns": 1793480639103682400
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2020\\Station_2304518\\data.parquet",
+      "size": 11531379,
+      "mtime_ns": 1793480639690535900
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2020\\Station_2304519\\data.parquet",
+      "size": 11929433,
+      "mtime_ns": 1793480640259830200
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2020\\Station_2304520\\data.parquet",
+      "size": 11738413,
+      "mtime_ns": 1793480640854373700
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2020\\Station_2304521\\data.parquet",
+      "size": 11881523,
+      "mtime_ns": 1793480641444085400
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2020\\Station_2304522\\data.parquet",
+      "size": 11788129,
+      "mtime_ns": 1793480642025449100
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2020\\Station_2304523\\data.parquet",
+      "size": 11962555,
+      "mtime_ns": 1793480642577535400
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2020\\Station_2304524\\data.parquet",
+      "size": 12149012,
+      "mtime_ns": 1793480643177066600
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2020\\Station_2304525\\data.parquet",
+      "size": 11970907,
+      "mtime_ns": 1793480643780847600
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2020\\Station_2304526\\data.parquet",
+      "size": 10125449,
+      "mtime_ns": 1793480644352809900
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2020\\Station_2304527\\data.parquet",
+      "size": 12075224,
+      "mtime_ns": 1793480644939597000
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2020\\Station_2304528\\data.parquet",
+      "size": 12244216,
+      "mtime_ns": 1793480645550745700
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2020\\Station_2304529\\data.parquet",
+      "size": 11993784,
+      "mtime_ns": 1793480646134252200
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2020\\Station_2304530\\data.parquet",
+      "size": 11917804,
+      "mtime_ns": 1793480646722638800
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2021\\Station_2304510\\data.parquet",
+      "size": 11721990,
+      "mtime_ns": 1793480647326163000
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2021\\Station_2304511\\data.parquet",
+      "size": 11784014,
+      "mtime_ns": 1793480647906308900
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2021\\Station_2304512\\data.parquet",
+      "size": 11634244,
+      "mtime_ns": 1793480648505285600
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2021\\Station_2304513\\data.parquet",
+      "size": 11703736,
+      "mtime_ns": 1793480649106435600
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2021\\Station_2304514\\data.parquet",
+      "size": 11769316,
+      "mtime_ns": 1793480649695756000
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2021\\Station_2304515\\data.parquet",
+      "size": 10087652,
+      "mtime_ns": 1793480650241422100
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2021\\Station_2304516\\data.parquet",
+      "size": 12269161,
+      "mtime_ns": 1793480650848495800
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2021\\Station_2304517\\data.parquet",
+      "size": 11822396,
+      "mtime_ns": 1793480651434877500
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2021\\Station_2304518\\data.parquet",
+      "size": 11608250,
+      "mtime_ns": 1793480652024401900
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2021\\Station_2304519\\data.parquet",
+      "size": 11663132,
+      "mtime_ns": 1793480652627932900
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2021\\Station_2304520\\data.parquet",
+      "size": 11581814,
+      "mtime_ns": 1793480653214037200
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2021\\Station_2304521\\data.parquet",
+      "size": 11596592,
+      "mtime_ns": 1793480653813418200
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2021\\Station_2304522\\data.parquet",
+      "size": 11712005,
+      "mtime_ns": 1793480654392767400
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2021\\Station_2304523\\data.parquet",
+      "size": 11729846,
+      "mtime_ns": 1793480655010436200
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2021\\Station_2304524\\data.parquet",
+      "size": 11926772,
+      "mtime_ns": 1793480655610383400
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2021\\Station_2304525\\data.parquet",
+      "size": 11639053,
+      "mtime_ns": 1793480656227631700
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2021\\Station_2304526\\data.parquet",
+      "size": 11979582,
+      "mtime_ns": 1793480656801161100
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2021\\Station_2304527\\data.parquet",
+      "size": 12616645,
+      "mtime_ns": 1793480657403356500
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2021\\Station_2304528\\data.parquet",
+      "size": 11990781,
+      "mtime_ns": 1793480658016720000
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2021\\Station_2304529\\data.parquet",
+      "size": 9846454,
+      "mtime_ns": 1793480658571070400
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2021\\Station_2304530\\data.parquet",
+      "size": 11624079,
+      "mtime_ns": 1793480659154679300
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2021\\Station_91\\data.parquet",
+      "size": 464872,
+      "mtime_ns": 1793480659504376900
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2022\\Station_2304510\\data.parquet",
+      "size": 11467833,
+      "mtime_ns": 1793480660068592400
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2022\\Station_2304511\\data.parquet",
+      "size": 11402502,
+      "mtime_ns": 1793480660686420900
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2022\\Station_2304512\\data.parquet",
+      "size": 11778884,
+      "mtime_ns": 1793480661302889300
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2022\\Station_2304513\\data.parquet",
+      "size": 11675246,
+      "mtime_ns": 1793480661922886700
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2022\\Station_2304514\\data.parquet",
+      "size": 11359289,
+      "mtime_ns": 1793480662519177500
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2022\\Station_2304515\\data.parquet",
+      "size": 9014306,
+      "mtime_ns": 1793480663046399500
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2022\\Station_2304516\\data.parquet",
+      "size": 11854741,
+      "mtime_ns": 1793480663648886200
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2022\\Station_2304517\\data.parquet",
+      "size": 11417484,
+      "mtime_ns": 1793480664230188000
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2022\\Station_2304518\\data.parquet",
+      "size": 11455907,
+      "mtime_ns": 1793480664809630600
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2022\\Station_2304519\\data.parquet",
+      "size": 11569564,
+      "mtime_ns": 1793480665398771500
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2022\\Station_2304520\\data.parquet",
+      "size": 11184782,
+      "mtime_ns": 1793480665957923100
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2022\\Station_2304521\\data.parquet",
+      "size": 11435072,
+      "mtime_ns": 1793480666569862800
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2022\\Station_2304522\\data.parquet",
+      "size": 11416048,
+      "mtime_ns": 1793480667189681200
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2022\\Station_2304523\\data.parquet",
+      "size": 11448765,
+      "mtime_ns": 1793480667780160600
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2022\\Station_2304524\\data.parquet",
+      "size": 10815596,
+      "mtime_ns": 1793480668375822200
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2022\\Station_2304525\\data.parquet",
+      "size": 11483635,
+      "mtime_ns": 1793480668973655400
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2022\\Station_2304526\\data.parquet",
+      "size": 11653135,
+      "mtime_ns": 1793480669574568300
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2022\\Station_2304527\\data.parquet",
+      "size": 12577827,
+      "mtime_ns": 1793480670279621100
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2022\\Station_2304528\\data.parquet",
+      "size": 11644099,
+      "mtime_ns": 1793480670880335100
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2022\\Station_2304529\\data.parquet",
+      "size": 11504220,
+      "mtime_ns": 1793480671489696400
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2022\\Station_2304530\\data.parquet",
+      "size": 11653382,
+      "mtime_ns": 1793480672074045000
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2022\\Station_91\\data.parquet",
+      "size": 465258,
+      "mtime_ns": 1793480672407696000
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2023\\Station_2304510\\data.parquet",
+      "size": 11980507,
+      "mtime_ns": 1793480673010457600
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2023\\Station_2304511\\data.parquet",
+      "size": 12061644,
+      "mtime_ns": 1793480673626331700
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2023\\Station_2304512\\data.parquet",
+      "size": 12196210,
+      "mtime_ns": 1793480674250504300
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2023\\Station_2304513\\data.parquet",
+      "size": 12501814,
+      "mtime_ns": 1793480674844677600
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2023\\Station_2304514\\data.parquet",
+      "size": 11973891,
+      "mtime_ns": 1793480675466142200
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2023\\Station_2304515\\data.parquet",
+      "size": 11954769,
+      "mtime_ns": 1793480676060446300
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2023\\Station_2304516\\data.parquet",
+      "size": 12324168,
+      "mtime_ns": 1793480676653626200
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2023\\Station_2304517\\data.parquet",
+      "size": 11946562,
+      "mtime_ns": 1793480677248521500
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2023\\Station_2304518\\data.parquet",
+      "size": 11952861,
+      "mtime_ns": 1793480677861917200
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2023\\Station_2304519\\data.parquet",
+      "size": 11990218,
+      "mtime_ns": 1793480678458458700
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2023\\Station_2304520\\data.parquet",
+      "size": 11755488,
+      "mtime_ns": 1793480679039718200
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2023\\Station_2304521\\data.parquet",
+      "size": 12566089,
+      "mtime_ns": 1793480679646319100
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2023\\Station_2304522\\data.parquet",
+      "size": 12158984,
+      "mtime_ns": 1793480680266939800
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2023\\Station_2304523\\data.parquet",
+      "size": 12435569,
+      "mtime_ns": 1793480680898258400
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2023\\Station_2304524\\data.parquet",
+      "size": 12142226,
+      "mtime_ns": 1793480681516916900
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2023\\Station_2304525\\data.parquet",
+      "size": 11530158,
+      "mtime_ns": 1793480682095857000
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2023\\Station_2304526\\data.parquet",
+      "size": 12052331,
+      "mtime_ns": 1793480682703564200
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2023\\Station_2304527\\data.parquet",
+      "size": 12045575,
+      "mtime_ns": 1793480683289049200
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2023\\Station_2304528\\data.parquet",
+      "size": 12094776,
+      "mtime_ns": 1793480683872197800
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2023\\Station_2304529\\data.parquet",
+      "size": 12275557,
+      "mtime_ns": 1793480684453353700
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2023\\Station_2304530\\data.parquet",
+      "size": 12068640,
+      "mtime_ns": 1793480685036710200
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2023\\Station_91\\data.parquet",
+      "size": 464802,
+      "mtime_ns": 1793480685375256000
+    }
+  ],
+  "implementation_sha256": "a6c3d4a1b586c1b89b62247004b350a1e606f5448dbd0c5c8a6613aae5c570af"
+}

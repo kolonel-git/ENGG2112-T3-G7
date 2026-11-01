@@ -1,0 +1,585 @@
+{
+  "protocol": {
+    "dataset": {
+      "name": "Hill of Towie",
+      "version": "2.1.0",
+      "zenodo_record": 22662930,
+      "doi": "10.5281/zenodo.22662930",
+      "tables": [
+        "tblSCTurTemp",
+        "tblSCTurbine",
+        "tblSCTurPress",
+        "tblAlarmLog",
+        "tblDailySummary"
+      ],
+      "wanted_not_in_raw": [
+        "tblSCTurGrid",
+        "tblSCTurFlag"
+      ]
+    },
+    "cleaning": {
+      "expected_turbines": 21,
+      "outage_coverage_threshold": 0.9,
+      "producing_min_rpm": 1000,
+      "suspect_wind_min_corr": 0.55,
+      "suspect_wind_min_rows": 1000,
+      "mask_sentinels": {
+        "tblSCTurTemp": [
+          200.0,
+          -50.0
+        ],
+        "tblSCTurPress": [
+          -100.0,
+          200.0
+        ],
+        "tblSCTurbine": []
+      },
+      "daily": {
+        "min_samples": 90,
+        "expected_period_minutes": 1440,
+        "max_hours": 24.01
+      }
+    },
+    "splits": {
+      "train_years": [
+        2016,
+        2017,
+        2018,
+        2020
+      ],
+      "val_years": [
+        2021,
+        2022
+      ],
+      "test_years": [
+        2023,
+        2024,
+        2025,
+        2026
+      ]
+    },
+    "robustness": {
+      "leave_one_turbine_out": false,
+      "sensor_groups": {
+        "pressure": {
+          "tokens": [
+            "HubPresA",
+            "HubPresB",
+            "HubPresC",
+            "HydPress",
+            "BrakPres",
+            "GearPres",
+            "InlPrAft",
+            "InlPrBef",
+            "OfflPres",
+            "InvPress",
+            "BrAccPrs",
+            "BoostAct",
+            "BoostAva"
+          ]
+        },
+        "drivetrain_temperature": {
+          "tokens": [
+            "GeOilTmp",
+            "GenBeGTm",
+            "GenBeRTm",
+            "MainBTmp",
+            "HSGenTmp",
+            "HSRotTmp",
+            "IMSGenTm",
+            "IMSRotTm",
+            "TraOilTF",
+            "TraRooTF",
+            "Gen1U1Tm",
+            "Gen1V1Tm",
+            "Gen1W1Tm",
+            "GenAvgTm",
+            "HydOilTm"
+          ]
+        },
+        "power_electronics": {
+          "tokens": [
+            "ConvWTmp",
+            "ReacUTmp",
+            "ReacVTmp",
+            "ReacWTmp",
+            "GFilB1Tm",
+            "GFilB2Tm",
+            "GFilB3Tm",
+            "InvUpTmp",
+            "TrafoTMa",
+            "BrkTmpGn"
+          ]
+        },
+        "wind_rpm": {
+          "tokens": [
+            "PrWindSp",
+            "SeWindSp",
+            "AcWindSp",
+            "GenRpm",
+            "MainSRpm"
+          ],
+          "state": true
+        }
+      }
+    },
+    "labels": {
+      "alarm_codes": [
+        {
+          "code": 3130,
+          "tier": 1,
+          "stopping": true,
+          "description": "Pitch lubrication"
+        },
+        {
+          "code": 10105,
+          "tier": 1,
+          "stopping": true,
+          "description": "Stopped, untwisting cables"
+        },
+        {
+          "code": 1005,
+          "tier": 2,
+          "stopping": true,
+          "description": "Availability - low wind"
+        },
+        {
+          "code": 8000,
+          "tier": 2,
+          "stopping": true,
+          "description": "Windspeed too high to operate"
+        },
+        {
+          "code": 8210,
+          "tier": 2,
+          "stopping": true,
+          "description": "Stopped, due to icing"
+        },
+        {
+          "code": 8230,
+          "tier": 2,
+          "stopping": true,
+          "description": "Ice detection: Low torque"
+        },
+        {
+          "code": 8234,
+          "tier": 2,
+          "stopping": true,
+          "description": "Ice detection: No cut in"
+        },
+        {
+          "code": 8235,
+          "tier": 2,
+          "stopping": true,
+          "description": "Ice Detect: Stopped"
+        },
+        {
+          "code": 8236,
+          "tier": 2,
+          "stopping": true,
+          "description": "Ice Detect: Stopped, De-Ice"
+        },
+        {
+          "code": 20,
+          "tier": 3,
+          "stopping": false,
+          "description": "Large generator cut-in"
+        },
+        {
+          "code": 25,
+          "tier": 3,
+          "stopping": false,
+          "description": "Fast cut-out of generator"
+        },
+        {
+          "code": 102,
+          "tier": 3,
+          "stopping": false,
+          "description": "Ice detection"
+        }
+      ],
+      "feature_tiers": [
+        1,
+        2,
+        3
+      ],
+      "keep_other_alarms_for_masking": false,
+      "targets": {
+        "daily_fault_time": {
+          "fault_day_min_hours": 4,
+          "episode_gap_days": 7
+        },
+        "scada_stops": {
+          "stop_max_rpm": 200,
+          "stop_min_wind_ms": 4.0,
+          "stop_min_intervals": 18,
+          "min_observed_intervals_per_day": 115,
+          "episode_gap_days": 7
+        }
+      },
+      "positive_window_days": 30,
+      "exclusion_end_days": 60,
+      "feature_window_days": 7,
+      "min_horizon_coverage": 0.8
+    },
+    "evaluation": {
+      "false_alarm_budget_per_turbine_month": 1,
+      "days_per_month": 30.4375,
+      "bootstrap_resamples": 1000,
+      "ci_level": 0.95
+    },
+    "features": {
+      "min_producing_intervals": 12,
+      "window_min_days": 4
+    },
+    "healthy": {
+      "start_year": 2016,
+      "end_year": 2025,
+      "recovery_days": 7,
+      "cut_in_wind_ms": 4.0
+    },
+    "preprocessing_p0": {
+      "min_observed_share": 0.5,
+      "add_missing_indicators": false,
+      "scale": true,
+      "clip_quantiles": null
+    },
+    "baseline_b4": {
+      "c_grid": [
+        0.01,
+        0.1,
+        1.0
+      ],
+      "selected_c": {
+        "a": 0.01,
+        "b": 0.01
+      },
+      "selection_metric": "pr_auc",
+      "selection_tie_break": "smallest_c",
+      "solver": "liblinear",
+      "max_iter": 2000,
+      "tolerance": 0.0001,
+      "nonfinite_score_fallback": 0.5,
+      "coefficient_top_n": 20
+    },
+    "b1_recent_fault": {
+      "tie_weight": 0.5,
+      "missing_count": 0.0
+    },
+    "b2_alarm_count": {
+      "selected_variant": {
+        "a": "tier1_2",
+        "b": "code_10105"
+      },
+      "candidates": [
+        "total",
+        "tier2",
+        "tier1_2",
+        "code_3130",
+        "code_10105",
+        "code_1005",
+        "code_8000",
+        "code_8210",
+        "code_8230",
+        "code_8234",
+        "code_8235",
+        "code_8236",
+        "code_20",
+        "code_25",
+        "code_102"
+      ],
+      "window_days": 7,
+      "missing_count": 0.0
+    },
+    "r1_zscore": {
+      "sensors": [
+        "wtc_GeOilTmp_mean",
+        "wtc_GenBeGTm_mean",
+        "wtc_GenBeRTm_mean",
+        "wtc_MainBTmp_mean",
+        "wtc_Gen1U1Tm_mean",
+        "wtc_Gen1V1Tm_mean",
+        "wtc_Gen1W1Tm_mean"
+      ],
+      "window_days": 7,
+      "minimum_healthy_rows": 30,
+      "minimum_std": 1e-06,
+      "missing_score": 0.0
+    },
+    "baseline_table": {
+      "exclude_stations": [
+        2304515
+      ]
+    },
+    "power_curve": {
+      "bin_width_ms": 0.5,
+      "wind_min_ms": 4.0,
+      "wind_max_ms": 25.0,
+      "min_bin_intervals": 30,
+      "tolerance_std_multiple": 2.0
+    },
+    "nbm": {
+      "inputs": [
+        "op_wtc_PrWindSp_mean",
+        "op_wtc_GenRpm_mean",
+        "op_wtc_MainSRpm_mean",
+        "op_wtc_AmbieTmp_mean",
+        "op_wtc_NacelTmp_mean"
+      ],
+      "targets": [
+        "op_wtc_GeOilTmp_mean",
+        "op_wtc_GenBeGTm_mean",
+        "op_wtc_GenBeRTm_mean",
+        "op_wtc_MainBTmp_mean",
+        "op_wtc_Gen1U1Tm_mean",
+        "op_wtc_Gen1V1Tm_mean",
+        "op_wtc_Gen1W1Tm_mean",
+        "op_wtc_TraOilTF_mean",
+        "op_wtc_HydOilTm_mean",
+        "op_wtc_IMSGenTm_mean"
+      ],
+      "ridge_alpha": 1.0,
+      "smoothing_days": 7,
+      "fleet_relative": true,
+      "fleet_min_turbines": 5,
+      "indicator_missing_score": 0.0,
+      "minimum_fit_rows": 200,
+      "minimum_turbine_rows": 100,
+      "minimum_std": 1e-06
+    },
+    "lgbm": {
+      "selected": {
+        "a": {
+          "num_leaves": 7,
+          "n_estimators": 300,
+          "learning_rate": 0.05,
+          "min_child_samples": 200
+        },
+        "b": {
+          "num_leaves": 31,
+          "n_estimators": 300,
+          "learning_rate": 0.05,
+          "min_child_samples": 200
+        }
+      },
+      "grid": {
+        "num_leaves": [
+          7,
+          15,
+          31
+        ],
+        "n_estimators": [
+          100,
+          300
+        ],
+        "learning_rate": [
+          0.05
+        ],
+        "min_child_samples": [
+          200
+        ]
+      },
+      "subsample": 0.8,
+      "colsample_bytree": 0.5,
+      "reg_lambda": 1.0,
+      "selection_metric": "pr_auc",
+      "selection_tie_break": "simplest",
+      "nonfinite_score_fallback": 0.5,
+      "importance_top_n": 20
+    },
+    "explain": {
+      "shap_sample_rows": 4000,
+      "stability_sample_rows": 1000,
+      "top_n": 20
+    },
+    "exploratory": {
+      "min_turbines": 5,
+      "feature_sets": [
+        "raw",
+        "fleet",
+        "fleet_season"
+      ],
+      "shallow_trees": {
+        "num_leaves": 3,
+        "max_depth": 2,
+        "learning_rate": 0.05,
+        "min_child_samples": 500,
+        "n_estimators": [
+          50,
+          150
+        ]
+      },
+      "sparse_logistic": {
+        "c_grid": [
+          0.003,
+          0.01,
+          0.03
+        ]
+      },
+      "year_shift": {
+        "fit_up_to": 2018,
+        "score_year": 2020
+      },
+      "resamples": 200
+    },
+    "exploratory_round2": {
+      "feature_sets": [
+        "self",
+        "self_fleet"
+      ],
+      "window_days": 90,
+      "min_days": 30,
+      "ranking": {
+        "top_k": [
+          3,
+          5
+        ],
+        "min_turbines": 10,
+        "resamples": 1000
+      }
+    },
+    "exploratory_round3": {
+      "feature_sets": [
+        "raw",
+        "self_fleet"
+      ],
+      "methods": [
+        "gain_cv",
+        "year_stable_auc",
+        "gain_cv_decorr"
+      ],
+      "keep": [
+        10,
+        25,
+        50,
+        100
+      ],
+      "decorrelate_above": 0.9,
+      "rank_sample_rows": 20000,
+      "models": [
+        "lgbm_frozen",
+        "b4_logistic"
+      ],
+      "drop_groups": [
+        "pressure",
+        "drivetrain_temperature",
+        "power_electronics",
+        "wind_rpm",
+        "alarms",
+        "fault_history",
+        "day_state"
+      ]
+    },
+    "label_sensitivity": {
+      "horizons": [
+        7,
+        14,
+        30
+      ],
+      "a_fault_hours": [
+        4,
+        8,
+        12
+      ],
+      "b_stop_intervals": [
+        18,
+        36,
+        72
+      ],
+      "b_weather_stops": [
+        "keep",
+        "drop"
+      ],
+      "weather_tiers": [
+        2
+      ],
+      "weather_margin_intervals": 1,
+      "models": [
+        "B1_recent_fault",
+        "B2_alarm_count",
+        "R1_zscore",
+        "B3_power_curve",
+        "B4_logistic",
+        "R2_nbm_indicator",
+        "L1_lgbm"
+      ],
+      "resamples": 500,
+      "ranking_top_k": 3
+    },
+    "seed": 42,
+    "additional_validation_models": {
+      "output_dir": "reports/additional_models_main_protocol",
+      "include_frozen_controls": true,
+      "nonfinite_score_fallback": 0.5,
+      "n_jobs": 4,
+      "random_forest": {
+        "n_estimators": 150,
+        "max_depth": 10,
+        "min_samples_leaf": 20,
+        "max_features": "sqrt",
+        "class_weight": "balanced_subsample"
+      },
+      "extra_trees": {
+        "n_estimators": 150,
+        "max_depth": 12,
+        "min_samples_leaf": 10,
+        "max_features": "sqrt",
+        "class_weight": "balanced"
+      },
+      "histogram_gradient_boosting": {
+        "max_iter": 150,
+        "max_leaf_nodes": 15,
+        "learning_rate": 0.05,
+        "min_samples_leaf": 30,
+        "l2_regularization": 1.0,
+        "early_stopping": false
+      }
+    },
+    "budget_analysis": {
+      "budgets": [
+        0.05,
+        0.1,
+        0.25,
+        0.5,
+        0.75,
+        1.0,
+        1.5,
+        2.0
+      ]
+    }
+  },
+  "targets": [
+    "a",
+    "b"
+  ],
+  "bootstrap_override": null,
+  "inputs": [
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\data\\interim\\features\\daily_features.parquet",
+      "size": 82380850,
+      "mtime_ns": 1792658902766397100
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\data\\interim\\labels\\a_labels.parquet",
+      "size": 119024,
+      "mtime_ns": 1792658884173580500
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\data\\interim\\labels\\a_episodes.parquet",
+      "size": 15698,
+      "mtime_ns": 1792658884154152300
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\data\\interim\\labels\\b_labels.parquet",
+      "size": 118963,
+      "mtime_ns": 1792658884324157700
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\data\\interim\\labels\\b_episodes.parquet",
+      "size": 15645,
+      "mtime_ns": 1792658884309642700
+    }
+  ],
+  "model_implementation_sha256": "5b34547b8237bd49f74ef412681ad7b40a3bc1cb78778e4590ac284dcc7e824f",
+  "evaluation_scope": "validation only; no test scoring"
+}

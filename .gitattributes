@@ -1,3 +1,4 @@
 * text=auto
 *.ipynb filter=nbstripout
 *.ipynb diff=ipynb
+exploratory_study/Iteration2/Data_Parquets_10min/**/*.parquet filter=lfs diff=lfs merge=lfs -text

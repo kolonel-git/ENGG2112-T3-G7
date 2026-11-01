@@ -311,6 +311,10 @@ Status is **decided** or **open** (value to be fixed during the work and logged 
   their score contract. No B3 curve, R1/R2 estimator, fault classifier or validation/
   test model evaluation is implemented by H0. Source data and global split years
   are unchanged. Usage is documented in `docs/HEALTHY_ROWS.md`.
+<<<<<<< HEAD
+
+## D-031 — B3 pooled healthy wind/RPM proxy (2026-10-22)
+=======
 - Review note (Kanav, 2026-10-23): the healthy-day and interval counts quoted above came from a
   partial source (only the 2018 and 2019 clean files) and are superseded by the table regenerated
   from the full clean data (target A: 11,255 healthy days and 1,186,895 healthy 10-minute intervals; target B: 9,259 days and
@@ -375,6 +379,7 @@ Status is **decided** or **open** (value to be fixed during the work and logged 
 - Date: 2026-10-22
 - Owner: Parvez
 - Status: decided; provisional operating choices
+>>>>>>> 6535030bf74e74d22a551c1b0c69d947a56fa522
 - Implemented `models/power_curve.py` under the shared Baseline interface,
   registered as `B3_power_curve`, with `scripts/run_b3_power_curve.py` and
   `tests/test_power_curve.py`. See `docs/POWER_CURVE.md` for usage and outputs.
@@ -403,6 +408,31 @@ Status is **decided** or **open** (value to be fixed during the work and logged 
 - Checks: 107 tests pass; changed Python files pass Ruff. Extended
   `check_feature_leakage.py --b3` to recompute after future truncation at fixed fit:
   two real sampled turbine-days passed, plus synthetic causal-window tests.
+<<<<<<< HEAD
+  Full-repository Ruff has unrelated existing findings (including earlier notebook).
+
+### D-030/D-031 follow-up: workflow and interpretation log (2026-10-22)
+- No new modelling settings or split decisions. Notebook renamed to
+  `notebooks/02_healthy_row_diagnostics_and_baseline_evaluation.ipynb`; documentation
+  points to that name. H0 has no training step; B3 is the fitted risk baseline.
+- Registry now includes B3; the earlier empty-registry notebook run used only
+  constant/random references and must not be confused with B3 results.
+- `RUN_PREPARATION=True` runs preparation, while false reuses prepared tables.
+  `FROZEN_TEST=False` still fits training models, selects thresholds and evaluates
+  validation. True additionally evaluates available configured test years.
+- All turbines contribute eligible training rows; plot `STATION` changes only
+  the displayed turbine. Current timeline shows evaluated splits only and omits
+  training scores. No full-period training risk visualization has been added.
+- PR curves are day-level; episode recall credits any alert in the preceding
+  30-day window. B3's substantially lower recall than random at comparable budget
+  is poor baseline performance, not evidence of predictive benefit. Alert timing
+  and evidence availability remain items to investigate on validation.
+- Earlier H0 partial-source counts are historical. The later B3 run used prepared
+  multi-year data and its recorded fit counts in D-031. Do not reuse old missing-
+  validation statements as a description of the newer prepared inputs.
+- This log update records existing artefacts and prior checks; it does not claim
+  a new test-set run or a fresh training/test execution.
+=======
 - Review note (Kanav, 2026-10-23): B3 deviates from BASELINE_SPLIT rules C4, C9 and C14. Its constructor takes optional
   sources, its `fit` reads the clean 10-minute tables (train years, and validation years to build features with the train-fitted
   curve) and its `score` loads further years on demand, instead of reading new feature columns from `daily_features.parquet`.
@@ -427,12 +457,13 @@ Status is **decided** or **open** (value to be fixed during the work and logged 
   - A and B episodes match within 7 days for 75% (A) and 72% (B) of episodes (F07).
   - Lead time of the baselines is about the same as the random score's (F19).
 - Consequences: a new important step gets a registered figure in the same PR. `reports/tables/t0_*.csv` were regenerated with B3 included (values unchanged for the other baselines). Older loose figures in `reports/figures/` (`B2/`, `R1/`, `b3_curve_*.png`, one timeline) are superseded by F21, F23 and F26a to F26e.
+>>>>>>> 6535030bf74e74d22a551c1b0c69d947a56fa522
 
 ## Open decisions
 - Dataset version: confirm v2.1.0 with the teammate who downloaded the data (D-004).
 - Licence: none chosen; README carries a TODO.
 - `TimeErr` meaning: the data dictionary does not describe `tblDailySummary`. It is inferred from its name and from its agreement with SCADA stop time (correlation 0.86, D-008); `tblSCTurFlag` would settle it (D-018).
-- Handling of the four flagged `suspect_wind` turbine-years (flag only for now, D-015): decide per model whether to exclude them.
+- Handling of flagged `suspect_wind` turbine-years for later models remains open; H0 and B3 exclude flagged intervals under D-030/D-031.
 - Whether the 2022 drop of alarms 20 and 25 (about 60%) reflects a controller change; relevant to alarm-count features across years.
 - Upgrade analysis needs `Hill_of_Towie_AeroUp_install_dates.csv` from Zenodo.
 
@@ -614,3 +645,15 @@ These are development selections, not authorization to score held-out test years
 - Result, does a more specific label help? The median lift (PR-AUC over its floor, all models) rises with severity, from 1.05 (4 hours) to 1.06 (8) to 1.18 (12) for target A and from 1.12 (18 intervals) to 1.18 (36) to 1.25 (72) for B; it is higher for B when weather stops are dropped (1.26 against 1.11). The horizon has no clear effect for A (1.10, 1.12, 1.09 for 7, 14 and 30 days) and a small one for B (1.20, 1.17, 1.11). The highest lifts sit in the rarest variants, where the intervals are widest (B3 on 72-interval stops with a 7-day window: 0.137 against 0.029, interval [0.033, 0.300]).
 - Result, ranking (daily top 3 against chance): 44 of 189 intervals are above chance and 9 below; the random score was above chance in 0 of 27 and below in 5. B3 power curve is above chance in 4 of 9 variants for A and 16 of 18 for B (median differences +0.033 and +0.053), B1 recent fault in 11 of 18 for B, L1 LightGBM in 2 and 6, and the R1 z-score is below chance in 1 variant for A and 8 for B (median -0.011 and -0.014).
 - Reading: the labels are not the main bottleneck for the learned models. Narrower labels leave LightGBM and the logistic model at the floor, and the only things that stand out are two simple rules: B3 (on the ranking view, above chance in 16 of 18 target B definitions and 4 of 9 for A) and B1, which says that a turbine that recently faulted tends to fault again, so it measures persistence of the same fault process more than early warning. R1 has the highest validation PR-AUC at the reference labels but ranks turbines worse than chance, and it did not hold on the test years (D-061), so validation PR-AUC above the floor is not enough. The 27 variants overlap heavily (same days, nested labels), so the 37 and 44 counts overstate independent evidence; with 189 intervals some would clear the floor by chance, and nothing was selected. Nothing frozen changed and the test years were not scored. If the team wants to act on B3, the next step is a fresh, pre-registered check on data not used here, not a new look at the test years.
+
+
+### D-071: Additional main-protocol classifiers, exploratory validation only
+- Date: 2026-11-01
+- Owner: Parvez (implementation with Codex)
+- Status: settings declared before the additional runs; exploratory, not a new frozen selection
+- Context: Iteration2 alarm-code forecasts differ from the main report's daily A/B targets. A comparable algorithm/pipeline comparison must reuse the main features, labels, split eligibility, event definitions and false-alarm-budget evaluator. D-061 already inspected the main test years, so these models cannot be presented as new held-out confirmation.
+- Decision: add an independent main-root notebook, `additional_models_main_protocol.ipynb`, and three `models.base.Baseline`-compatible classifiers: random forest, Extra Trees and histogram gradient boosting. Settings are fixed provisionally in `additional_validation_models` in the protocol, not tuned on validation or test. Original logistic and LightGBM settings are rerun as controls, alongside the runner's constant/random floors. Candidate feature families match B4. New trees use the existing train-only P0 sparse/constant filtering and median imputation without scaling; original controls retain their existing preprocessing. Training uses all labelled train rows, with no negative subsampling. Class balancing is learned from training only. The original frozen registry is not extended, so its default experiment membership is unchanged.
+- Evaluation: use the existing A/B label files and daily feature table, train on configured train years, choose thresholds on validation at the configured one-false-alert-day per turbine-month budget, and call the shared runner for validation with its configured turbine-bootstrap confidence intervals. Also report clearly labelled window precision/recall/F1/ROC-AUC and confusion matrices, using the runner's strict `score > threshold` rule. Existing frozen results are not overwritten. Output is isolated under `reports/additional_models_main_protocol/<run-id>/` with configuration, coverage and file provenance.
+- Limits: post-hoc model comparisons on repeatedly used validation years, not an untouched experiment. Current cached feature/label coverage may differ from the published run, so fresh controls on exactly the same rows are the primary comparators. The notebook filters to development years before modelling and includes no test-scoring switch. No A/B labels or frozen model selections are changed. Full test evaluation, if later authorised, must be explicitly described as post-hoc or use genuinely new data.
+
+- Initial D-071 result: the executed run `reports/additional_models_main_protocol/fd99c521d412/` used 22,309 training and 9,690 validation rows for A, and 21,199 training and 8,827 validation rows for B. New-model validation AP: random forest 0.4105 (A), 0.4509 (B); Extra Trees 0.4141, 0.4662; histogram gradient boosting 0.4288, 0.4322. Paired random-score AP was 0.4649 and 0.4830. None of the additional-model point estimates exceeded that reference. All new-model realised validation false-alert rates were at or below the configured budget; episode recall ranged from 0.120 to 0.258 (A) and 0.161 to 0.344 (B), below the random reference's 0.780 and 0.760. Results and bootstrap intervals are in the isolated validation CSVs and notebook. No model was promoted to the frozen registry, no settings were tuned after these results, and no test-year predictions were produced.

@@ -101,3 +101,17 @@ the shared pipeline and rerun this report when the remaining years are prepared.
 Tests cover held-out and wrong-split rejection, recovery boundaries, missing
 history/flags, turbine isolation, midnight/year-boundary runs, finite-value and
 cut-in checks, input/index preservation, and reporting unavailable years.
+<<<<<<< HEAD
+# Integrated notebook (2026-10-22)
+
+Open `notebooks/02_healthy_row_diagnostics_and_baseline_evaluation.ipynb` for all-turbine
+coverage checks, H0 retention charts, registered-model validation, metric
+comparisons, precision–recall curves and risk timelines. Change `MODEL_IDS`
+in the configuration cell to select registered models. H0 is a training mask,
+not a risk predictor; it is audited separately. Preparation and frozen test
+evaluation default to off. Tables and figures go to
+`reports/notebook_all_turbines/`. All code cells were executed successfully
+against the current prepared data with reference models; the 11 H0 tests pass.
+
+=======
+>>>>>>> 6535030bf74e74d22a551c1b0c69d947a56fa522

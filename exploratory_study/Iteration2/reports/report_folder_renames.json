@@ -1,0 +1,22 @@
+[
+  {
+    "old": "alarm_all_alarms_ALL_10min_aligned_lookback120min_turbines_2304510-2304511-2304512-2304513-2304514_years_2016-2017-2018-2020-2021",
+    "new": "all_alarms_10m_all_1afdc414ce"
+  },
+  {
+    "old": "alarm_all_alarms_ALL_20min_aligned_lookback120min_turbines_2304510-2304511-2304512-2304513-2304514_years_2016-2017-2018-2020-2021",
+    "new": "all_alarms_20m_all_13c2298b8c"
+  },
+  {
+    "old": "alarm_all_alarms_ALL_30min_aligned_lookback120min_turbines_2304510-2304511-2304512-2304513-2304514_years_2016-2017-2018-2020-2021",
+    "new": "all_alarms_30m_all_7bf4f8e217"
+  },
+  {
+    "old": "alarm_icing_8230-8234-8235-8236_10min_aligned_lookback120min_turbines_2304510-2304511-2304512-2304513-2304514_years_2016-2017-2018-2020-2021",
+    "new": "icing_10m_all_80e426d863"
+  },
+  {
+    "old": "alarm_untwisting_cables_10105_10min_aligned_lookback120min_turbines_2304510-2304511-2304512-2304513-2304514_years_2016-2017-2018-2020-2021",
+    "new": "untwisting_10m_all_62c9f2e2e9"
+  }
+]

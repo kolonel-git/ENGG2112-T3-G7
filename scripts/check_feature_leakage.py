@@ -6,6 +6,8 @@ when everything after the end of its day is deleted. Exits with status 1 on any 
     python scripts/check_feature_leakage.py --stations 4 --days 5
 """
 
+# ruff: noqa: E402 -- support direct IDE execution with src-layout imports
+
 from __future__ import annotations
 
 import argparse
@@ -14,7 +16,7 @@ from pathlib import Path
 
 # Support running this file directly from an IDE without installing the package.
 ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT / 'src'))
+sys.path.insert(0, str(ROOT / "src"))
 
 import numpy as np
 import pandas as pd

@@ -17,7 +17,11 @@ This fits separate target-specific curves and evaluates A and B on validation,
 with the constant/random floors and turbine-bootstrap confidence intervals.
 It does not evaluate test years. Use `--target a` for A only.
 
+<<<<<<< HEAD
+The ordinary runner and integrated notebook also find B3 in the registry:
+=======
 The ordinary runner also finds B3 in the registry:
+>>>>>>> 6535030bf74e74d22a551c1b0c69d947a56fa522
 
 ```powershell
 python scripts/run_baselines.py --target a --baselines B3_power_curve
@@ -25,6 +29,13 @@ python scripts/check_feature_leakage.py --b3 --target a --stations 1 --days 2
 python -m pytest tests/test_power_curve.py -v
 ```
 
+<<<<<<< HEAD
+In `notebooks/02_healthy_row_diagnostics_and_baseline_evaluation.ipynb`, set
+`MODEL_IDS = ["B3_power_curve"]` and select `PLOT_MODEL = "B3_power_curve"` in the
+last code cell. Restart the kernel if it was opened before registration.
+
+=======
+>>>>>>> 6535030bf74e74d22a551c1b0c69d947a56fa522
 ## Definition (D-031)
 
 - Pooled fleet curve; 0.5 m/s wind bins; median healthy generator RPM in each bin.
@@ -89,3 +100,8 @@ Validation: 107 repository tests pass; changed Python files pass Ruff. The
 real-data B3 truncation check passed two sampled turbine-days (station 2304511).
 Synthetic tests cover curve recovery, injected underperformance, held-out
 perturbation, score contract, midnight assignment, calendar gaps and missing data.
+<<<<<<< HEAD
+Repository-wide Ruff still reports existing findings outside this change,
+including the previously created notebook.
+=======
+>>>>>>> 6535030bf74e74d22a551c1b0c69d947a56fa522
