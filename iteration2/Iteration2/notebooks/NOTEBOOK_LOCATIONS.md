@@ -18,3 +18,5 @@
 | 12_train_alarm_group_6hour.ipynb | [05_model_training/icing_8230_8234_8235_8236/03_horizon_6hours/01_train_all_features.ipynb](05_model_training/icing_8230_8234_8235_8236/03_horizon_6hours/01_train_all_features.ipynb) |
 | 13_train_alarm_group_1day.ipynb | [05_model_training/icing_8230_8234_8235_8236/04_horizon_1day/01_train_all_features.ipynb](05_model_training/icing_8230_8234_8235_8236/04_horizon_1day/01_train_all_features.ipynb) |
 | 14_train_alarm_group_1week.ipynb | [05_model_training/icing_8230_8234_8235_8236/05_horizon_1week/01_train_all_features.ipynb](05_model_training/icing_8230_8234_8235_8236/05_horizon_1week/01_train_all_features.ipynb) |
+
+New experiment: [All-turbine 6-hour 8200-family CV](06_all_turbine_cross_validation/01_cv_8200_family_all_turbines_6hour.ipynb). This is a new workflow, not a renamed single-turbine notebook.

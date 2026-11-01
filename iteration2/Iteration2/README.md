@@ -178,3 +178,17 @@ To review another date with models already fitted in the current kernel, rerun t
 - **Slow first run:** Excel conversion is done in preparation, not plotting/training. With processed data already available, skip directly to Stage 4 or 5.
 
 For notebook navigation, see [notebooks/README.md](notebooks/README.md) and the [old-to-new notebook locations](notebooks/NOTEBOOK_LOCATIONS.md). Supporting modules in `notebooks/shared/` are imported automatically; they are not separate pipeline steps.
+
+
+## All-turbine chronological cross-validation
+
+For the next development stage, use [06_all_turbine_cross_validation](notebooks/06_all_turbine_cross_validation/README.md) and its [6-hour 8200-family notebook](notebooks/06_all_turbine_cross_validation/01_cv_8200_family_all_turbines_6hour.ipynb). It requires the processed files from Stage 3, not the earlier single-turbine models.
+
+It pools all eligible sensor turbines in available 2016–2023 data, with independent calibration and evaluation years in each fold, and then freezes final models after a development-only refit. Default training keeps all positive windows and a weighted negative sample from every turbine-year; set MAX_TRAIN_NEGATIVES to None to use all rows if resources permit. Event-level and per-turbine reports supplement window metrics. The CV target now uses only 8230, 8234, 8235 and 8236, matching the four-code icing group. Earlier broad 8200–8299 reports are separate historical experiments.
+
+The 2024–2025 test step is off by default (`RUN_RESERVED_TEST = False`), including during Run All. Enable it only after choosing and freezing the development configuration. These years were already examined in previous experiments, so they are not historically untouched. Full all-turbine CV can take substantially longer than a single-turbine run.
+
+
+## View saved cross-validation evaluation
+
+Open [evaluate_cross_validation_results.ipynb](evaluate_cross_validation_results.ipynb) in this folder and Run All. It automatically selects the most recently completed CV result set, or set RUN_ID to choose one. It displays fold/candidate metrics, per-turbine results, PR curves and confusion matrices without retraining, changing thresholds or opening reserved test data. Set PLOT_PRECISION_RECALL to False for CSV-only review if needed.

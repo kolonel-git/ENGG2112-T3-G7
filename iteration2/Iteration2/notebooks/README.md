@@ -31,3 +31,8 @@ The two 10-minute selected-feature versions are both retained, even though their
 See [NOTEBOOK_LOCATIONS.md](NOTEBOOK_LOCATIONS.md) to find notebooks by their old filenames. Close old notebook tabs without saving them over the moved files, then reopen from the new folders.
 
 All three alarm groups now have identical notebook roles at every horizon: `01_train_all_features.ipynb`, `02_train_selected_features.ipynb`, and `03_train_selected_features_variant.ipynb` (45 notebooks total). The variant may duplicate the selected-feature experiment when settings match.
+
+
+## Stage 6: all-turbine temporal cross-validation
+
+[06_all_turbine_cross_validation](06_all_turbine_cross_validation/README.md) contains an independent 6-hour 8200-family experiment using all eligible turbines. It develops on 2016–2023 and keeps 2024–2025 disabled until explicitly enabled for testing. Run after Stage 3; the notebooks in Stage 5 are not prerequisites. See its README for the weighted negative-sampling default and optional all-row training.
