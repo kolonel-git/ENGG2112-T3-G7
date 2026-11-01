@@ -63,13 +63,8 @@ def main() -> None:
         table = attach_labels(features, labels, cfg)
         result = run_baselines(
             build(args.baselines, target, interim=args.interim), table, episodes, cfg, target,
-<<<<<<< HEAD
             splits=splits,
             frozen=args.frozen, exclude_stations=args.exclude, resamples=args.resamples,
-=======
-            splits=splits, frozen=args.frozen, exclude_stations=args.exclude,
-            resamples=args.resamples,
->>>>>>> 6535030bf74e74d22a551c1b0c69d947a56fa522
         )  # fmt: skip
         variant = result.table["variant"].iloc[0]
         suffix = "" if variant == "all" else f"_{variant}"
