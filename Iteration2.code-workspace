@@ -1,0 +1,15 @@
+{
+  "folders": [
+    {
+      "name": "Iteration 2 - active workflow",
+      "path": "iteration2/Iteration2"
+    }
+  ],
+  "settings": {
+    "python.defaultInterpreterPath": "${workspaceFolder}/.venv/Scripts/python.exe",
+    "files.exclude": {
+      "**/__pycache__": true,
+      "**/.ipynb_checkpoints": true
+    }
+  }
+}

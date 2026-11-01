@@ -1,3 +1,11 @@
+# Start here: Iteration 2
+
+**Iteration 2 is the active notebook workflow.** Open [Iteration2.code-workspace](Iteration2.code-workspace) in VS Code, then follow the [Iteration 2 run guide](iteration2/Iteration2/README.md) or open [00_START_HERE.ipynb](iteration2/Iteration2/00_START_HERE.ipynb).
+
+If you already have processed ten-minute Parquets, skip data conversion and go directly to plotting or one training experiment. The top-level `src/`, `scripts/`, `configs/`, `notebooks/`, and `reports/` below belong to the separate original protocol; they are not prerequisites for Iteration 2. Its historical findings remain documented below.
+
+---
+
 # Predicting Wind Turbine Degradation from SCADA
 
 **Explainable predictive maintenance on open wind-farm data.**

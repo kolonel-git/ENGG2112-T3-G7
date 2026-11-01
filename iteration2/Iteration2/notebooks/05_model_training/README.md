@@ -1,50 +1,44 @@
-# 05_model_training
+# Stage 5: choose one training experiment
 
-Choose an alarm-set folder and horizon. Current configurations all use the icing alarm group. Each model notebook is independent.
+Prerequisite: processed `Data_Parquets_10min` files. [Full run guide](../../README.md).
 
-See [the pipeline guide](../README.md) for the full run order.
+## 1. Choose the alarm target
 
+| Group | Target codes | Horizons |
+|---|---|---|
+| [Icing](icing_8230_8234_8235_8236/README.md) | 8230, 8234, 8235, 8236 | 10, 20, 30 minutes; 1 hour; 6 hours; 1 day; 1 week |
+| [Pitch lubrication](pitch_lubrication_3130/README.md) | 3130 | 10, 20, 30 minutes; 1 hour; 6 hours; 1 day; 1 week |
+| [Untwisting cables](untwisting_cables_10105/README.md) | 10105 | 10, 20, 30 minutes; 1 hour; 6 hours; 1 day; 1 week |
+| [All recorded alarms](all_alarms/README.md) | Every code, including operational codes 20 and 25 | 10, 20, 30 minutes |
 
-## Alarm-specific training folders
+## 2. Choose the feature mode
 
-- `icing_8230_8234_8235_8236/` — existing grouped icing notebooks.
-- `pitch_lubrication_3130/` — independent pitch-lubrication experiments.
-- `untwisting_cables_10105/` — independent untwisting-cable experiments.
+- `01_train_all_features.ipynb`: recommended first run; every available sensor feature.
+- `02_train_selected_features.ipynb`: edit `SELECTED_FEATURES` to choose sensors.
+- `03_train_selected_features_variant.ipynb`: an independent alternative selected-sensor configuration. It is not a required next stage and may duplicate version 02 if settings match.
 
-All three alarm-set folders contain matching horizon folders and training notebooks. Each alarm set is trained independently; existing icing settings are unchanged.
+## 3. Choose one horizon
 
-Pitch-lubrication (3130) and untwisting-cables (10105) now mirror all five icing horizon folders, including the all-feature and selected-feature variants available at each horizon. The new notebooks have not been trained.
+- `01_horizon_10min/`: next 10 minutes.
+- `02_horizon_20min/`: next 20 minutes.
+- `03_horizon_30min/`: next 30 minutes.
+- `04_horizon_1hour/`: next 1 hour.
+- `05_horizon_6hours/`: next 6 hours.
+- `06_horizon_1day/`: next 1 day.
+- `07_horizon_1week/`: next 1 week.
 
-Every alarm group now includes all three notebook roles in each of the five horizon folders: all features, selected features, and the selected-feature variant. New notebooks have not been trained.
+## Shared defaults
 
+Five turbines: 2304510–2304514. Years: train 2016–2018, validate 2020, test 2021. Inputs: previous two hours of sensor readings, summarized independently per turbine. Predictions every ten minutes. Target: at least one new target alarm start in `[t, t + horizon)`; currently active target alarms are excluded.
 
-## Prediction horizon order
+Models: constant prevalence, fixed random-weight score, lightweight logistic regression (`lbfgs`, 100 iterations, tolerance 1e-3), random forest, LightGBM and XGBoost. Training-only imputation/scaling; validation-only threshold selection; fixed thresholds on test. Both classes must exist in each split.
 
-- `01_horizon_10min/`
-- `02_horizon_20min/`
-- `03_horizon_30min/`
-- `04_horizon_1hour/`
-- `05_horizon_6hours/`
-- `06_horizon_1day/`
-- `07_horizon_1week/`
+Restart Kernel → Run All after changing settings. No other horizon or feature variant is a prerequisite. Review printed timing and output paths. Results go to compact `reports/<target>_<minutes>m_<mode>_<hash>/` folders; `configuration.json` retains exact settings. The hash separates configurations; it does not automatically archive reruns with identical settings.
 
-Each horizon contains all-features, selected-features, and selected-features variant notebooks. The sensor lookback remains two hours. New horizons require independent training.
+Metrics include precision, recall, F1/F2, AP, ROC-AUC and confusion matrices. Detailed binary summaries and ROC plots are also available in the 10/20/30-minute all-features notebooks. Prediction-history plots show one configured turbine at a time although fitting pools all five.
 
+The evaluated years have been inspected in previous work; these are exploratory results. AP must be compared with prevalence. Different alarm definitions and horizons change the task.
 
-## Training runtime settings
+## Advanced alternative
 
-All seven horizons and all three notebook variants retain a two-hour sensor lookback. Lightweight logistic regression is enabled by default (`TRAIN_LOGISTIC_REGRESSION = True`) and uses `lbfgs`, 100 iterations and tolerance 1e-3. Random forest, LightGBM, histogram XGBoost, constant prevalence and random-weight baselines run by default. XGBoost uses 100 depth-4 trees and four CPU threads; reduce `TREE_ESTIMATORS` for a quicker pilot. Install the Iteration2 requirements in the notebook kernel before running. Training prints elapsed fit/scoring time per model. This change applies to `05_model_training`; the separate cross-validation experiment retains its declared candidates.
-
-
-Training defaults pool turbines **2304510, 2304511, 2304512, 2304513 and 2304514**. Histories are calculated separately per turbine; models are fitted on combined training rows. Lightweight logistic regression uses `lbfgs`, `max_iter=100`, and `tol=1e-3`, with training-only imputation and scaling. Reports include the turbine IDs in their folder name to preserve previous single-turbine results. Prediction-history plots still show one configured turbine at a time.
-
-
-## Five-year training defaults
-
-Only 2016, 2017, 2018, 2020 and 2021 are loaded. Train: 2016-2018; validation/threshold selection: 2020; test: 2021. All five turbines and the two-hour lookback are retained. Report folders include the selected years so previous experiments are preserved. This applies to `05_model_training`; the separate all-turbine cross-validation workflow is unchanged.
-
-
-All-alarm experiments: `all_alarms/` contains 10-, 20- and 30-minute horizons, each with all-features, selected-features and variant notebooks. See its README for the all-code target definition.
-
-
-Report folders now use compact names such as `all_alarms_30m_all_<hash>`. The digest distinguishes targets, turbine IDs, selected years, horizons, split dates, seeds and feature selections. Exact settings remain in `configuration.json`; existing renamed reports are listed in `reports/report_folder_renames.json`.
+[All-turbine temporal CV](../06_all_turbine_cross_validation/README.md) is separate and retains its own candidates and date ranges; Stage 5 is not a prerequisite.

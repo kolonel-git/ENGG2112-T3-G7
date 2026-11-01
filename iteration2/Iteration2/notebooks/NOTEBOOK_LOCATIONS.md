@@ -1,4 +1,6 @@
-# Notebook locations
+# Historical notebook filename lookup
+
+For the current run order, use [Start Here](../README.md) and the [notebook directory](README.md). This table is only for locating older filenames. Some old names mention 3130 even when the notebook now targets icing; the current settings define the target.
 
 | Previous filename | New location |
 |---|---|

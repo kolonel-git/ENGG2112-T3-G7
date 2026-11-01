@@ -1,35 +1,25 @@
-# untwisting_cables_10105
+# Untwisting cables
 
-Each horizon folder contains the same three notebook roles:
+Target: **10105**. [Training guide](../README.md). Choose one notebook below; horizons are independent.
 
-- `01_train_all_features.ipynb`: all sensor features.
-- `02_train_selected_features.ipynb`: editable sensor subset.
-- `03_train_selected_features_variant.ipynb`: preserved alternate copy; identical settings give the same experiment/report directory.
+| Horizon | Start with all features | Other versions |
+|---|---|---|
+| 10 minutes | [Run notebook](01_horizon_10min/01_train_all_features.ipynb) | [Selected](01_horizon_10min/02_train_selected_features.ipynb), [variant](01_horizon_10min/03_train_selected_features_variant.ipynb) |
+| 20 minutes | [Run notebook](02_horizon_20min/01_train_all_features.ipynb) | [Selected](02_horizon_20min/02_train_selected_features.ipynb), [variant](02_horizon_20min/03_train_selected_features_variant.ipynb) |
+| 30 minutes | [Run notebook](03_horizon_30min/01_train_all_features.ipynb) | [Selected](03_horizon_30min/02_train_selected_features.ipynb), [variant](03_horizon_30min/03_train_selected_features_variant.ipynb) |
+| 1 hour | [Run notebook](04_horizon_1hour/01_train_all_features.ipynb) | [Selected](04_horizon_1hour/02_train_selected_features.ipynb), [variant](04_horizon_1hour/03_train_selected_features_variant.ipynb) |
+| 6 hours | [Run notebook](05_horizon_6hours/01_train_all_features.ipynb) | [Selected](05_horizon_6hours/02_train_selected_features.ipynb), [variant](05_horizon_6hours/03_train_selected_features_variant.ipynb) |
+| 1 day | [Run notebook](06_horizon_1day/01_train_all_features.ipynb) | [Selected](06_horizon_1day/02_train_selected_features.ipynb), [variant](06_horizon_1day/03_train_selected_features_variant.ipynb) |
+| 1 week | [Run notebook](07_horizon_1week/01_train_all_features.ipynb) | [Selected](07_horizon_1week/02_train_selected_features.ipynb), [variant](07_horizon_1week/03_train_selected_features_variant.ipynb) |
 
-Horizon folders: `01_horizon_10min`, `04_horizon_1hour`, `05_horizon_6hours`, `06_horizon_1day`, `07_horizon_1week`.
+## Shared defaults
 
-All use the previous hour of sensor inputs and predict every 10 minutes. Each notebook can run independently after preprocessing. Edit settings and Run All to train. Existing notebooks were preserved; newly created notebooks have not been trained.
+Five turbines: 2304510–2304514. Years: train 2016–2018, validate 2020, test 2021. Inputs: previous two hours of sensor readings, summarized independently per turbine. Predictions every ten minutes. Target: at least one new target alarm start in `[t, t + horizon)`; currently active target alarms are excluded.
 
+Models: constant prevalence, fixed random-weight score, lightweight logistic regression (`lbfgs`, 100 iterations, tolerance 1e-3), random forest, LightGBM and XGBoost. Training-only imputation/scaling; validation-only threshold selection; fixed thresholds on test. Both classes must exist in each split.
 
-## Prediction horizon order
+Restart Kernel → Run All after changing settings. No other horizon or feature variant is a prerequisite. Review printed timing and output paths. Results go to compact `reports/<target>_<minutes>m_<mode>_<hash>/` folders; `configuration.json` retains exact settings. The hash separates configurations; it does not automatically archive reruns with identical settings.
 
-- `01_horizon_10min/`
-- `02_horizon_20min/`
-- `03_horizon_30min/`
-- `04_horizon_1hour/`
-- `05_horizon_6hours/`
-- `06_horizon_1day/`
-- `07_horizon_1week/`
+Metrics include precision, recall, F1/F2, AP, ROC-AUC and confusion matrices. Detailed binary summaries and ROC plots are also available in the 10/20/30-minute all-features notebooks. Prediction-history plots show one configured turbine at a time although fitting pools all five.
 
-Each horizon contains all-features, selected-features, and selected-features variant notebooks. The sensor lookback remains two hours. New horizons require independent training.
-
-
-Training defaults pool turbines **2304510, 2304511, 2304512, 2304513 and 2304514**. Histories are calculated separately per turbine; models are fitted on combined training rows. Lightweight logistic regression uses `lbfgs`, `max_iter=100`, and `tol=1e-3`, with training-only imputation and scaling. Reports include the turbine IDs in their folder name to preserve previous single-turbine results. Prediction-history plots still show one configured turbine at a time.
-
-
-## Five-year training defaults
-
-Only 2016, 2017, 2018, 2020 and 2021 are loaded. Train: 2016-2018; validation/threshold selection: 2020; test: 2021. All five turbines and the two-hour lookback are retained. Report folders include the selected years so previous experiments are preserved. This applies to `05_model_training`; the separate all-turbine cross-validation workflow is unchanged.
-
-
-Report folders now use compact names such as `all_alarms_30m_all_<hash>`. The digest distinguishes targets, turbine IDs, selected years, horizons, split dates, seeds and feature selections. Exact settings remain in `configuration.json`; existing renamed reports are listed in `reports/report_folder_renames.json`.
+The evaluated years have been inspected in previous work; these are exploratory results. AP must be compared with prevalence. Different alarm definitions and horizons change the task.

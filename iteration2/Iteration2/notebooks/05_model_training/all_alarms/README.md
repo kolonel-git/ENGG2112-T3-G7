@@ -1,16 +1,23 @@
-# All-alarm prediction
+# All recorded alarms
 
-Run one of the following independent experiments after preprocessing:
+Target: **Every code, including operational codes 20 and 25**. [Training guide](../README.md). Choose one notebook below; horizons are independent.
 
-- `01_horizon_10min/`
-- `02_horizon_20min/`
-- `03_horizon_30min/`
+| Horizon | Start with all features | Other versions |
+|---|---|---|
+| 10 minutes | [Run notebook](01_horizon_10min/01_train_all_features.ipynb) | [Selected](01_horizon_10min/02_train_selected_features.ipynb), [variant](01_horizon_10min/03_train_selected_features_variant.ipynb) |
+| 20 minutes | [Run notebook](02_horizon_20min/01_train_all_features.ipynb) | [Selected](02_horizon_20min/02_train_selected_features.ipynb), [variant](02_horizon_20min/03_train_selected_features_variant.ipynb) |
+| 30 minutes | [Run notebook](03_horizon_30min/01_train_all_features.ipynb) | [Selected](03_horizon_30min/02_train_selected_features.ipynb), [variant](03_horizon_30min/03_train_selected_features_variant.ipynb) |
 
-Each contains `01_train_all_features.ipynb`, `02_train_selected_features.ipynb`, and `03_train_selected_features_variant.ipynb`. Edit `SELECTED_FEATURES` in selected-feature notebooks as needed; the all-features version uses every sensor feature.
+All-alarm labels include operational alarms, not just faults. `ALARM_CODES = ['ALL']` is a descriptive sentinel; event records are not filtered by code. Active periods of any alarm exclude windows, potentially reducing coverage.
 
-The label is 1 if **any recorded alarm code starts** in `[t, t + horizon)`, otherwise 0. All codes, including operational alarms 20 and 25, are retained; alarm flags and counts are never model inputs. `ALARM_CODES = ['ALL']` is a descriptive sentinel, not an actual source alarm code. Target events are intentionally unfiltered. Already-active alarms exclude prediction windows, consistent with the other onset-prediction notebooks. Frequent operational alarms can substantially reduce eligible windows and change prevalence; both classes must remain available in every split.
+## Shared defaults
 
-Defaults: turbines 2304510-2304514, a two-hour sensor history, train 2016-2018, validation 2020, test 2021. Models: constant prevalence, random-weight score, lightweight logistic regression, random forest, LightGBM and XGBoost. Run All independently for each horizon. Results are stored separately under the `all_alarms_ALL` target. Historical test-year reuse means these are exploratory evaluations.
+Five turbines: 2304510–2304514. Years: train 2016–2018, validate 2020, test 2021. Inputs: previous two hours of sensor readings, summarized independently per turbine. Predictions every ten minutes. Target: at least one new target alarm start in `[t, t + horizon)`; currently active target alarms are excluded.
 
+Models: constant prevalence, fixed random-weight score, lightweight logistic regression (`lbfgs`, 100 iterations, tolerance 1e-3), random forest, LightGBM and XGBoost. Training-only imputation/scaling; validation-only threshold selection; fixed thresholds on test. Both classes must exist in each split.
 
-Report folders now use compact names such as `all_alarms_30m_all_<hash>`. The digest distinguishes targets, turbine IDs, selected years, horizons, split dates, seeds and feature selections. Exact settings remain in `configuration.json`; existing renamed reports are listed in `reports/report_folder_renames.json`.
+Restart Kernel → Run All after changing settings. No other horizon or feature variant is a prerequisite. Review printed timing and output paths. Results go to compact `reports/<target>_<minutes>m_<mode>_<hash>/` folders; `configuration.json` retains exact settings. The hash separates configurations; it does not automatically archive reruns with identical settings.
+
+Metrics include precision, recall, F1/F2, AP, ROC-AUC and confusion matrices. Detailed binary summaries and ROC plots are also available in the 10/20/30-minute all-features notebooks. Prediction-history plots show one configured turbine at a time although fitting pools all five.
+
+The evaluated years have been inspected in previous work; these are exploratory results. AP must be compared with prevalence. Different alarm definitions and horizons change the task.
