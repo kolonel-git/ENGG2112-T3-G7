@@ -17,7 +17,7 @@ See the [saved test results](reports/TEST_RESULTS.md) or
 
 ## Start here
 
-### For Pratul (tutor)
+### For Pratul or TJ or whoever is viewing this readme :D
 
 Please start with [`notebooks/00_combined_full_pipeline.ipynb`](notebooks/00_combined_full_pipeline.ipynb).
 It is the main guided Jupyter notebook and shows how the project fits together:
@@ -27,6 +27,8 @@ For additional data visualization and exploratory studies, see the notebooks in
 [`exploratory_study/`](exploratory_study/). The
 [exploratory-study README](exploratory_study/README.md) links to its notebook
 entry point and explains how to set up and use that workflow.
+
+Below is more detailed instructions on what to look at, tbh we just used this for our own reference.
 
 ### Review the results
 
