@@ -662,3 +662,11 @@ These are development selections, not authorization to score held-out test years
 ## Short-horizon any-alarm experiment — 2026-11-01
 
 The user requested an independent binary target: any recorded alarm starts in the next 10, 20 or 30 minutes, using two hours of past sensor data from the supplied ten-minute Parquets. This is separate from the daily degradation protocol. Settings and model budgets live in `configs/short_horizon_alarm.json`. See [SH-001–SH-007](SHORT_HORIZON_DECISIONS.md) for label timing, chronological splits, sampling, model selection and source-label limitations.
+
+### D-072: Repair inherited CI blockers without changing experiments
+- Date: 2026-11-01
+- Trigger: PR #22 failed at the repository-wide Ruff stage before pytest ran.
+- Resolve committed conflict markers in the baseline registry and three CLI scripts. Preserve the full registered baseline set, the NBM leakage-check option and direct-script import support.
+- Keep complete Python-file linting. Notebook cells retain syntax, undefined-name, redefinition and bugbear checks, while interactive import order, inspection imports, long plot labels and compact plotting syntax have notebook-only style exceptions. Declare immutable `pandas.Timedelta` defaults safe rather than suppressing default-argument checks.
+- Make existing zip truncation explicit with `strict=False`, name unused loop variables accordingly and report warnings at the caller. Use an explicit `globals().get` cache lookup and move future imports into the initial export-notebook cells. Format the four existing Python notebook helpers/tests to satisfy the same lint policy as other Python files.
+- No dataset, feature/horizon setting, model fit, threshold, frozen model selection or reported metric is changed by this CI repair. Existing workflow stages remain enabled; neither Ruff nor pytest is skipped or marked non-blocking.

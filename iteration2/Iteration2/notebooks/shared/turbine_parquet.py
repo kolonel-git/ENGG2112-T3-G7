@@ -1,4 +1,5 @@
 """Persistent typed sensor and alarm caches for the feature notebooks."""
+
 import json
 import os
 from pathlib import Path
@@ -13,8 +14,12 @@ def load_turbine(workbook_path, turbine_id, cache_root, rebuild=False):
     """Read a current Parquet cache, or build it once from the Excel turbine sheet."""
     workbook_path = Path(workbook_path).resolve()
     stat = workbook_path.stat()
-    fingerprint = {"version": CACHE_VERSION, "source": str(workbook_path),
-                   "size": stat.st_size, "mtime_ns": stat.st_mtime_ns}
+    fingerprint = {
+        "version": CACHE_VERSION,
+        "source": str(workbook_path),
+        "size": stat.st_size,
+        "mtime_ns": stat.st_mtime_ns,
+    }
     sheet = f"Station_{turbine_id}"
     if not str(turbine_id).isdigit():
         raise ValueError("TURBINE_ID must contain digits only.")
@@ -42,7 +47,9 @@ def load_turbine(workbook_path, turbine_id, cache_root, rebuild=False):
     if not features:
         raise ValueError("No wtc_ sensor features found in the sheet.")
     sensors = data.loc[data[features].notna().any(axis=1), ["TimeStamp", *features]].copy()
-    sensors["TimeStamp"] = pd.to_datetime(sensors["TimeStamp"], errors="coerce").astype("datetime64[ns]")
+    sensors["TimeStamp"] = pd.to_datetime(sensors["TimeStamp"], errors="coerce").astype(
+        "datetime64[ns]"
+    )
     sensors[features] = sensors[features].apply(pd.to_numeric, errors="coerce")
     sensors = sensors.dropna(subset=["TimeStamp"]).sort_values("TimeStamp").set_index("TimeStamp")
     events = []
@@ -57,18 +64,27 @@ def load_turbine(workbook_path, turbine_id, cache_root, rebuild=False):
     for column in ["TimeOn", "TimeOff"]:
         alarms[column] = pd.to_datetime(alarms[column], errors="coerce").astype("datetime64[ns]")
     alarms = alarms.dropna(subset=["TimeOn"])
-    if workbook_path.stat().st_mtime_ns != stat.st_mtime_ns or workbook_path.stat().st_size != stat.st_size:
-        raise RuntimeError("The workbook changed during conversion. Rerun after the export completes.")
+    if (
+        workbook_path.stat().st_mtime_ns != stat.st_mtime_ns
+        or workbook_path.stat().st_size != stat.st_size
+    ):
+        raise RuntimeError(
+            "The workbook changed during conversion. Rerun after the export completes."
+        )
     folder.mkdir(parents=True, exist_ok=True)
     # Publish the manifest last so interrupted conversions are rebuilt next time.
     manifest_path.unlink(missing_ok=True)
     token = uuid4().hex
-    temporary = [folder / f".{token}-{name}" for name in ["sensors.parquet", "alarms.parquet", "source.json"]]
+    temporary = [
+        folder / f".{token}-{name}" for name in ["sensors.parquet", "alarms.parquet", "source.json"]
+    ]
     try:
         sensors.to_parquet(temporary[0], engine="pyarrow", compression="snappy")
         alarms.to_parquet(temporary[1], engine="pyarrow", compression="snappy", index=False)
         temporary[2].write_text(json.dumps(fingerprint, indent=2), encoding="utf-8")
-        for staged, target in zip(temporary, [sensors_path, alarms_path, manifest_path]):
+        for staged, target in zip(
+            temporary, [sensors_path, alarms_path, manifest_path], strict=False
+        ):
             os.replace(staged, target)
     finally:
         for staged in temporary:

@@ -1,6 +1,5 @@
 """Run B3 and reference floors on validation for A and B; never test by default."""
 
-<<<<<<< HEAD
 # ruff: noqa: E402
 from __future__ import annotations
 
@@ -21,25 +20,6 @@ from wt_predmaint.config import load_protocol
 from wt_predmaint.evaluation.runner import run_baselines
 from wt_predmaint.models.base import attach_labels
 from wt_predmaint.models.power_curve import PowerCurveProxy
-=======
-from __future__ import annotations
-
-import argparse
-from pathlib import Path
-
-import matplotlib
-
-matplotlib.use("Agg")
-import matplotlib.pyplot as plt  # noqa: E402
-import pandas as pd  # noqa: E402
-
-from wt_predmaint.config import load_protocol  # noqa: E402
-from wt_predmaint.evaluation.runner import run_baselines  # noqa: E402
-from wt_predmaint.models.base import attach_labels  # noqa: E402
-from wt_predmaint.models.power_curve import PowerCurveProxy  # noqa: E402
-
-ROOT = Path(__file__).resolve().parents[1]
->>>>>>> 6535030bf74e74d22a551c1b0c69d947a56fa522
 
 
 def main() -> None:
