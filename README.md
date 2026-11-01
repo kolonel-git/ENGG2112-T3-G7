@@ -1,43 +1,87 @@
-# ENGG2112 Group 7 — repository guide
+# Predicting Wind Turbine Degradation from SCADA
 
-This repository contains our main wind-turbine downtime study and a separate
-**Iteration 2 exploratory alarm-forecasting workflow**. This page explains how to
-review the submitted work, where its evidence lives, and how to run either workflow.
-The two workflows ask different questions and use different labels, splits and
-metrics; their scores should not be combined into one results table.
+**ENGG2112, University of Sydney — Group 7, “AI for Good”**
 
-## Suggested reading order for the marker
+We study whether 10-minute SCADA sensor readings from 21 Hill of Towie wind
+turbines can indicate degradation or warn of an upcoming fault or stoppage. The
+main study evaluates a normal-behaviour indicator (O1), 30-day downtime warnings
+(O2), and model robustness (O3). A separate exploratory workflow predicts alarm
+starts; an alarm is not necessarily a component fault, so its results are kept
+separate from the main study.
 
-1. Read the [main findings below](#findings) and the
-   [stakeholder summary](reports/STAKEHOLDER_SUMMARY.md) for the project outcome.
-2. Inspect [saved test results](reports/TEST_RESULTS.md), the generated
-   [figures index](reports/figures/README.md), and the
-   [report source](reports/report/main.tex). Reviewing saved evidence does not
-   require retraining models or downloading all raw data.
-3. Use the [labels/features reference](docs/FEATURES_AND_LABELS.md),
-   [decision log](docs/project/DECISIONS.md), and
-   [data traps](docs/project/DATA_TRAPS.md) to trace methodological choices.
-4. Explore Iteration 2 through [Start Here](exploratory_study/Iteration2/00_START_HERE.ipynb)
-   and its [run guide](exploratory_study/Iteration2/README.md). This is additional
-   investigation of alarm starts, not a replacement for the main study's frozen results.
-5. For implementation review, see the reusable code in `src/wt_predmaint/`,
-   command-line entry points in `scripts/`, and synthetic checks in `tests/`.
+**Main result:** on the held-out test years, no model was distinguishable from a
+random score by PR-AUC, and the validation alert threshold did not maintain the
+target false-alarm rate. We do not recommend these models for operational use.
+See the [saved test results](reports/TEST_RESULTS.md) or
+[plain-language summary](reports/STAKEHOLDER_SUMMARY.md).
 
-## Choose a workflow
+## Start here
 
-| Workflow | Question and scope | Start here |
+### For Pratul (tutor)
+
+Please start with [`notebooks/00_combined_full_pipeline.ipynb`](notebooks/00_combined_full_pipeline.ipynb).
+It is the main guided Jupyter notebook and shows how the project fits together:
+each stage calls the reusable code and scripts used by the full pipeline.
+
+For additional data visualization and exploratory studies, see the notebooks in
+[`exploratory_study/`](exploratory_study/). The
+[exploratory-study README](exploratory_study/README.md) links to its notebook
+entry point and explains how to set up and use that workflow.
+
+### Review the results
+
+Start with the [stakeholder summary](reports/STAKEHOLDER_SUMMARY.md), then browse
+the [test results](reports/TEST_RESULTS.md) and
+[generated figures](reports/figures/README.md). These are saved in the repository;
+reviewing them does not require downloading the raw data or rerunning the models.
+
+### Run the main-study notebook
+
+1. Follow the [quickstart](#quickstart) to set up Python and dependencies.
+2. Open [`notebooks/00_combined_full_pipeline.ipynb`](notebooks/00_combined_full_pipeline.ipynb)
+   and select the repository's `.venv` Python environment as its kernel.
+3. Read the **Run controls** at the top, then choose **Run All**. With the default
+   settings, the notebook displays saved results; it does not rebuild the data or
+   rerun the frozen test evaluation.
+4. To reproduce stages, enable the relevant switches in the notebook and follow
+   its numbered sections. Rebuilding requires the raw input files. The held-out
+   test run is already frozen; do not rerun it to tune models.
+
+The notebook is a step-by-step front end to the maintained code in `scripts/`
+and `src/`; it avoids duplicating the modelling implementation.
+
+### Choose another workflow
+
+| Workflow | Purpose | Guide |
 |---|---|---|
-| **Main study / original protocol** | Daily 30-day downtime warning, targets A (fault time) and B (SCADA stops), fleet training and fixed chronological evaluation | [Main-study quickstart](#quickstart), [protocol](configs/protocol.yaml), [saved test results](reports/TEST_RESULTS.md) |
-| **Iteration 2 / exploratory notebooks** | Forecast new alarm starts at configurable horizons; inspect sensor patterns and compare classifiers | [Run guide](exploratory_study/Iteration2/README.md), [notebook directory](exploratory_study/Iteration2/notebooks/README.md) |
-| **Iteration 2 / all-turbine temporal CV** | Separate six-hour icing-alarm experiment with development folds and a disabled reserved-test step | [CV guide](exploratory_study/Iteration2/notebooks/06_all_turbine_cross_validation/README.md) |
-| **Additional main-protocol comparisons** | Post-hoc validation-only classifier comparisons using the original daily A/B task | [Additional-model notebook](additional_models_main_protocol.ipynb), [scope below](#additional-validation-only-model-comparison-d-071) |
+| **Main study** | Daily 30-day warnings for fault-time target A and SCADA-stop target B | [Notebook](notebooks/00_combined_full_pipeline.ipynb) · [Protocol](configs/protocol.yaml) |
+| **Iteration 2** | Exploratory alarm-start forecasting, visualization and classifier comparisons | [Start Here notebook](exploratory_study/Iteration2/00_START_HERE.ipynb) · [Run guide](exploratory_study/Iteration2/README.md) |
+| **All-turbine temporal CV** | Separate six-hour icing-alarm experiment | [CV guide](exploratory_study/Iteration2/notebooks/06_all_turbine_cross_validation/README.md) |
+| **Additional model comparison** | Validation-only classifiers using the main study's daily labels | [Notebook](additional_models_main_protocol.ipynb) |
 
-An alarm start is not necessarily a component fault. Operational codes can be
-predictable without providing useful degradation warnings. Iteration 2 evaluation
-years have already been inspected in exploratory work; they are not new independent
-confirmation of the main report's findings.
+These workflows use different targets, splits and metrics. Do not combine their
+scores as if they were one experiment. Iteration 2 evaluation years have already
+been inspected in exploratory work; they are not independent confirmation of the
+main study's findings.
+
+## Where things are
+
+| Location | Contents |
+|---|---|
+| [`notebooks/`](notebooks/) | Main-study guided pipeline and diagnostics |
+| [`src/wt_predmaint/`](src/wt_predmaint/) | Reusable data, feature, label, model, evaluation and reporting code |
+| [`scripts/`](scripts/) | Main-study command-line pipeline steps |
+| [`configs/protocol.yaml`](configs/protocol.yaml) | Main-study years, windows, quality rules, model settings and seed |
+| [`data/`](data/) | Raw, interim and processed data; generally git-ignored |
+| [`reports/`](reports/) | Saved results, figures, tables and report |
+| [`docs/`](docs/) | Setup, methods, decisions and project notes |
+| [`tests/`](tests/) | Synthetic software-correctness and leakage tests |
+| [`exploratory_study/Iteration2/`](exploratory_study/Iteration2/) | Separate exploratory notebooks, data layout and outputs |
 
 ## Using Iteration 2 as an exploratory workspace
+
+<details>
+<summary>Setup, data, and notebook instructions</summary>
 
 The actual project directory is **`exploratory_study/Iteration2/`**. The extra directory
 level is intentional; keep it so existing notebook paths continue to resolve.
@@ -123,60 +167,18 @@ current configured code list. `RUN_RESERVED_TEST = False` leaves 2024–2025
 unopened by that workflow. Those years have been used elsewhere in this project,
 so they are not globally unseen data. Consult the CV guide before enabling that step.
 
-## Overall repository structure
+</details>
 
-| Location | What it contains |
-|---|---|
-| `src/wt_predmaint/` | Main-study reusable loading/cleaning, labels, features, models, evaluation, explanations and reporting |
-| `configs/` | Original protocol: years, windows, quality rules, model settings and seeds |
-| `scripts/` | Main-study command-line pipeline; see the command table below |
-| `notebooks/` | Original-protocol exploration and diagnostic notebooks; separate from Iteration 2 |
-| `data/` | Main-study raw/interim/processed data, generally excluded from Git |
-| `reports/` | Main-study saved evidence, figures, tables, stakeholder summary and LaTeX report |
-| `docs/` | Usage guides, label definitions, decisions, limitations and project history |
-| `tests/` | Software correctness/leakage tests; these are not model performance results |
-| `exploratory_study/Iteration2/` | Separate exploratory notebook workflow, environment, data layout and outputs |
-| `additional_models_main_protocol.ipynb` | Additional validation-only experiments on original A/B labels |
-| `.github/`, `pyproject.toml`, `CONTRIBUTING.md` | CI, package/dependency configuration and contribution rules |
+## Main study: problem and methods
 
-The sections below document the **main study**: its problem, methods, findings,
-limitations, dataset, setup, ordered script commands, team roles and licence status.
-Use the saved report evidence for marking; reproducing the full large-data pipeline
-is optional and requires the corresponding source files. Test results in the main
-study are already frozen; do not rerun its test step to select or tune models.
+The main study uses open SCADA data from the Hill of Towie wind farm in Scotland:
+21 Siemens SWT-2.3-VS-82 turbines, with 10-minute readings from 2016 to April 2026.
+It asks whether routine turbine sensor data can indicate degradation early enough
+to support maintenance planning, and whether those warnings can be explained.
 
----
-
-# Predicting Wind Turbine Degradation from SCADA
-
-**Explainable predictive maintenance on open wind-farm data.**
-ENGG2112 (University of Sydney), Group 7, "AI for Good".
-
-Wind turbines are expensive to repair and expensive to leave idle. An unplanned breakdown means a
-stopped turbine, a crew sent out at short notice and electricity that is never sold. This project
-asks whether the sensor data a turbine already records can warn us **before** it fails, and whether
-we can explain the warning well enough for a maintenance engineer to trust it.
-
-## Headline result
-
-**On the test years (2023 to April 2026) no model could be told apart from a random score.** Every
-95% interval for PR-AUC contains the random-score value. The model that looked best on the tuning
-years fell back to the random level on the test years, and the alert threshold chosen on the tuning
-years did not hold a fixed false-alarm rate. We therefore do **not** recommend using any of these
-models for operations. Details, numbers and caveats are in
-[Findings](#findings), [`reports/TEST_RESULTS.md`](reports/TEST_RESULTS.md) and
-[`reports/STAKEHOLDER_SUMMARY.md`](reports/STAKEHOLDER_SUMMARY.md) (a plain-language version).
-
-## The problem
-
-Each turbine logs hundreds of readings every 10 minutes (temperatures, pressures, rotor speed, wind
-speed) plus a log of alarms. Many alarms are routine events that happen to every turbine all the
-time (three alarm codes are present in more than 99% of 30-day windows), so "an alarm fired" is not
-the same as "something is wrong". We need a better definition of failure, and a way to see trouble
-building up.
-
-We work with real data: the Hill of Towie wind farm in Scotland, 21 Siemens SWT-2.3-VS-82 turbines,
-about ten years (2016 to April 2026).
+Each turbine records temperatures, pressures, rotor speed, wind speed and alarms.
+Many alarms are routine: three codes appear in more than 99% of 30-day windows,
+so an alarm is not by itself evidence that a turbine is failing.
 
 ## What we built
 
@@ -326,15 +328,40 @@ The full list, with the evidence, is in [`docs/project/DATA_TRAPS.md`](docs/proj
 git clone <repo-url>
 cd <repo>
 python -m venv .venv
-source .venv/bin/activate            # Windows: .venv\Scripts\activate
-pip install -e ".[dev]"
+```
+
+Activate the environment for your shell:
+
+```powershell
+.\.venv\Scripts\Activate.ps1
+```
+
+```bash
+source .venv/bin/activate
+```
+
+Then install the project tools:
+
+```bash
+python -m pip install -e ".[dev]"
 pre-commit install
 nbstripout --install                 # strips notebook outputs
 ```
 
-Put the raw monthly CSVs in `data/raw/<year>/`, or download them
-(`python scripts/download_data.py --list`, then `python scripts/download_data.py`; all years are
-about 15 GB of yearly zips). Then run, in order:
+The root notebook is the recommended way to follow the project in clearly
+labelled steps. The commands below rebuild the main study from raw data. The
+data are not bundled; downloading them requires about 15 GB. Put the raw monthly
+CSVs in `data/raw/<year>/`, or download them:
+
+```bash
+python scripts/download_data.py --list
+python scripts/download_data.py
+```
+
+Then run the pipeline in order:
+
+<details>
+<summary>Show all command-line pipeline steps</summary>
 
 | Command | Produces |
 |---|---|
@@ -360,6 +387,8 @@ about 15 GB of yearly zips). Then run, in order:
 | `python scripts/write_report_tables.py` | the LaTeX tables in `reports/report/tables/` from the result tables |
 | `python scripts/plot_risk_timeline.py --target a --station <id> --column <col>` | `reports/figures/timeline_<target>_<station>_<column>.png`: one turbine's daily values with status, split and missing-value bands |
 
+</details>
+
 The report is `reports/report/main.tex` (it needs `refs.bib` and the logo image beside it; figures
 and tables come from the commands above). Metadata only:
 `python scripts/download_data.py --only Hill_of_Towie_data_dictionary.md --out data/raw/metadata`
@@ -372,27 +401,23 @@ values, and the command prints day counts and missing-value reasons alongside th
 
 Check the code with `pytest` and `ruff check .`.
 
-## Repository map
+## Reference documents
 
-- `src/wt_predmaint/`: all reusable code (`data`, `features`, `labels`, `models`, `evaluation`,
-  `explain`, `reporting`)
-- `configs/protocol.yaml`: the single source of experiment settings (windows, splits, thresholds,
-  model settings, seed)
-- `scripts/`: command-line entry points for the steps above
-- `docs/`: [`roadmap.md`](docs/project/roadmap.md) (schedule, owners, gates), [`DECISIONS.md`](docs/project/DECISIONS.md)
-  (every decision, with an ID), [`TEAM_CHECKLIST.md`](docs/TEAM_CHECKLIST.md),
-  [`DATA_TRAPS.md`](docs/project/DATA_TRAPS.md),
-  [`FEATURES_AND_LABELS.md`](docs/FEATURES_AND_LABELS.md) (every label and feature column),
-  [`BASELINE_SPLIT.md`](docs/BASELINE_SPLIT.md) (who builds which baseline, and what each must deliver),
-  [`modelling_plan.md`](docs/project/modelling_plan.md) (the original plan; the roadmap and decision log
-  supersede it), `reference/` (alarm code and data descriptions)
-- `notebooks/`: exploration only, named `NN_owner_topic.ipynb`; outputs are never committed
-- `reports/`: [`report/main.tex`](reports/report/main.tex) (final report),
-  [`TEST_RESULTS.md`](reports/TEST_RESULTS.md), [`STAKEHOLDER_SUMMARY.md`](reports/STAKEHOLDER_SUMMARY.md),
-  [`REVAEL_FEATURES_AND_LABELS.md`](reports/REVAEL_FEATURES_AND_LABELS.md) (reviewed labels/features
-  section and traceability map), plus `figures/` and `tables/` (generated outputs)
-- `data/{raw,interim,processed}`: git-ignored, never committed
-- `tests/`: unit tests on synthetic data
+The [repository map above](#where-things-are) summarizes the main folders.
+For project details, see:
+
+- [Roadmap](docs/project/roadmap.md) (schedule, owners and gates) and
+  [decision log](docs/project/DECISIONS.md) (decisions and their IDs).
+- [Team checklist](docs/TEAM_CHECKLIST.md) and
+  [data traps](docs/project/DATA_TRAPS.md).
+- [Features and labels](docs/FEATURES_AND_LABELS.md) and
+  [baseline split](docs/BASELINE_SPLIT.md).
+- [Original modelling plan](docs/project/modelling_plan.md); the roadmap and
+  decision log supersede it.
+- Alarm-code and dataset descriptions in `docs/reference/`.
+- [Final report](reports/report/main.tex), [test results](reports/TEST_RESULTS.md),
+  [stakeholder summary](reports/STAKEHOLDER_SUMMARY.md), and generated
+  [figures](reports/figures/README.md).
 
 ## Team
 
