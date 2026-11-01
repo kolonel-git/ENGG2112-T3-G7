@@ -1,0 +1,23 @@
+{
+  "schema": 2,
+  "year": 2016,
+  "turbine": "2304517",
+  "selected_alarm_codes": [
+    "10105",
+    "3130",
+    "8000",
+    "8235"
+  ],
+  "inputs": [
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\Iteration2\\Data_Parquets\\2016\\Station_2304517\\sensors.parquet",
+      "size": 11328325,
+      "mtime_ns": 1793415341244838900
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\Iteration2\\Data_Parquets\\2016\\Station_2304517\\alarms.parquet",
+      "size": 424594,
+      "mtime_ns": 1793415341256345700
+    }
+  ]
+}

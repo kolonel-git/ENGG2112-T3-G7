@@ -1,0 +1,28 @@
+{
+  "schema": 2,
+  "year": 2017,
+  "turbine": "2304521",
+  "inputs": [
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\Iteration2\\Data_Parquets\\turbines_2017\\Station_2304521\\sensors.parquet",
+      "size": 11377410,
+      "mtime_ns": 1793429659764933300
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\Iteration2\\Data_Parquets\\2016\\Station_2304521\\alarms.parquet",
+      "size": 416059,
+      "mtime_ns": 1793415381455805100
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\Iteration2\\Data_Parquets\\turbines_2017\\Station_2304521\\alarms.parquet",
+      "size": 392643,
+      "mtime_ns": 1793429659778444100
+    }
+  ],
+  "selected_alarm_codes": [
+    "10105",
+    "3130",
+    "8000",
+    "8235"
+  ]
+}

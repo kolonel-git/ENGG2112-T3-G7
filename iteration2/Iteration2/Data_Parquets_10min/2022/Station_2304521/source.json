@@ -1,0 +1,48 @@
+{
+  "schema": 2,
+  "year": 2022,
+  "turbine": "2304521",
+  "inputs": [
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\Iteration2\\Data_Parquets\\turbines_2022\\Station_2304521\\sensors.parquet",
+      "size": 11225712,
+      "mtime_ns": 1793431548131672100
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\Iteration2\\Data_Parquets\\2016\\Station_2304521\\alarms.parquet",
+      "size": 416059,
+      "mtime_ns": 1793415381455805100
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\Iteration2\\Data_Parquets\\turbines_2017\\Station_2304521\\alarms.parquet",
+      "size": 392643,
+      "mtime_ns": 1793429659778444100
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\Iteration2\\Data_Parquets\\turbines_2018\\Station_2304521\\alarms.parquet",
+      "size": 365774,
+      "mtime_ns": 1793430191963795800
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\Iteration2\\Data_Parquets\\turbines_2020\\Station_2304521\\alarms.parquet",
+      "size": 275919,
+      "mtime_ns": 1793430723799158700
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\Iteration2\\Data_Parquets\\turbines_2021\\Station_2304521\\alarms.parquet",
+      "size": 300683,
+      "mtime_ns": 1793431146587022700
+    },
+    {
+      "path": "C:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\Iteration2\\Data_Parquets\\turbines_2022\\Station_2304521\\alarms.parquet",
+      "size": 149067,
+      "mtime_ns": 1793431548139672900
+    }
+  ],
+  "selected_alarm_codes": [
+    "10105",
+    "3130",
+    "8000",
+    "8235"
+  ]
+}
