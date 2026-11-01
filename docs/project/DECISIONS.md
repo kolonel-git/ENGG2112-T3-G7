@@ -657,3 +657,16 @@ These are development selections, not authorization to score held-out test years
 - Limits: post-hoc model comparisons on repeatedly used validation years, not an untouched experiment. Current cached feature/label coverage may differ from the published run, so fresh controls on exactly the same rows are the primary comparators. The notebook filters to development years before modelling and includes no test-scoring switch. No A/B labels or frozen model selections are changed. Full test evaluation, if later authorised, must be explicitly described as post-hoc or use genuinely new data.
 
 - Initial D-071 result: the executed run `reports/additional_models_main_protocol/fd99c521d412/` used 22,309 training and 9,690 validation rows for A, and 21,199 training and 8,827 validation rows for B. New-model validation AP: random forest 0.4105 (A), 0.4509 (B); Extra Trees 0.4141, 0.4662; histogram gradient boosting 0.4288, 0.4322. Paired random-score AP was 0.4649 and 0.4830. None of the additional-model point estimates exceeded that reference. All new-model realised validation false-alert rates were at or below the configured budget; episode recall ranged from 0.120 to 0.258 (A) and 0.161 to 0.344 (B), below the random reference's 0.780 and 0.760. Results and bootstrap intervals are in the isolated validation CSVs and notebook. No model was promoted to the frozen registry, no settings were tuned after these results, and no test-year predictions were produced.
+
+
+## Short-horizon any-alarm experiment — 2026-11-01
+
+The user requested an independent binary target: any recorded alarm starts in the next 10, 20 or 30 minutes, using two hours of past sensor data from the supplied ten-minute Parquets. This is separate from the daily degradation protocol. Settings and model budgets live in `configs/short_horizon_alarm.json`. See [SH-001–SH-007](SHORT_HORIZON_DECISIONS.md) for label timing, chronological splits, sampling, model selection and source-label limitations.
+
+### D-072: Repair inherited CI blockers without changing experiments
+- Date: 2026-11-01
+- Trigger: PR #22 failed at the repository-wide Ruff stage before pytest ran.
+- Resolve committed conflict markers in the baseline registry and three CLI scripts. Preserve the full registered baseline set, the NBM leakage-check option and direct-script import support.
+- Keep complete Python-file linting. Notebook cells retain syntax, undefined-name, redefinition and bugbear checks, while interactive import order, inspection imports, long plot labels and compact plotting syntax have notebook-only style exceptions. Declare immutable `pandas.Timedelta` defaults safe rather than suppressing default-argument checks.
+- Make existing zip truncation explicit with `strict=False`, name unused loop variables accordingly and report warnings at the caller. Use an explicit `globals().get` cache lookup and move future imports into the initial export-notebook cells. Format the four existing Python notebook helpers/tests to satisfy the same lint policy as other Python files.
+- No dataset, feature/horizon setting, model fit, threshold, frozen model selection or reported metric is changed by this CI repair. Existing workflow stages remain enabled; neither Ruff nor pytest is skipped or marked non-blocking.

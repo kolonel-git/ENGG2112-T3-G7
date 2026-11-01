@@ -39,3 +39,8 @@ Record dataset surprises here (missing sensors, unit changes, upgrades, timestam
 =======
 | 2026-10-22 | alternate raw source for B1 | The supplied sibling year-folder dataset includes 12 monthly temperature and pressure CSVs for 2019, unlike the earlier raw copy described above. | Preserve the experiment years in D-006. SCADA conversion defaults to protocol years; do not silently add 2019 episodes to this experiment (D-050). | Farhan |
 >>>>>>> 6535030bf74e74d22a551c1b0c69d947a56fa522
+
+
+## Ten-minute any-alarm experiment audit — 2026-11-01
+
+The supplied processed dataset already contains regular grid rows and any-code `alarmOccurred` flags. Auxiliary station 91 is not a physical turbine; use 2304510–2304530. Year 2019 is absent. `wtc_InvUpTmp_mean` and `wtc_TrafoTMa_mean` are missing in about 88% of observed 2016–2022 training rows; imputation is fitted on training only. Target flags inherit the export's alarm completeness and cannot recover events removed from original inputs. Do not substitute selected-alarm flags for the any-code target. See the new experiment README for exact eligibility and split-purging rules.

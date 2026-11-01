@@ -17,6 +17,7 @@ dependencies = [
     "matplotlib>=3.7",
     "pyarrow>=14.0",
     "pyyaml>=6.0",
+    "xgboost>=2.0",
 ]
 
 [project.optional-dependencies]
@@ -41,10 +42,18 @@ src = ["src", "tests", "scripts"]
 select = ["E", "F", "I", "UP", "B"]
 
 [tool.ruff.lint.per-file-ignores]
+# Interactive cells intentionally repeat imports, keep inspection imports available,
+# and use compact plotting statements/long labels. Retain syntax, undefined-name,
+# redefinition and bugbear checks in notebooks, plus full linting for Python files.
+"*.ipynb" = ["E401", "E402", "E501", "E701", "E702", "F401", "I001"]
 # figure descriptions are long prose strings that feed the generated report index
 "src/wt_predmaint/reporting/figures_*.py" = ["E501"]
 # scripts add src/ to sys.path so they also run directly from an IDE without installing the package
 "scripts/**/*.py" = ["E402"]
+
+[tool.ruff.lint.flake8-bugbear]
+# Timedelta instances are immutable; shared defaults cannot accumulate state.
+extend-immutable-calls = ["pandas.Timedelta"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

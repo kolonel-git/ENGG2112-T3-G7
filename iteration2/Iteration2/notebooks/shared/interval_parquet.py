@@ -1,9 +1,11 @@
 """Build and read regular ten-minute turbine datasets, without altering source files."""
+
 import json
 import os
 from collections import Counter, defaultdict
 from pathlib import Path
 from uuid import uuid4
+
 import numpy as np
 import pandas as pd
 
@@ -17,7 +19,9 @@ def year_folder(root, year):
     for name in [str(year), f"turbines_{year}"]:
         if (root / name).is_dir():
             return root / name
-    raise FileNotFoundError(f"No source Parquet folder for {year} in {root}. Run notebook 02 first.")
+    raise FileNotFoundError(
+        f"No source Parquet folder for {year} in {root}. Run notebook 02 first."
+    )
 
 
 def add_selected_alarm_labels(frame, selected_alarm_codes=DEFAULT_SELECTED_ALARM_CODES):
@@ -26,10 +30,15 @@ def add_selected_alarm_labels(frame, selected_alarm_codes=DEFAULT_SELECTED_ALARM
     if not codes or any(not code for code in codes):
         raise ValueError("Choose at least one nonblank selected alarm code.")
     counts = frame["triggeredAlarmCounts"].map(
-        lambda payload: {code: count for code, count in json.loads(payload).items() if code in codes})
+        lambda payload: {
+            code: count for code, count in json.loads(payload).items() if code in codes
+        }
+    )
     frame["selectedTriggeredAlarmCounts"] = counts.map(json.dumps)
     frame["selectedTriggeredAlarmCodes"] = counts.map(lambda values: "; ".join(sorted(values)))
-    frame["selectedAlarmTriggerCount"] = counts.map(lambda values: sum(values.values())).astype("int32")
+    frame["selectedAlarmTriggerCount"] = counts.map(lambda values: sum(values.values())).astype(
+        "int32"
+    )
     frame["selectedAlarmOccurred"] = frame["selectedAlarmTriggerCount"].gt(0)
     frame.attrs["selected_alarm_codes"] = sorted(codes)
     return frame
@@ -44,7 +53,10 @@ def align_year(sensors, alarms, year, turbine, selected_alarm_codes=DEFAULT_SELE
         raise ValueError("Expected a timezone-naive sensor timestamp index.")
     sensors = sensors.loc[(sensors.index >= begin) & (sensors.index < finish)]
     if (sensors.index != sensors.index.floor("10min")).any():
-        raise ValueError("Off-grid sensor timestamps found; choose an explicit aggregation policy before preprocessing.")
+        raise ValueError(
+            "Off-grid sensor timestamps found; choose an explicit aggregation "
+            "policy before preprocessing."
+        )
     sensors = sensors.loc[~sensors.index.duplicated(keep="last")].sort_index()
     columns = [c for c in sensors.columns if c.startswith("wtc_")]
     observed = sensors[columns].notna().any(axis=1)
@@ -72,8 +84,13 @@ def align_year(sensors, alarms, year, turbine, selected_alarm_codes=DEFAULT_SELE
         if begin <= on < finish:
             i = int((on - begin) // STEP)
             starts[i][code] += 1
-            events_by_bin[i].append({"Alarmcode": code, "TimeOn": on.isoformat(sep=" "),
-                                     "TimeOff": None if pd.isna(off) else off.isoformat(sep=" ")})
+            events_by_bin[i].append(
+                {
+                    "Alarmcode": code,
+                    "TimeOn": on.isoformat(sep=" "),
+                    "TimeOff": None if pd.isna(off) else off.isoformat(sep=" "),
+                }
+            )
         if pd.notna(off) and off > on:
             if on >= finish or off <= begin:
                 continue
@@ -107,19 +124,32 @@ def align_year(sensors, alarms, year, turbine, selected_alarm_codes=DEFAULT_SELE
     result["alarmTriggerCount"] = np.asarray(totals, dtype="int32")
     # Original event timing retained inside JSON, never as extra timestamp rows.
     result["alarmEvents"] = event_text
-    result.attrs['carry_in_alarm_events'] = [
-        {'Alarmcode': str(e.Alarmcode).strip(), 'TimeOn': e.TimeOn.isoformat(sep=' '),
-         'TimeOff': e.TimeOff.isoformat(sep=' ')}
+    result.attrs["carry_in_alarm_events"] = [
+        {
+            "Alarmcode": str(e.Alarmcode).strip(),
+            "TimeOn": e.TimeOn.isoformat(sep=" "),
+            "TimeOff": e.TimeOff.isoformat(sep=" "),
+        }
         for e in alarms.itertuples(index=False)
-        if e.TimeOn < begin and pd.notna(e.TimeOff) and e.TimeOff > begin]
+        if e.TimeOn < begin and pd.notna(e.TimeOff) and e.TimeOff > begin
+    ]
     return add_selected_alarm_labels(result, selected_alarm_codes)
 
 
-def preprocess_year(source_root, output_root, year, turbines=None, rebuild=False,
-                    selected_alarm_codes=DEFAULT_SELECTED_ALARM_CODES):
+def preprocess_year(
+    source_root,
+    output_root,
+    year,
+    turbines=None,
+    rebuild=False,
+    selected_alarm_codes=DEFAULT_SELECTED_ALARM_CODES,
+):
     source = year_folder(source_root, year)
-    ids = ([p.name.removeprefix("Station_") for p in source.glob("Station_*") if p.is_dir()]
-           if turbines is None else [str(t) for t in turbines])
+    ids = (
+        [p.name.removeprefix("Station_") for p in source.glob("Station_*") if p.is_dir()]
+        if turbines is None
+        else [str(t) for t in turbines]
+    )
     if not ids:
         raise ValueError(f"No turbines found in {source}")
     summary = []
@@ -137,12 +167,24 @@ def preprocess_year(source_root, output_root, year, turbines=None, rebuild=False
                 if candidate.is_file() and candidate not in alarm_paths:
                     alarm_paths.append(candidate)
         if not sensors_path.is_file() or not alarms_path.is_file():
-            raise FileNotFoundError(f"Missing sensor/alarm Parquet for {year}/{station.name}. Run notebook 02.")
+            raise FileNotFoundError(
+                f"Missing sensor/alarm Parquet for {year}/{station.name}. Run notebook 02."
+            )
         inputs = [sensors_path, *sorted(alarm_paths)]
-        signature = {"schema": SCHEMA_VERSION, "year": year, "turbine": turbine,
-                     "selected_alarm_codes": sorted({str(c).strip() for c in selected_alarm_codes}),
-                     "inputs": [{"path": str(p.resolve()), "size": p.stat().st_size,
-                                 "mtime_ns": p.stat().st_mtime_ns} for p in inputs]}
+        signature = {
+            "schema": SCHEMA_VERSION,
+            "year": year,
+            "turbine": turbine,
+            "selected_alarm_codes": sorted({str(c).strip() for c in selected_alarm_codes}),
+            "inputs": [
+                {
+                    "path": str(p.resolve()),
+                    "size": p.stat().st_size,
+                    "mtime_ns": p.stat().st_mtime_ns,
+                }
+                for p in inputs
+            ],
+        }
         destination = Path(output_root) / str(year) / station.name
         target, manifest = destination / "data.parquet", destination / "source.json"
         try:
@@ -150,7 +192,9 @@ def preprocess_year(source_root, output_root, year, turbines=None, rebuild=False
         except (FileNotFoundError, ValueError):
             current = False
         if not rebuild and current and target.is_file():
-            summary.append({"Year": year, "Turbine": turbine, "Status": "unchanged", "Path": str(target)})
+            summary.append(
+                {"Year": year, "Turbine": turbine, "Status": "unchanged", "Path": str(target)}
+            )
             continue
         sensor_data = pd.read_parquet(sensors_path)
         alarm_parts = []
@@ -176,8 +220,16 @@ def preprocess_year(source_root, output_root, year, turbines=None, rebuild=False
             manifest.write_text(json.dumps(signature, indent=2), encoding="utf-8")
         finally:
             temporary.unlink(missing_ok=True)
-        summary.append({"Year": year, "Turbine": turbine, "Status": "created", "Rows": len(frame),
-                        "Triggers": int(frame.alarmTriggerCount.sum()), "Path": str(target)})
+        summary.append(
+            {
+                "Year": year,
+                "Turbine": turbine,
+                "Status": "created",
+                "Rows": len(frame),
+                "Triggers": int(frame.alarmTriggerCount.sum()),
+                "Path": str(target),
+            }
+        )
         print(year, turbine, len(frame), "rows", flush=True)
     return summary
 
@@ -185,9 +237,14 @@ def preprocess_year(source_root, output_root, year, turbines=None, rebuild=False
 def load_aligned(root, year, turbine, bin_alarm_times=False):
     path = Path(root) / str(year) / f"Station_{turbine}" / "data.parquet"
     if not path.is_file():
-        raise FileNotFoundError(f"Run 03_preprocessing/01_preprocess_10min_parquets.ipynb first. Missing: {path}")
+        raise FileNotFoundError(
+            f"Run 03_preprocessing/01_preprocess_10min_parquets.ipynb first. Missing: {path}"
+        )
     frame = pd.read_parquet(path)
-    if not isinstance(frame.index, pd.DatetimeIndex) or (frame.index != frame.index.floor("10min")).any():
+    if (
+        not isinstance(frame.index, pd.DatetimeIndex)
+        or (frame.index != frame.index.floor("10min")).any()
+    ):
         raise ValueError("Invalid 10-minute data; rerun notebook 03.")
     events = list(frame.attrs.get("carry_in_alarm_events", []))
     for payload in frame.loc[frame.alarmOccurred, "alarmEvents"]:

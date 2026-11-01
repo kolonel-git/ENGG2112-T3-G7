@@ -1,0 +1,72 @@
+{
+  "data_root": "iteration2/Data_Parquets_10min",
+  "report_root": "iteration2/reports/any_alarm_binary",
+  "target": "any_alarm_start",
+  "lookback_minutes": 120,
+  "horizons_minutes": [
+    10,
+    20,
+    30
+  ],
+  "step_minutes": 10,
+  "turbine_ids": [
+    "2304510",
+    "2304511",
+    "2304512",
+    "2304513",
+    "2304514",
+    "2304515",
+    "2304516",
+    "2304517",
+    "2304518",
+    "2304519",
+    "2304520",
+    "2304521",
+    "2304522",
+    "2304523",
+    "2304524",
+    "2304525",
+    "2304526",
+    "2304527",
+    "2304528",
+    "2304529",
+    "2304530"
+  ],
+  "train_start": "2016-01-01",
+  "train_end": "2023-01-01",
+  "validation_end": "2024-01-01",
+  "test_end": "2026-01-01",
+  "max_train_rows": 120000,
+  "max_validation_rows": 50000,
+  "max_test_rows": 50000,
+  "seed": 42,
+  "n_jobs": 4,
+  "models": [
+    "logistic_regression",
+    "random_forest",
+    "xgboost"
+  ],
+  "random_forest": {
+    "n_estimators": 120,
+    "max_depth": 14,
+    "max_leaf_nodes": 512,
+    "min_samples_leaf": 20
+  },
+  "xgboost": {
+    "n_estimators": 180,
+    "max_depth": 5,
+    "learning_rate": 0.08,
+    "subsample": 0.85,
+    "colsample_bytree": 0.8,
+    "reg_lambda": 2.0
+  },
+  "eda_turbine": "2304511",
+  "eda_year": 2022,
+  "eda_start": "2022-02-01",
+  "eda_days": 7,
+  "eda_features": [
+    "wtc_PrWindSp_mean",
+    "wtc_GenRpm_mean",
+    "wtc_GeOilTmp_mean"
+  ]
+}
