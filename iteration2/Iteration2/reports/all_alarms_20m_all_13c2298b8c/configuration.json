@@ -1,0 +1,52 @@
+{
+  "years": [
+    2016,
+    2017,
+    2018,
+    2020,
+    2021
+  ],
+  "alarm_codes": [
+    "ALL"
+  ],
+  "target_name": "all_alarms",
+  "turbines": [
+    "2304510",
+    "2304511",
+    "2304512",
+    "2304513",
+    "2304514"
+  ],
+  "horizon": "0 days 00:20:00",
+  "lookback": "0 days 02:00:00",
+  "train_end": "2020-01-01 00:00:00",
+  "validation_end": "2021-01-01 00:00:00",
+  "seed": 42,
+  "input_folders": [
+    "c:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2016\\Station_2304510",
+    "c:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2016\\Station_2304511",
+    "c:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2016\\Station_2304512",
+    "c:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2016\\Station_2304513",
+    "c:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2016\\Station_2304514",
+    "c:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2017\\Station_2304510",
+    "c:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2017\\Station_2304511",
+    "c:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2017\\Station_2304512",
+    "c:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2017\\Station_2304513",
+    "c:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2017\\Station_2304514",
+    "c:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2018\\Station_2304510",
+    "c:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2018\\Station_2304511",
+    "c:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2018\\Station_2304512",
+    "c:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2018\\Station_2304513",
+    "c:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2018\\Station_2304514",
+    "c:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2020\\Station_2304510",
+    "c:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2020\\Station_2304511",
+    "c:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2020\\Station_2304512",
+    "c:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2020\\Station_2304513",
+    "c:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2020\\Station_2304514",
+    "c:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2021\\Station_2304510",
+    "c:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2021\\Station_2304511",
+    "c:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2021\\Station_2304512",
+    "c:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2021\\Station_2304513",
+    "c:\\Users\\parve\\Desktop\\University Stuff\\ENG2112\\Project\\ENGG2112-T3-G7\\iteration2\\Iteration2\\Data_Parquets_10min\\2021\\Station_2304514"
+  ]
+}

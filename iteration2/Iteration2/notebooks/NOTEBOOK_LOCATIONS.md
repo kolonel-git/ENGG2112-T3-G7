@@ -20,3 +20,6 @@
 | 14_train_alarm_group_1week.ipynb | [05_model_training/icing_8230_8234_8235_8236/07_horizon_1week/01_train_all_features.ipynb](05_model_training/icing_8230_8234_8235_8236/07_horizon_1week/01_train_all_features.ipynb) |
 
 New experiment: [All-turbine 6-hour 8200-family CV](06_all_turbine_cross_validation/01_cv_8200_family_all_turbines_6hour.ipynb). This is a new workflow, not a renamed single-turbine notebook.
+
+
+All-alarm experiments: `05_model_training/all_alarms/` contains 10-, 20- and 30-minute horizons, each with all-features, selected-features and variant notebooks. See its README for the all-code target definition.
