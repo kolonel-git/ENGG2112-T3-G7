@@ -141,7 +141,7 @@ Choose the target folder in [05_model_training](notebooks/05_model_training/):
 | [untwisting_cables_10105](notebooks/05_model_training/untwisting_cables_10105/) | 10105: stopped, untwisting cables |
 | [icing_8230_8234_8235_8236](notebooks/05_model_training/icing_8230_8234_8235_8236/) | Any of 8230, 8234, 8235 or 8236 |
 
-Then choose a horizon folder: `01_horizon_10min`, `02_horizon_1hour`, `03_horizon_6hours`, `04_horizon_1day`, or `05_horizon_1week`.
+Then choose a horizon folder: `01_horizon_10min`, `04_horizon_1hour`, `05_horizon_6hours`, `06_horizon_1day`, or `07_horizon_1week`.
 
 Each contains:
 

@@ -19,10 +19,10 @@ All existing training notebooks currently target the icing group: **8230, 8234, 
 | Subfolder | Horizon | Versions |
 |---|---|---|
 | 01_horizon_10min | Next 10 minutes | All features; selected features; preserved selected-feature variant |
-| 02_horizon_1hour | Next hour | All features; selected features; selected-feature variant |
-| 03_horizon_6hours | Next 6 hours | All features; selected features; selected-feature variant |
-| 04_horizon_1day | Next day | All features; selected features; selected-feature variant |
-| 05_horizon_1week | Next week | All features; selected features; selected-feature variant |
+| 04_horizon_1hour | Next hour | All features; selected features; selected-feature variant |
+| 05_horizon_6hours | Next 6 hours | All features; selected features; selected-feature variant |
+| 06_horizon_1day | Next day | All features; selected features; selected-feature variant |
+| 07_horizon_1week | Next week | All features; selected features; selected-feature variant |
 
 Every model notebook still uses the preceding hour of sensor readings and predicts every 10 minutes. Each trains independently; you do not need to run earlier horizon notebooks first. Edit ALARM_CODES, TURBINE_IDS and (where applicable) SELECTED_FEATURES in settings. If you save a notebook for another alarm set, place that copy in a correspondingly named alarm-set folder.
 

@@ -14,9 +14,9 @@
 | 09_train_alarm_3130.ipynb | [05_model_training/icing_8230_8234_8235_8236/01_horizon_10min/01_train_all_features.ipynb](05_model_training/icing_8230_8234_8235_8236/01_horizon_10min/01_train_all_features.ipynb) |
 | 11_train_alarm_3130_selected_features.ipynb | [05_model_training/icing_8230_8234_8235_8236/01_horizon_10min/02_train_selected_features.ipynb](05_model_training/icing_8230_8234_8235_8236/01_horizon_10min/02_train_selected_features.ipynb) |
 | 15_train_alarm_group_10min_selected_features.ipynb | [05_model_training/icing_8230_8234_8235_8236/01_horizon_10min/03_train_selected_features_variant.ipynb](05_model_training/icing_8230_8234_8235_8236/01_horizon_10min/03_train_selected_features_variant.ipynb) |
-| 16_train_alarm_group_1hour_selected_features.ipynb | [05_model_training/icing_8230_8234_8235_8236/02_horizon_1hour/02_train_selected_features.ipynb](05_model_training/icing_8230_8234_8235_8236/02_horizon_1hour/02_train_selected_features.ipynb) |
-| 12_train_alarm_group_6hour.ipynb | [05_model_training/icing_8230_8234_8235_8236/03_horizon_6hours/01_train_all_features.ipynb](05_model_training/icing_8230_8234_8235_8236/03_horizon_6hours/01_train_all_features.ipynb) |
-| 13_train_alarm_group_1day.ipynb | [05_model_training/icing_8230_8234_8235_8236/04_horizon_1day/01_train_all_features.ipynb](05_model_training/icing_8230_8234_8235_8236/04_horizon_1day/01_train_all_features.ipynb) |
-| 14_train_alarm_group_1week.ipynb | [05_model_training/icing_8230_8234_8235_8236/05_horizon_1week/01_train_all_features.ipynb](05_model_training/icing_8230_8234_8235_8236/05_horizon_1week/01_train_all_features.ipynb) |
+| 16_train_alarm_group_1hour_selected_features.ipynb | [05_model_training/icing_8230_8234_8235_8236/04_horizon_1hour/02_train_selected_features.ipynb](05_model_training/icing_8230_8234_8235_8236/04_horizon_1hour/02_train_selected_features.ipynb) |
+| 12_train_alarm_group_6hour.ipynb | [05_model_training/icing_8230_8234_8235_8236/05_horizon_6hours/01_train_all_features.ipynb](05_model_training/icing_8230_8234_8235_8236/05_horizon_6hours/01_train_all_features.ipynb) |
+| 13_train_alarm_group_1day.ipynb | [05_model_training/icing_8230_8234_8235_8236/06_horizon_1day/01_train_all_features.ipynb](05_model_training/icing_8230_8234_8235_8236/06_horizon_1day/01_train_all_features.ipynb) |
+| 14_train_alarm_group_1week.ipynb | [05_model_training/icing_8230_8234_8235_8236/07_horizon_1week/01_train_all_features.ipynb](05_model_training/icing_8230_8234_8235_8236/07_horizon_1week/01_train_all_features.ipynb) |
 
 New experiment: [All-turbine 6-hour 8200-family CV](06_all_turbine_cross_validation/01_cv_8200_family_all_turbines_6hour.ipynb). This is a new workflow, not a renamed single-turbine notebook.

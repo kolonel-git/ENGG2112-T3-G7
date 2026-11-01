@@ -23,9 +23,9 @@ from sklearn.metrics import (
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 
-VERSION = 1
+VERSION = 2
 STEP = pd.Timedelta(minutes=10)
-LOOKBACK = pd.Timedelta(hours=1)
+LOOKBACK = pd.Timedelta(hours=2)
 HORIZON = pd.Timedelta(hours=6)
 FEATURE_STATS = ("mean", "std", "min", "max")
 
@@ -113,7 +113,8 @@ def prepare_one(source, cache_root, codes, sensors, rebuild=False):
     episodes, audit = episode_table(frame, codes, turbine)
     values = frame.reindex(columns=sensors).apply(pd.to_numeric, errors="coerce")
     values = values.replace([np.inf, -np.inf], np.nan).where(observed, axis=0)
-    rolling = values.shift(1).rolling(6, min_periods=1)
+    history_steps = int(LOOKBACK / STEP)
+    rolling = values.shift(1).rolling(history_steps, min_periods=1)
     parts = []
     for name in FEATURE_STATS:
         part = getattr(rolling, name)()
@@ -132,7 +133,7 @@ def prepare_one(source, cache_root, codes, sensors, rebuild=False):
         if right > left:
             changes[left] += 1
             changes[right] -= 1
-    complete_history = observed.shift(1, fill_value=False).rolling(6, min_periods=6).sum().eq(6)
+    complete_history = observed.shift(1, fill_value=False).rolling(history_steps, min_periods=history_steps).sum().eq(history_steps)
     keep = complete_history.to_numpy() & ((grid + HORIZON) <= end) & (np.cumsum(changes[:-1]) == 0)
     output = features.loc[keep].copy()
     output.insert(0, "TimeStamp", grid[keep])

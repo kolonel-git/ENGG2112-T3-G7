@@ -16,3 +16,16 @@ All three alarm-set folders contain matching horizon folders and training notebo
 Pitch-lubrication (3130) and untwisting-cables (10105) now mirror all five icing horizon folders, including the all-feature and selected-feature variants available at each horizon. The new notebooks have not been trained.
 
 Every alarm group now includes all three notebook roles in each of the five horizon folders: all features, selected features, and the selected-feature variant. New notebooks have not been trained.
+
+
+## Prediction horizon order
+
+- `01_horizon_10min/`
+- `02_horizon_20min/`
+- `03_horizon_30min/`
+- `04_horizon_1hour/`
+- `05_horizon_6hours/`
+- `06_horizon_1day/`
+- `07_horizon_1week/`
+
+Each horizon contains all-features, selected-features, and selected-features variant notebooks. The sensor lookback remains two hours. New horizons require independent training.

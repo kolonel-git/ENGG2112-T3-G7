@@ -256,3 +256,10 @@ is seeded from the config; the test years are scored once.
 ## Licence
 
 TODO: no licence chosen yet. The team must decide before any public release.
+
+
+## Additional validation-only model comparison (D-071)
+
+[additional_models_main_protocol.ipynb](additional_models_main_protocol.ipynb) at the project root trains random forest, Extra Trees and histogram gradient boosting, with the original logistic/LightGBM controls and the shared constant/random floors. It reuses the main daily A/B labels/features, configured train/validation years, false-alarm-budget threshold and turbine-bootstrap evaluator. It does not score test years or overwrite the frozen report tables. Results are isolated under `reports/additional_models_main_protocol/<run-id>/`.
+
+This is post-hoc exploratory validation work, not new held-out evidence. See D-071 in the decision log and the notebook's coverage audit; currently cached rows may differ from the published run. The notebook directly calls the evaluator and does not depend on the frozen model registry.

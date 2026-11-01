@@ -41,7 +41,7 @@ class PipelineTests(unittest.TestCase):
         grid = pd.date_range("2016-01-01", "2017-01-01", freq=cv.STEP, inclusive="left")
         frame = pd.DataFrame({"wtc_test": np.arange(len(grid), dtype=float), "sensorObserved": True,
                               "alarmOccurred": False, "alarmEvents": "[]"}, index=grid)
-        frame.iloc[6, frame.columns.get_loc("wtc_test")] = 999
+        frame.iloc[12, frame.columns.get_loc("wtc_test")] = 999
         events = [
             {"Alarmcode": "8210", "TimeOn": "2016-01-01 12:00:00", "TimeOff": "2016-01-01 12:20:00"},
             {"Alarmcode": "8210", "TimeOn": "2016-01-01 12:00:00", "TimeOff": "2016-01-01 12:20:00"},
@@ -55,7 +55,7 @@ class PipelineTests(unittest.TestCase):
         entry = cv.prepare_one(source, self.root / "prepared", ["8210", "8230"], ["wtc_test"])
         features = pd.read_parquet(entry["features"]).set_index("TimeStamp")
         episodes = pd.read_parquet(entry["episodes"])
-        self.assertEqual(features.loc["2016-01-01 01:00", "wtc_test__mean"], 2.5)
+        self.assertEqual(features.loc["2016-01-01 02:00", "wtc_test__mean"], 5.5)
         self.assertEqual(features.loc["2016-01-01 06:00", "target"], 0)  # End is exclusive.
         self.assertEqual(features.loc["2016-01-01 06:10", "target"], 1)
         self.assertNotIn(pd.Timestamp("2016-01-01 12:10"), features.index)
@@ -65,23 +65,24 @@ class PipelineTests(unittest.TestCase):
         self.assertEqual(episodes.iloc[0].codes, "8210; 8230")
         self.assertTrue((features.index + cv.HORIZON <= pd.Timestamp("2017-01-01")).all())
         self.assertNotIn("alarmOccurred", features.columns)
-        self.assertNotIn("2016-01-01 00:50", features.index)
-        # A source gap invalidates its following input hour without filling the gap.
+        self.assertNotIn(pd.Timestamp("2016-01-01 01:50"), features.index)
+        # A source gap invalidates its following two input hours without filling the gap.
         frame.loc["2016-01-01 00:20", "sensorObserved"] = False
         frame.to_parquet(source)
         revised = cv.prepare_one(source, self.root / "prepared", ["8210", "8230"], ["wtc_test"])
         self.assertNotEqual(entry["features"], revised["features"])
         revised_rows = pd.read_parquet(revised["features"])
-        self.assertNotIn(pd.Timestamp("2016-01-01 01:00"), revised_rows.TimeStamp.tolist())
+        self.assertNotIn(pd.Timestamp("2016-01-01 02:20"), revised_rows.TimeStamp.tolist())
+        self.assertIn(pd.Timestamp("2016-01-01 02:30"), revised_rows.TimeStamp.tolist())
 
     def test_shared_timestamp_purging(self):
         entry = self.entry(2023)
         frame = pd.read_parquet(entry["features"]).iloc[:4].copy()
-        frame["TimeStamp"] = pd.to_datetime(["2023-01-01 00:30", "2023-01-01 01:00",
+        frame["TimeStamp"] = pd.to_datetime(["2023-01-01 01:50", "2023-01-01 02:00",
                                              "2023-12-31 18:00", "2023-12-31 18:10"])
         frame.to_parquet(entry["features"], index=False)
         selected = list(cv.iter_frames([entry], "2023-01-01", "2024-01-01"))[0][1]
-        self.assertEqual(selected.TimeStamp.tolist(), [pd.Timestamp("2023-01-01 01:00"),
+        self.assertEqual(selected.TimeStamp.tolist(), [pd.Timestamp("2023-01-01 02:00"),
                                                        pd.Timestamp("2023-12-31 18:00")])
 
     def test_sampling_preserves_all_positives_and_turbine_strata(self):
